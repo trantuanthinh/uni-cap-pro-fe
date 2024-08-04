@@ -5,13 +5,15 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-    const user = {
-        username: "trantuanthinh",
-        age: 22,
-    };
+    // const user = {
+    //     username: "trantuanthinh",
+    //     age: 22,
+    // };
+
+    const user = null;
 
     return (
-        <main className={ `container ${inter.className}` }>
+        <main className={ `${inter.className}` }>
             <Header user={ user } />
 
             <Footer />
