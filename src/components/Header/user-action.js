@@ -16,9 +16,10 @@ export default function UserActions({ user }) {
         <div className="relative">
             <button
                 onClick={ toggleDropdown }
-                className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded focus:outline-none"
+                className="flex items-center space-x-2 bg-rich-brown hover:bg-gray-700 text-white py-2 px-4 rounded focus:outline-none"
             >
-                <FaUser /><span className="not-sr-only">{ user?.username }</span>
+                <FaUser />
+                <span className="not-sr-only">{ user?.username }</span>
             </button>
             { isOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg">

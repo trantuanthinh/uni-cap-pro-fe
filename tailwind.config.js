@@ -12,7 +12,7 @@ module.exports = {
                 "light-green": "#7D9A5F",
                 "rich-brown": "#6F4F28",
                 "light-brown": "#BFAE9F",
-                beige: "#F5F5DC",
+                "beige": "#F5F5DC",
                 "sky-blue": "#87CEEB",
                 "sunset-orange": "#FF6F00",
                 "harvest-yellow": "#F4C542",
