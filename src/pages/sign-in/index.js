@@ -1,26 +1,25 @@
-
-import Link from 'next/link';
-import { useState } from 'react';
+import Link from "next/link";
+import { useState } from "react";
 
 export default function SignIn() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [identifier, setIdentifier] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
+        setError("");
 
         // Example validation
-        if (!email || !password) {
-            setError('Both fields are required.');
+        if (!identifier || !password) {
+            setError("Both fields are required.");
             return;
         }
 
         // Add sign-in logic here (e.g., call an API)
         // For now, we'll just log the values
-        console.log('Email:', email);
-        console.log('Password:', password);
+        console.log("Identifier (Email/Username):", identifier);
+        console.log("Password:", password);
     };
 
     return (
@@ -32,27 +31,23 @@ export default function SignIn() {
 
                 <form onSubmit={ handleSubmit }>
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
-                        </label>
                         <input
-                            type="email"
-                            id="email"
-                            value={ email }
-                            onChange={ (e) => setEmail(e.target.value) }
+                            type="text"
+                            id="identifier"
+                            value={ identifier }
+                            placeholder="Username or Phone Number"
+                            onChange={ (e) => setIdentifier(e.target.value) }
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
                         />
                     </div>
 
                     <div className="mb-6">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
                         <input
                             type="password"
                             id="password"
                             value={ password }
+                            placeholder="Password"
                             onChange={ (e) => setPassword(e.target.value) }
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
@@ -68,7 +63,7 @@ export default function SignIn() {
                 </form>
 
                 <div className="mt-4 text-center">
-                    <Link href="/register" className="text-indigo-600 hover:text-indigo-800">
+                    <Link href="/sign-up" className="text-indigo-600 hover:text-indigo-800">
                         Don't have an account? Register here.
                     </Link>
                 </div>
