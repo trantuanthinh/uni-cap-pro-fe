@@ -41,7 +41,7 @@ class APIService {
     // User
     async getUsers() {
         // let baseUrl = this.rootApI + "/User";
-        let baseUrl = "http://jsonplaceholder.typicode.com/users";
+        let baseUrl = "https://jsonplaceholder.typicode.com/users";
         try {
             return await this.getItems(baseUrl);
         } catch (error) {
@@ -51,7 +51,7 @@ class APIService {
 
     async getUsers(id) {
         // let baseUrl = this.rootApI + "/User";
-        let baseUrl = "http://jsonplaceholder.typicode.com/users";
+        let baseUrl = "https://jsonplaceholder.typicode.com/users";
         try {
             return await this.getItem(baseUrl, id);
         } catch (error) {
