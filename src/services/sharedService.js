@@ -14,4 +14,5 @@ export class SharedService {
 
 Object.freeze(SharedService);
 const sharedService = new SharedService();
+
 export default sharedService;
