@@ -8,7 +8,7 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-primary-green text-white py-6">
+        <footer className="bg-primary-green text-white py-6 rounded-none">
             <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
                 <div className="mb-4 md:mb-0">
                     <LinkList linkList={ linkList } />

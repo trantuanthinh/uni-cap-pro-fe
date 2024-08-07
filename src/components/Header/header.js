@@ -11,7 +11,7 @@ export default function Header({ user }) {
         { href: "/produce", label: "Produce" },
     ];
     return (
-        <header className="bg-primary-green text-white py-4">
+        <header className="bg-primary-green text-white py-4 rounded-none">
             <div className="container mx-auto flex justify-between items-center">
                 <div className="text-2xl font-bold">
                     <Link href="/">Logo</Link>

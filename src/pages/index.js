@@ -48,7 +48,7 @@ export default function Home({ }) {
 
     return (
         <main className="px-20 py-5">
-            <section className="flex flex-col items-center justify-center rounded-lg">
+            <section className="flex flex-col items-center justify-center ">
                 <ProductList title={ "Productions" } listItems={ list } />
             </section>
             <section></section>

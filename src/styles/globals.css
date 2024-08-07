@@ -6,6 +6,9 @@
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 214, 219, 220;
 }
+*{
+    border-radius: 0.5rem;
+}
 
 body {
     color: rgb(var(--foreground-rgb));
