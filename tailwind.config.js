@@ -16,6 +16,8 @@ module.exports = {
                 "sky-blue": "#87CEEB",
                 "sunset-orange": "#FF6F00",
                 "harvest-yellow": "#F4C542",
+                "text-title": "#4A773C",
+                "text-base": "#6F4F28",
             },
             backgroundImage: {
                 "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

@@ -24,13 +24,14 @@ export default function UserActions({ user }) {
             { isOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg">
                     <ul className="py-1">
-                        { actionList.map((item) => (
-                            <li key={ item.label }>
-                                <Link href={ item.href } className="block px-4 py-2 hover:bg-gray-100">
-                                    { item.label }
-                                </Link>
-                            </li>
-                        )) }
+                        { actionList &&
+                            actionList?.map((item) => (
+                                <li key={ item.label }>
+                                    <Link href={ item.href } className="block px-4 py-2 hover:bg-gray-100">
+                                        { item.label }
+                                    </Link>
+                                </li>
+                            )) }
                     </ul>
                 </div>
             ) }

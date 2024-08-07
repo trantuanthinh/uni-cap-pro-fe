@@ -1,11 +1,60 @@
-import { Inter } from "next/font/google";
+import ProductList from "@/components/main/product-list";
 
-const inter = Inter({ subsets: ["latin"] });
+export default function Home({ }) {
+    const list = [
+        {
+            title: "Title",
+            description: "Description",
+            imageUrl: "/download.jpg",
+            price: 5000,
+        },
+        {
+            title: "Title",
+            description: "Description",
+            imageUrl: "/download.jpg",
+            price: 5000,
+        }, {
+            title: "Title",
+            description: "Description",
+            imageUrl: "/download.jpg",
+            price: 5000,
+        }, {
+            title: "Title",
+            description: "Description",
+            imageUrl: "/download.jpg",
+            price: 5000,
+        }, {
+            title: "Title",
+            description: "Description",
+            imageUrl: "/download.jpg",
+            price: 5000,
+        }, {
+            title: "Title",
+            description: "Description",
+            imageUrl: "/download.jpg",
+            price: 5000,
+        }, {
+            title: "Title",
+            description: "Description",
+            imageUrl: "/download.jpg",
+            price: 5000,
+        }, {
+            title: "Title",
+            description: "Description",
+            imageUrl: "/download.jpg",
+            price: 5000,
+        },
+    ];
 
-export default function Home() {
     return (
-        <main className={ `${inter.className}` }>
-
+        <main className="px-20 py-5">
+            <section className="flex flex-col items-center justify-center rounded-lg">
+                <ProductList title={ "Productions" } listItems={ list } />
+            </section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
         </main>
     );
 }
