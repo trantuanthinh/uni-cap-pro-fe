@@ -1,15 +1,21 @@
-import AddToCartButton from "@/components/shared/add-to-cart";
+import CommentCard from "@/components/shared/comment-card";
+import ProductInfo from "@/components/shared/product-info";
 import apiService from "@/services/api-service";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa";
 
-export default function ProductDetail({ total_rating_value = 100, quantity_rating_value = 10 }) {
+export default function ProductDetail() {
     const router = useRouter();
     const { slug } = router.query;
-    const starRating = total_rating_value / quantity_rating_value;
-
+    const starRating = 4;
+    const commentList = [
+        {
+            username: "thaohoang",
+            timestamp: "2 hours ago",
+            avatar: '/download.jpg',
+            comment: "Love youdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddsadawdsadasdasdasdawdasdasdasddddddddddd"
+        },
+    ];
     const [product, setProduct] = useState([]);
 
     useEffect(() => {
@@ -19,8 +25,8 @@ export default function ProductDetail({ total_rating_value = 100, quantity_ratin
     async function fetchItem() {
         try {
             const response = await apiService.getUsers();
-            setProduct(response);
             console.log(response);
+            setProduct(response);
         } catch (error) {
             console.log("Error: " + error);
             setMessage("Error");
@@ -28,33 +34,24 @@ export default function ProductDetail({ total_rating_value = 100, quantity_ratin
     }
 
     return (
-        <div className="bg-white shadow-md rounded-lg p-10">
-            <div className="flex flex-col md:flex-row">
-                <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                    <Image
-                        className="rounded-lg"
-                        src="/download.jpg"
-                        alt="Product Image"
-                        width={ 400 }
-                        height={ 400 }
-                    />
+        <>
+            <div className="max-w-screen-xl mx-auto py-6">
+                <div class="grid md:grid-cols-2 gap-6 lg:gap-12 items-start">
+                    <ProductInfo />
                 </div>
-
-                <div className="flex-grow">
-                    <div className="flex items-center mt-2 opacity-50">
-                        <span className="mr-1">{ starRating.toFixed(1) }</span>
-                        <FaStar color="gold" size={ 24 } />
-                        <span className="ml-1">({ quantity_rating_value })</span>
-                    </div>
-                    <h2 className="text-2xl font-bold mb-2">Product Title</h2>
-                    <p className="text-gray-700 mb-4">
-                        Description of the product goes here. It can be a detailed description of the features,
-                        benefits, and other relevant information.
-                    </p>
-                    <p className="text-xl font-semibold text-gray-900">Price: $99.99</p>
-                    <AddToCartButton />
+                <div className="p-4 mt-10">
+                    <h2 className="text-2xl font-bold mb-4">Comments</h2>
+                    { commentList && commentList.map((item, index) => (
+                        <CommentCard
+                            key={ index }
+                            avatar={ item.avatar }
+                            username={ item.username }
+                            timestamp={ item.timestamp }
+                            comment={ item.comment }
+                        />
+                    )) }
                 </div>
             </div>
-        </div>
+        </>
     );
 }

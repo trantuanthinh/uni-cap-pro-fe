@@ -1,6 +1,6 @@
 export class SharedService {
     formatVietnamDong(number) {
-        return this.isNumber(number) ? `${this.formatMoney(number)}đ` : "";
+        return this.isNumber(number) ? `${this.formatMoney(number)}vnd` : "";
     }
 
     formatMoney(num) {
