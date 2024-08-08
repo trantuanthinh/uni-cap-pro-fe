@@ -2,7 +2,9 @@
 import httpService from "./http-service";
 
 class APIService {
-    rootApI = "http://localhost:5043/api";
+    rootApI = "http://localhost:5130/api";
+    // rootApI = `${process.env.NODE_ENV}}http://localhost:5130/api`;
+
 
     async getItems(url) {
         let items = await httpService.getItems(url);
@@ -40,8 +42,7 @@ class APIService {
 
     // User
     async getUsers() {
-        // let baseUrl = this.rootApI + "/User";
-        let baseUrl = "https://jsonplaceholder.typicode.com/users";
+        let baseUrl = this.rootApI + "/users";
         try {
             return await this.getItems(baseUrl);
         } catch (error) {
@@ -49,31 +50,30 @@ class APIService {
         }
     }
 
-    async getUsers(id) {
-        // let baseUrl = this.rootApI + "/User";
-        let baseUrl = "https://jsonplaceholder.typicode.com/users";
+    async getUser(id) {
+        let baseUrl = this.rootApI + "/user";
         try {
             return await this.getItem(baseUrl, id);
         } catch (error) {
-            return this.handleError("getUsers: ", error);
+            return this.handleError("getUser: ", error);
         }
     }
 
     async postUser(data) {
-        let baseUrl = this.rootApI + "/User";
+        let baseUrl = this.rootApI + "/user";
         try {
             return await this.postItem(baseUrl, data);
         } catch (error) {
-            return this.handleError("getUsers: ", error);
+            return this.handleError("postUser: ", error);
         }
     }
 
     async patchUser(id, data) {
-        let baseUrl = this.rootApI + "/User";
+        let baseUrl = this.rootApI + "/user";
         try {
             return await this.patchItem(baseUrl, id, data);
         } catch (error) {
-            return this.handleError("getUsers: ", error);
+            return this.handleError("patchUser: ", error);
         }
     }
 }

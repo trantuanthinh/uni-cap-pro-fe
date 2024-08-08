@@ -24,9 +24,10 @@ export default function ProductDetail() {
 
     async function fetchItem() {
         try {
+            // const response = await apiService.getUser("0d32cd51-e3ba-4629-a5f2-4f687d357a18");
             const response = await apiService.getUsers();
             console.log(response);
-            setProduct(response);
+            setProduct(response.data);
         } catch (error) {
             console.log("Error: " + error);
             setMessage("Error");
@@ -36,18 +37,18 @@ export default function ProductDetail() {
     return (
         <>
             <div className="max-w-screen-xl mx-auto py-6">
-                <div class="grid md:grid-cols-2 gap-6 lg:gap-12 items-start">
+                <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start">
                     <ProductInfo />
                 </div>
                 <div className="p-4 mt-10">
                     <h2 className="text-2xl font-bold mb-4">Comments</h2>
-                    { commentList && commentList.map((item, index) => (
+                    { product && product.map((item, index) => (
                         <CommentCard
                             key={ index }
                             avatar={ item.avatar }
                             username={ item.username }
                             timestamp={ item.timestamp }
-                            comment={ item.comment }
+                            comment={"sdasdhjk"}
                         />
                     )) }
                 </div>
