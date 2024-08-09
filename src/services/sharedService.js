@@ -1,23 +1,31 @@
 export class SharedService {
     formatVietnamDong(number) {
-        return this.isNumber(number) ? `${this.formatMoney(number)}vnd` : "";
+        return this.isNumber(number) ? `${this.formatMoney(number)}` : "";
     }
 
     formatMoney(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if (typeof num !== "number" && typeof num !== "string") {
+            return "";
+        }
+
+        return Number(num).toLocaleString('vi', { style: 'currency', currency: 'VND' });
     }
 
-    isNumber(number) {
-        return typeof number === "number" || !isNaN(number);
+    isNumber(value) {
+        return typeof value === "number" || !isNaN(Number(value));
     }
 
     isVietnamesePhoneNumber(number) {
+        if (typeof number !== "string") {
+            return false;
+        }
+
         const regex = /^0(3[2-9]|5[0-9]|7[0-9]|8[0-9]|9[0-9])\d{7}$/;
         return regex.test(number);
     }
 }
 
-Object.freeze(SharedService);
 const sharedService = new SharedService();
+Object.freeze(sharedService);
 
 export default sharedService;

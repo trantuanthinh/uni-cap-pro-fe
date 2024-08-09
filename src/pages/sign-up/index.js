@@ -1,16 +1,24 @@
 import GlobalSettings from "@/configurations/global-settings";
+import apiService from "@/services/api-service";
+import dataManagement from "@/services/data-manage";
 import sharedService from "@/services/sharedService";
 import { debounce } from "lodash";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 
 export default function SignUp() {
+    const router = useRouter();
+
     const [fullname, setFullname] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [userType, setUserType] = useState("");
+
+    const userTypeList = Object.values(dataManagement.USER_TYPE);
 
     const [errors, setErrors] = useState({
         fullname: "",
@@ -19,55 +27,8 @@ export default function SignUp() {
         phone: "",
         password: "",
         confirmPassword: "",
+        userType: "",
     });
-
-    const validateForm = () => {
-        const newErrors = { ...errors };
-
-        for (const key in newErrors) {
-            newErrors[key] = "";
-        }
-
-        if (!fullname) newErrors.fullname = "Full Name is required.";
-        if (!username) newErrors.username = "Username is required.";
-        if (!email) newErrors.email = "Email is required.";
-        if (!phone) newErrors.phone = "Phone Number is required.";
-        if (!password) newErrors.password = "Password is required.";
-        if (!confirmPassword) newErrors.confirmPassword = "Confirm Password is required.";
-
-        if (password && confirmPassword && password !== confirmPassword) {
-            newErrors.confirmPassword = "Passwords do not match.";
-        }
-
-        setErrors(newErrors);
-        return !Object.values(newErrors).some((error) => error);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!validateForm()) return;
-
-        try {
-            await postUser();
-            // Handle successful signup (e.g., redirect, show success message)
-        } catch (error) {
-            console.error("Failed to post user data:", error);
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                server: "An error occurred. Please try again.",
-            }));
-        }
-    };
-
-    const postUser = async () => {
-        try {
-            // Logic to post user data to the server
-        } catch (error) {
-            console.error("Failed to post user data:", error);
-            throw error;
-        }
-    };
 
     const checkPhoneNumber = useCallback(
         debounce((input) => {
@@ -81,6 +42,63 @@ export default function SignUp() {
         }, GlobalSettings.Settings.debounceTimer.valueChanges),
         []
     );
+
+    function validateForm() {
+        const newErrors = { ...errors };
+
+        for (const key in newErrors) {
+            newErrors[key] = "";
+        }
+
+        if (!fullname) newErrors.fullname = "Full Name is required.";
+        if (!username) newErrors.username = "Username is required.";
+        if (!email) newErrors.email = "Email is required.";
+        if (!phoneNumber) newErrors.phone = "Phone Number is required.";
+        if (!password) newErrors.password = "Password is required.";
+        if (!confirmPassword) newErrors.confirmPassword = "Confirm Password is required.";
+        if (!userType) newErrors.userType = "User Type is required.";
+
+        if (password && confirmPassword && password !== confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match.";
+        }
+
+        setErrors(newErrors);
+        return !Object.values(newErrors).some((error) => error);
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        let dataJSON = {
+            username: username,
+            name: fullname,
+            email: email,
+            password: password,
+            phoneNumber: phoneNumber,
+            active_Status: dataManagement.ACTIVE_STATUS.ACTUVE,
+            user_Type: dataManagement.USER_TYPE[userType],
+            avatar: null,
+            description: null,
+        };
+
+        try {
+            let response = await apiService.postUser(dataJSON);
+
+            if (response && response.ok) {
+                const user = JSON.stringify(response.data);
+                localStorage.setItem("user", user);
+                router.push("/");
+            }
+        } catch (error) {
+            console.error("Failed to post user data:", error);
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                server: "An error occurred. Please try again.",
+            }));
+        }
+    };
 
     function handleBlur(field) {
         return () => {
@@ -109,6 +127,8 @@ export default function SignUp() {
         <div className="flex items-center py-6 justify-center min-h-screen bg-background-base">
             <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
                 <h1 className="text-center text-3xl text-text-title font-bold mb-6">Sign Up</h1>
+
+                { errors.server && <p className="text-red-500 mb-4">{ errors.server }</p> }
 
                 <form onSubmit={ handleSubmit }>
                     <div className="mb-4">
@@ -166,8 +186,8 @@ export default function SignUp() {
                         <input
                             type="text"
                             id="phone"
-                            value={ phone }
-                            onChange={ handleChange("phone", setPhone) }
+                            value={ phoneNumber }
+                            onChange={ handleChange("phone", setPhoneNumber) }
                             onBlur={ handleBlur("phone") }
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
@@ -207,6 +227,26 @@ export default function SignUp() {
                         { errors.confirmPassword && (
                             <p className="text-red-500 text-sm">{ errors.confirmPassword }</p>
                         ) }
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="userType" className="block text-sm font-medium text-gray-700">
+                            User Type
+                        </label>
+                        <select
+                            id="userType"
+                            value={ userType }
+                            onChange={ (e) => setUserType(e.target.value) }
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                        >
+                            <option value="" disabled>
+                                Select a type
+                            </option>
+                            { userTypeList &&
+                                userTypeList.map((userType) => <option value={ userType }>{ userType }</option>) }
+                        </select>
+                        { errors.userType && <p className="text-red-500 text-sm">{ errors.userType }</p> }
                     </div>
 
                     <button
