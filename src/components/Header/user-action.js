@@ -9,8 +9,12 @@ export default function UserActions({ user }) {
     const actionList = [
         { href: "/profile", label: "Profile" },
         { href: "/settings", label: "Settings" },
-        { href: "/logout", label: "Logout" },
     ];
+
+    function handleLogout() {
+        localStorage.setItem("user", null);
+        window.location.reload();
+    }
 
     return (
         <div className="relative">
@@ -27,11 +31,15 @@ export default function UserActions({ user }) {
                         { actionList &&
                             actionList?.map((item) => (
                                 <li key={ item.label }>
-                                    <Link href={ item.href } className="block px-4 py-2 hover:bg-gray-100">
+                                    <Link href={ item.href } className="text-center block px-4 py-2 hover:bg-gray-100">
                                         { item.label }
                                     </Link>
                                 </li>
                             )) }
+                        <hr className="bg-red-700" />
+                        <li>
+                            <button onClick={ handleLogout() } className="w-full block px-4 py-2 hover:bg-gray-100">Log out</button>
+                        </li>
                     </ul>
                 </div>
             ) }

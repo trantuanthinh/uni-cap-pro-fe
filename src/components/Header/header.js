@@ -1,9 +1,24 @@
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import LinkList from "../shared/link-list";
 import SignActions from "./sign-actions";
 import UserActions from "./user-action";
 
-export default function Header({ user }) {
+export default function Header() {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+
+        if (storedUser) {
+            console.log("storedUser", JSON.parse(storedUser));
+
+            setUser(JSON.parse(storedUser));
+        } else {
+            setUser(null);
+        }
+    }, []);
+
     const navList = [
         { href: "/", label: "Home" },
         { href: "/about", label: "About" },
