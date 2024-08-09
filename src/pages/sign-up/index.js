@@ -66,7 +66,7 @@ export default function SignUp() {
         return !Object.values(newErrors).some((error) => error);
     }
 
-    const handleSubmit = async (e) => {
+    async function handleSubmit(e) {
         e.preventDefault();
 
         if (!validateForm()) return;
@@ -77,19 +77,18 @@ export default function SignUp() {
             email: email,
             password: password,
             phoneNumber: phoneNumber,
-            active_Status: dataManagement.ACTIVE_STATUS.ACTUVE,
+            active_Status: dataManagement.ACTIVE_STATUS.ACTIVE,
             user_Type: dataManagement.USER_TYPE[userType],
             avatar: null,
             description: null,
         };
 
         try {
-            let response = await apiService.postUser(dataJSON);
+            let response = await apiService.postUser(JSON.stringify(dataJSON));
 
             if (response && response.ok) {
-                const user = JSON.stringify(response.data);
-                localStorage.setItem("user", user);
-                router.push("/");
+                alert("Successfully created account. Please sign in to continue.");
+                router.push("/sign-in");
             }
         } catch (error) {
             console.error("Failed to post user data:", error);
@@ -98,7 +97,7 @@ export default function SignUp() {
                 server: "An error occurred. Please try again.",
             }));
         }
-    };
+    }
 
     function handleBlur(field) {
         return () => {
@@ -244,7 +243,11 @@ export default function SignUp() {
                                 Select a type
                             </option>
                             { userTypeList &&
-                                userTypeList.map((userType) => <option value={ userType }>{ userType }</option>) }
+                                userTypeList.map((userType) => (
+                                    <option key={ userType } value={ userType }>
+                                        { userType }
+                                    </option>
+                                )) }
                         </select>
                         { errors.userType && <p className="text-red-500 text-sm">{ errors.userType }</p> }
                     </div>

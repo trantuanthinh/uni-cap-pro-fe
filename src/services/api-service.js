@@ -62,6 +62,11 @@ class APIService {
         throw error;
     }
 
+    // Auth
+    async signin(data) {
+        return this.#postItem("auth/signin", data);
+    }
+
     // User
     async getUsers() {
         return this.#getItems("users");

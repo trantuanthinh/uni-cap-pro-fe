@@ -1,8 +1,12 @@
+import { clearUser } from "@/redux/slicers/userSlice";
 import Link from "next/link";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
+import { useDispatch } from "react-redux";
 
 export default function UserActions({ user }) {
+    const dispatch = useDispatch();
+
     const [isOpen, setIsOpen] = useState(false);
     const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -12,8 +16,9 @@ export default function UserActions({ user }) {
     ];
 
     function handleLogout() {
-        localStorage.setItem("user", null);
-        window.location.reload();
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        dispatch(clearUser());
     }
 
     return (
@@ -38,7 +43,7 @@ export default function UserActions({ user }) {
                             )) }
                         <hr className="bg-red-700" />
                         <li>
-                            <button onClick={ handleLogout() } className="w-full block px-4 py-2 hover:bg-gray-100">Log out</button>
+                            <button onClick={ handleLogout } className="w-full block px-4 py-2 hover:bg-gray-100">Log out</button>
                         </li>
                     </ul>
                 </div>
