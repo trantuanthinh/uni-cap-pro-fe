@@ -1,59 +1,130 @@
-// pages/signup.js
-
-import Link from 'next/link';
-import { useState } from 'react';
+import GlobalSettings from "@/configurations/global-settings";
+import sharedService from "@/services/sharedService";
+import { debounce } from "lodash";
+import Link from "next/link";
+import { useCallback, useState } from "react";
 
 export default function SignUp() {
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
+    const [fullname, setFullname] = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [errors, setErrors] = useState({
+        fullname: "",
+        username: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const validateForm = () => {
+        const newErrors = { ...errors };
+
+        for (const key in newErrors) {
+            newErrors[key] = "";
+        }
+
+        if (!fullname) newErrors.fullname = "Full Name is required.";
+        if (!username) newErrors.username = "Username is required.";
+        if (!email) newErrors.email = "Email is required.";
+        if (!phone) newErrors.phone = "Phone Number is required.";
+        if (!password) newErrors.password = "Password is required.";
+        if (!confirmPassword) newErrors.confirmPassword = "Confirm Password is required.";
+
+        if (password && confirmPassword && password !== confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match.";
+        }
+
+        setErrors(newErrors);
+        return !Object.values(newErrors).some((error) => error);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
 
-        // Example validation
-        if (!email || !phone || !username || !password || !confirmPassword) {
-            setError('All fields are required.');
-            return;
+        if (!validateForm()) return;
+
+        try {
+            await postUser();
+            // Handle successful signup (e.g., redirect, show success message)
+        } catch (error) {
+            console.error("Failed to post user data:", error);
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                server: "An error occurred. Please try again.",
+            }));
         }
-
-        if (password !== confirmPassword) {
-            setError('Passwords do not match.');
-            return;
-        }
-
-        // Add sign-up logic here (e.g., call an API)
-        // For now, we'll just log the values
-        console.log('Email:', email);
-        console.log('Phone:', phone);
-        console.log('Username:', username);
-        console.log('Password:', password);
     };
 
-    return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md bg-white p-8  shadow-lg">
-                <h1 className="text-2xl font-bold mb-6">Sign Up</h1>
+    const postUser = async () => {
+        try {
+            // Logic to post user data to the server
+        } catch (error) {
+            console.error("Failed to post user data:", error);
+            throw error;
+        }
+    };
 
-                { error && <p className="text-red-500 mb-4">{ error }</p> }
+    const checkPhoneNumber = useCallback(
+        debounce((input) => {
+            let checkIsNumber = sharedService.isNumber(input);
+            let checkValidPhoneNumber = sharedService.isVietnamesePhoneNumber(input);
+
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                phone: checkIsNumber && checkValidPhoneNumber ? "" : "Please enter a valid phone number.",
+            }));
+        }, GlobalSettings.Settings.debounceTimer.valueChanges),
+        []
+    );
+
+    function handleBlur(field) {
+        return () => {
+            if (!eval(field)) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [field]: `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`,
+                }));
+            }
+        };
+    }
+
+    function handleChange(field, setter) {
+        return (e) => {
+            if (field === "phone") checkPhoneNumber(e.target.value);
+            const value = e.target.value;
+            setter(value);
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [field]: "",
+            }));
+        };
+    }
+
+    return (
+        <div className="flex items-center py-6 justify-center min-h-screen bg-background-base">
+            <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
+                <h1 className="text-center text-3xl text-text-title font-bold mb-6">Sign Up</h1>
 
                 <form onSubmit={ handleSubmit }>
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
+                        <label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
+                            Full Name
                         </label>
                         <input
-                            type="email"
-                            id="email"
-                            value={ email }
-                            onChange={ (e) => setEmail(e.target.value) }
+                            type="text"
+                            id="fullname"
+                            value={ fullname }
+                            onChange={ handleChange("fullname", setFullname) }
+                            onBlur={ handleBlur("fullname") }
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
                         />
+                        { errors.fullname && <p className="text-red-500 text-sm">{ errors.fullname }</p> }
                     </div>
 
                     <div className="mb-4">
@@ -64,10 +135,28 @@ export default function SignUp() {
                             type="text"
                             id="username"
                             value={ username }
-                            onChange={ (e) => setUsername(e.target.value) }
+                            onChange={ handleChange("username", setUsername) }
+                            onBlur={ handleBlur("username") }
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
                         />
+                        { errors.username && <p className="text-red-500 text-sm">{ errors.username }</p> }
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={ email }
+                            onChange={ handleChange("email", setEmail) }
+                            onBlur={ handleBlur("email") }
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required
+                        />
+                        { errors.email && <p className="text-red-500 text-sm">{ errors.email }</p> }
                     </div>
 
                     <div className="mb-4">
@@ -75,13 +164,15 @@ export default function SignUp() {
                             Phone Number
                         </label>
                         <input
-                            type="tel"
+                            type="text"
                             id="phone"
                             value={ phone }
-                            onChange={ (e) => setPhone(e.target.value) }
+                            onChange={ handleChange("phone", setPhone) }
+                            onBlur={ handleBlur("phone") }
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
                         />
+                        { errors.phone && <p className="text-red-500 text-sm">{ errors.phone }</p> }
                     </div>
 
                     <div className="mb-4">
@@ -92,10 +183,12 @@ export default function SignUp() {
                             type="password"
                             id="password"
                             value={ password }
-                            onChange={ (e) => setPassword(e.target.value) }
+                            onChange={ handleChange("password", setPassword) }
+                            onBlur={ handleBlur("password") }
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
                         />
+                        { errors.password && <p className="text-red-500 text-sm">{ errors.password }</p> }
                     </div>
 
                     <div className="mb-6">
@@ -106,10 +199,14 @@ export default function SignUp() {
                             type="password"
                             id="confirmPassword"
                             value={ confirmPassword }
-                            onChange={ (e) => setConfirmPassword(e.target.value) }
+                            onChange={ handleChange("confirmPassword", setConfirmPassword) }
+                            onBlur={ handleBlur("confirmPassword") }
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required
                         />
+                        { errors.confirmPassword && (
+                            <p className="text-red-500 text-sm">{ errors.confirmPassword }</p>
+                        ) }
                     </div>
 
                     <button

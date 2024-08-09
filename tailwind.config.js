@@ -18,6 +18,7 @@ module.exports = {
                 "harvest-yellow": "#F4C542",
                 "text-title": "#4A773C",
                 "text-base": "#6F4F28",
+                "background-base": "#F5F5DC",
             },
             backgroundImage: {
                 "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

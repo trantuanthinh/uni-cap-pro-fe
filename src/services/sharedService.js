@@ -10,6 +10,11 @@ export class SharedService {
     isNumber(number) {
         return typeof number === "number" || !isNaN(number);
     }
+
+    isVietnamesePhoneNumber(number) {
+        const regex = /^0(3[2-9]|5[0-9]|7[0-9]|8[0-9]|9[0-9])\d{7}$/;
+        return regex.test(number);
+    }
 }
 
 Object.freeze(SharedService);

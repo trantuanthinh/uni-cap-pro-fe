@@ -2,7 +2,7 @@
 const nextConfig = {
 	reactStrictMode: true,
 	compiler: {
-		removeConsole: true, // Console statements will be removed in production
+		removeConsole: false, // Console statements will be removed in production
 	},
 	images: {
 		remotePatterns: [
