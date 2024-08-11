@@ -16,9 +16,8 @@ export default function ItemBlock({
 
     return (
         <div className="flex flex-col overflow-hidden shadow-xl p-4 m-5 bg-white transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-100">
-
             <Link href={ `/products/detail/${id}` } className="flex flex-col h-full">
-                <div className="flex-shrink-0 border-4 border-rich-brown mb-2">
+                <div className="flex-shrink-0 border-4 rounded-lg border-rich-brown mb-2">
                     <Image className="rounded" src={ imageUrl } alt={ title } width={ 240 } height={ 240 } />
                 </div>
                 <div className="py-4">

@@ -2,16 +2,17 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./slicers/userSlice";
+import cartReducer from "./slicers/cartSlice";
 
 // Function to load the persisted state from localStorage
 function loadState() {
     if (typeof window === "undefined") {
-        // If window is undefined, we're on the server, so return undefined
+        // We're on the server, return undefined
         return undefined;
     }
 
     try {
-        const serializedState = localStorage.getItem("state");
+        const serializedState = localStorage.getItem("user");
         if (serializedState === null) {
             return undefined;
         }
@@ -27,7 +28,7 @@ function saveState(state) {
     if (typeof window !== "undefined") {
         try {
             const serializedState = JSON.stringify(state);
-            localStorage.setItem("state", serializedState);
+            localStorage.setItem("user", serializedState);
         } catch (err) {
             console.error("Could not save state to localStorage:", err);
         }
@@ -41,11 +42,15 @@ const persistedState = loadState();
 export const store = configureStore({
     reducer: {
         user: userReducer,
+        cart: cartReducer,
     },
-    preloadedState: persistedState, // Use the persisted state as the initial state
+    preloadedState: persistedState,
 });
 
 // Subscribe to store updates and save the state to localStorage
 store.subscribe(() => {
-    saveState(store.getState());
+    // Ensure only the client environment triggers this
+    if (typeof window !== "undefined") {
+        saveState(store.getState());
+    }
 });
