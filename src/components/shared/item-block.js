@@ -17,26 +17,26 @@ export default function ItemBlock({
     const formattedPrice = sharedService.formatVietnamDong(price);
 
     return (
-        <div className="flex flex-col overflow-hidden shadow-xl p-4 m-5 bg-white transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-100">
-            <Link href={ `/products/detail/${id}` } className="flex flex-col h-full">
+        <div className="grid grid-flow-row grid-rows-1 overflow-hidden shadow-xl p-4 m-5 bg-white transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-100">
+            <Link href={ `/products/detail/${id}` }>
                 <div className="flex-shrink-0 border-4 rounded-lg border-rich-brown mb-2">
                     <Image className="rounded" src={ imageUrl } alt={ name } width={ 240 } height={ 240 } />
                 </div>
-                <div className="py-4">
-                    <div className="flex items-center mt-2 opacity-50">
+                <div className="grid grid-flow-row py-4">
+                    <div className="flex opacity-50">
                         <span className="mr-1">{ starRating.toFixed(1) }</span>
                         <FaStar color="gold" size={ 24 } />
                         <span className="ml-1">({ quantity_rating_value })</span>
                     </div>
-                    <p className="text-text-title font-bold text-3xl">{ name }</p>
-                    <p className="text-text-base text-base line-clamp-2 mt-3 mb-2">{ description }</p>
-                    <p className="text-red-500 font-bold text-lg">Price: { formattedPrice }</p>
+                    <div className="text-text-title font-bold text-3xl">{ name }</div>
+                    <div className="text-text-base text-base line-clamp-2  mt-3 mb-2">
+                        { description }
+                    </div>
                 </div>
             </Link>
 
-            <div className="flex justify-end h-auto mt-4">
-                <AddToCartButton />
-            </div>
+            <div className="text-red-500 font-bold text-lg text-end">Price: { formattedPrice }</div>
+            <AddToCartButton />
         </div>
     );
 }
