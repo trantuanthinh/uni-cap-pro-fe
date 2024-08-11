@@ -73,19 +73,28 @@ class APIService {
     }
 
     async getUser(id) {
-        return this.#getItem("user", id);
+        return this.#getItem("users", id);
     }
 
     async postUser(data) {
-        return this.#postItem("user", data);
+        return this.#postItem("users", data);
     }
 
     async patchUser(id, data) {
-        return this.#patchItem("user", id, data);
+        return this.#patchItem("users", id, data);
     }
 
     async deleteUser(id) {
-        return this.#deleteItem("user", id);
+        return this.#deleteItem("users", id);
+    }
+
+    // products
+    async getProducts() {
+        return this.#getItems("products");
+    }
+
+    async getProduct(id) {
+        return this.#getItem("products", id);
     }
 }
 

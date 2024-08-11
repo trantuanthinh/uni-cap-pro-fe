@@ -1,4 +1,10 @@
 {
-    "Sign In": "/sign-in",
-    "Sign Up": "/sign-up"
+    "about": "/about",
+    "cart": "/cart",
+    "contact": "/contact",
+    "home": "/",
+    "product detail": "/products/[slug]",
+    "products": "/products/all",
+    "sign in": "/sign-in",
+    "sign up": "/sign-up"
 }
