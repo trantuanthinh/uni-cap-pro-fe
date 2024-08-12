@@ -1,5 +1,5 @@
 import sharedService from "@/services/sharedService";
-import ItemBlock from "./item-block";
+import ItemCard from "./item-card";
 
 export default function ListItem({ productList, pageSize }) {
     return (
@@ -7,7 +7,7 @@ export default function ListItem({ productList, pageSize }) {
             { productList &&
                 productList.slice(0, pageSize).map((product) => {
                     return (
-                        <ItemBlock
+                        <ItemCard
                             key={ product.id }
                             id={ product.id }
                             product={ product }

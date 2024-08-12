@@ -4,7 +4,7 @@ import { FaStar } from "react-icons/fa";
 import AddToCartButton from "./add-to-cart";
 import sharedService from "@/services/sharedService";
 
-export default function ItemBlock({ id, product }) {
+export default function ItemCard({ id, product }) {
     const starRating =
         product.total_Rating_Quantity === 0 ? 0 : product.total_Rating_Value / product.total_Rating_Quantity;
     const formattedPrice = sharedService.formatVietnamDong(product.price);
