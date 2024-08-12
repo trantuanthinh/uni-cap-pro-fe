@@ -76,11 +76,14 @@ export default function Home({ }) {
                 <title>Home Page</title>
                 <meta name="description" content="Welcome to the home page of my website." />
             </Head>
-            <main className="px-20 py-5">
-                <section className="flex flex-col items-center justify-center ">
-                    <ProductList title={ "Productions" } productList={ productList } pageSize={ 8 } />
+            <main className="grid grid-flow-row gap-y-20 px-20 py-5">
+                <section className="flex flex-col items-center justify-center">
+                    <ProductList type={ "cart" } title={ "Productions" } productList={ productList } pageSize={ 8 } />
                 </section>
-                <section></section>
+
+                <section className="flex flex-col items-center justify-center">
+                    <ProductList type={ "buy-together" } title={ "Buy Together" } productList={ list } pageSize={ 8 } />
+                </section>
                 <section></section>
                 <section></section>
                 <section></section>

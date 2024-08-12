@@ -1,7 +1,7 @@
+import sharedService from "@/services/sharedService";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
-import AddToCartButton from "./add-to-cart";
-import sharedService from "@/services/sharedService";
+import AddToCartButton from "./add-to-cart-button";
 
 export default function ProductInfo({ product }) {
     const formattedPrice = sharedService.formatVietnamDong(product.price);

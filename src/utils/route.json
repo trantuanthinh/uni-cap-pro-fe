@@ -1,9 +1,10 @@
 {
     "about": "/about",
+    "buy together": "/products/buy-together",
     "cart": "/cart",
     "contact": "/contact",
     "home": "/",
-    "product detail": "/products/[slug]",
+    "product detail": "/products/detail/[slug]",
     "products": "/products/all",
     "sign in": "/sign-in",
     "sign up": "/sign-up"
