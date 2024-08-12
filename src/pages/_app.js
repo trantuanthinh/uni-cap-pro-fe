@@ -17,12 +17,14 @@ export const itim = Itim({
 
 export default function App({ Component, pageProps }) {
 	return (
-		<div className={ itim.className }>
-			<Providers>
+		<Providers>
+			<div className={ `flex flex-col min-h-screen ${itim.className}` }>
 				<Header />
-				<Component { ...pageProps } />
+				<main className="flex-grow">
+					<Component { ...pageProps } />
+				</main>
 				<Footer />
-			</Providers>
-		</div>
+			</div>
+		</Providers>
 	);
 }

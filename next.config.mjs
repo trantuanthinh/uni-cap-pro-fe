@@ -7,14 +7,19 @@ const nextConfig = {
 	images: {
 		remotePatterns: [
 			{
-				protocol: 'http',
-				hostname: 'localhost',
-				pathname: '**',
+				protocol: "http",
+				hostname: "localhost",
+				pathname: "**",
 			},
 			{
-				protocol: 'https',
-				hostname: 'aniyuki.com',
-				pathname: '**',
+				protocol: "https",
+				hostname: "localhost",
+				pathname: "**",
+			},
+			{
+				protocol: "https",
+				hostname: "aniyuki.com",
+				pathname: "**",
 			},
 		],
 	},
@@ -25,7 +30,7 @@ const nextConfig = {
 	async rewrites() {
 		return [
 			{
-				source: '/api/:slug*',
+				source: "/api/:slug*",
 				destination: `http://localhost:5130/api/:slug*`,
 			},
 		];

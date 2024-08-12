@@ -1,9 +1,10 @@
 import ProductList from "@/components/main/product-list";
 import apiService from "@/services/api-service";
+import Head from "next/head";
 import { useEffect, useState } from "react";
 
 export default function Home({ }) {
-    const [items, setItems] = useState();
+    const [productList, setProductList] = useState();
 
     useEffect(() => {
         getAllData();
@@ -12,8 +13,7 @@ export default function Home({ }) {
     async function getAllData() {
         try {
             const response = await apiService.getProducts();
-            setItems(response.data);
-            console.log(response.data);
+            setProductList(response.data);
         } catch (error) {
             throw error;
         }
@@ -31,32 +31,38 @@ export default function Home({ }) {
             description: "Description",
             imageUrl: "/download.jpg",
             price: 5000,
-        }, {
+        },
+        {
             title: "Title",
             description: "Description",
             imageUrl: "/download.jpg",
             price: 5000,
-        }, {
+        },
+        {
             title: "Title",
             description: "Description",
             imageUrl: "/download.jpg",
             price: 5000,
-        }, {
+        },
+        {
             title: "Title",
             description: "Description",
             imageUrl: "/download.jpg",
             price: 5000,
-        }, {
+        },
+        {
             title: "Title",
             description: "Description",
             imageUrl: "/download.jpg",
             price: 5000,
-        }, {
+        },
+        {
             title: "Title",
             description: "Description",
             imageUrl: "/download.jpg",
             price: 5000,
-        }, {
+        },
+        {
             title: "Title",
             description: "Description",
             imageUrl: "/download.jpg",
@@ -65,14 +71,20 @@ export default function Home({ }) {
     ];
 
     return (
-        <main className="px-20 py-5">
-            <section className="flex flex-col items-center justify-center ">
-                <ProductList title={ "Productions" } listItems={ items } pageSize={ 8 } />
-            </section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-        </main>
+        <>
+            <Head>
+                <title>Home Page</title>
+                <meta name="description" content="Welcome to the home page of my website." />
+            </Head>
+            <main className="px-20 py-5">
+                <section className="flex flex-col items-center justify-center ">
+                    <ProductList title={ "Productions" } productList={ productList } pageSize={ 8 } />
+                </section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+            </main>
+        </>
     );
 }
