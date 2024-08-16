@@ -6,8 +6,6 @@ class APIService {
     // Alternatively, you can use process.env for different environments
     // rootAPI = `${process.env.API_URL || 'http://localhost:5130/api'}`;
 
-    // Utility method to build full URL
-
     #buildUrl(path, id = null) {
         return id ? `${this.#rootAPI}/${path}/${id}` : `${this.#rootAPI}/${path}`;
     }
@@ -95,6 +93,15 @@ class APIService {
 
     async getProduct(id) {
         return this.#getItem("products", id);
+    }
+
+    // orders
+    async getOrders() {
+        return this.#getItems("orders");
+    }
+
+    async getOrder() {
+        return this.#getItem("orders");
     }
 }
 

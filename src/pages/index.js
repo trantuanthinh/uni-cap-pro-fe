@@ -5,17 +5,27 @@ import { useEffect, useState } from "react";
 
 export default function Home({ }) {
     const [productList, setProductList] = useState();
+    const [orderList, setOrderList] = useState();
 
     useEffect(() => {
-        getAllData();
+        getProduct();
     }, []);
 
-    async function getAllData() {
+    async function getProduct() {
         try {
             const response = await apiService.getProducts();
             setProductList(response.data);
         } catch (error) {
-            throw error;
+            console.log("Error: " + error);
+        }
+    }
+
+    async function getProduct() {
+        try {
+            const response = await apiService.getProducts();
+            setOrderList(response.data);
+        } catch (error) {
+            console.log("Error: " + error);
         }
     }
 
