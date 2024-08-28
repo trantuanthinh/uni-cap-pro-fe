@@ -100,8 +100,17 @@ class APIService {
         return this.#getItems("orders");
     }
 
-    async getOrder() {
-        return this.#getItem("orders");
+    async getOrder(id) {
+        return this.#getItem("orders", id);
+    }
+
+    // discounts
+    async getDiscounts() {
+        return this.#getItems("discounts");
+    }
+
+    async getDiscounts(id) {
+        return this.#getItem("discounts", id);
     }
 }
 

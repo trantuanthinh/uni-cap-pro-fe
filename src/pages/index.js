@@ -4,29 +4,22 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 
 export default function Home({ }) {
-    const [productList, setProductList] = useState();
-    const [orderList, setOrderList] = useState();
+    const [productList, setProductList] = useState([]);
+    const [orderList, setOrderList] = useState([]);
 
     useEffect(() => {
-        getProduct();
+        getData();
     }, []);
 
-    async function getProduct() {
-        try {
-            const response = await apiService.getProducts();
-            setProductList(response.data);
-        } catch (error) {
-            console.log("Error: " + error);
-        }
-    }
-
-    async function getProduct() {
-        try {
-            const response = await apiService.getProducts();
-            setOrderList(response.data);
-        } catch (error) {
-            console.log("Error: " + error);
-        }
+    function getData() {
+        Promise.all([apiService.getProducts(), apiService.getOrders()])
+            .then(([productResponse, orderResponse]) => {
+                setProductList(productResponse.data);
+                setOrderList(orderResponse.data);
+            })
+            .catch((error) => {
+                console.log("Error: ", error);
+            });
     }
 
     const list = [
@@ -94,7 +87,9 @@ export default function Home({ }) {
                 <section className="flex flex-col items-center justify-center">
                     <ProductList type={ "buy-together" } title={ "Buy Together" } productList={ list } pageSize={ 8 } />
                 </section>
-                <section></section>
+                <section>
+                    {/* <ProductList type={ "buy-together" } title={ "Buy Together" } productList={ orderList } pageSize={ 8 } /> */ }
+                </section>
                 <section></section>
                 <section></section>
             </main>
