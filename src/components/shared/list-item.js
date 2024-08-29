@@ -6,7 +6,7 @@ export default function ListItem({ productList, pageSize, type }) {
             { Array.isArray(productList) &&
                 productList
                     .slice(0, pageSize)
-                    .map((product) => <ItemCard key={ product.id } id={ product.id } product={ product } type={ type } />) }
+                    .map((product, index) => <ItemCard key={ `${product.id}-${index}` } id={ product.id } product={ product } type={ type } />) }
         </div>
     );
 }
