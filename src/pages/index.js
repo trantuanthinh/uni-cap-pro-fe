@@ -85,7 +85,7 @@ export default function Home({ }) {
                 </section>
 
                 <section className="flex flex-col items-center justify-center">
-                    <ProductList type={ "buy-together" } title={ "Buy Together" } productList={ list } pageSize={ 8 } />
+                    <ProductList type={ "buy-together" } title={ "Buy Together" } orderList={ orderList } pageSize={ 8 } />
                 </section>
                 <section>
                     {/* <ProductList type={ "buy-together" } title={ "Buy Together" } productList={ orderList } pageSize={ 8 } /> */ }

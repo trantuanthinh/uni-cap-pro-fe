@@ -33,13 +33,13 @@ export default function Header() {
                     <LinkList linkList={ navList } />
                 </nav>
                 <div className="flex justify-end items-center space-x-4 text-lg px-10">
-                    <Link href="/cart" className="relative">
-                        <FaShoppingCart size={ 24 } />
-                        { cart.totalQuantity > 0 && (
-                            <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                    <Link href="/cart">
+                        <FaShoppingCart size={ 24 } className="text-gray-700" />
+                        {/* { cart.totalQuantity > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                                 { cart.totalQuantity }
                             </span>
-                        ) }
+                        ) } */}
                     </Link>
                     { isClient ? <UserActions user={ user } /> : <SignActions /> }
                 </div>

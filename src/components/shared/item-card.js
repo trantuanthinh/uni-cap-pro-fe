@@ -18,6 +18,17 @@ export default function ItemCard({ id, product, level = 0, type = "cart" }) {
         product.total_Rating_Quantity === 0 ? 0 : product.total_Rating_Value / product.total_Rating_Quantity;
     const formattedPrice = sharedService.formatVietnamDong(product.price);
 
+    let discountPrice;
+
+    if (level > 0) {
+        for (let item of product.discount.discount_Details) {
+            if (item.level == level) {
+                discountPrice = sharedService.formatVietnamDong(product.price - product.price * item.amount);
+                break;
+            }
+        }
+    }
+
     return (
         <div className="grid grid-flow-row grid-rows-1 overflow-hidden shadow-xl p-4 m-5 bg-white transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-100">
             <Link href={ `/products/detail/${id}` }>
@@ -39,19 +50,25 @@ export default function ItemCard({ id, product, level = 0, type = "cart" }) {
                     <div className="text-text-title font-bold text-3xl">{ product.name }</div>
                     <div className="text-text-base text-base line-clamp-2 mt-3 mb-2">{ product.description }</div>
                 </div>
-                {
-                    level > 0 && (
-                        <div className="text-red-500 font-bold text-sm flex items-center">
-                            Level: <span className="ml-2 text-base">{ level }</span>
-                        </div>
-                    )
-                }
             </Link>
-
-            <div className="text-red-500 font-bold text-lg text-end">
-                Price: <span className="text-xl font-semibold">{ formattedPrice }</span>
+            <div className="flex flex-row justify-between space-x-5">
+                { level > 0 && (
+                    <div className="text-red-500 font-bold text-sm flex items-center">
+                        Joined: <span className="ml-2 text-base">{ level }</span>
+                    </div>
+                ) }
+                <div className="text-red-500 font-bold text-lg flex items-center">
+                    Price:{ " " }
+                    { level > 0 ? (
+                        <>
+                            <span className="font-semibold">{ discountPrice }</span> { ` ` }
+                            <span className="text-xs line-through">{ formattedPrice }</span>
+                        </>
+                    ) : (
+                        <span className="text-xl font-semibold">{ formattedPrice }</span>
+                    ) }
+                </div>
             </div>
-
 
             { button }
         </div>
