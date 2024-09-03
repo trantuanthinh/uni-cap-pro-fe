@@ -35,7 +35,7 @@ export default function ItemCard({ id, product, level = 0, type = "cart" }) {
                 <div className="flex-shrink-0 border-4 rounded-lg border-rich-brown mb-2">
                     <Image
                         className="rounded"
-                        src={ product.imageUrl }
+                        src={ product.images[0] }
                         alt={ product.name }
                         width={ 240 }
                         height={ 240 }
