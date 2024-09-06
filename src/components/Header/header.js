@@ -13,7 +13,7 @@ export default function Header() {
 
     useEffect(() => {
         setIsClient(Boolean(user));
-    }, []);
+    }, [user]);
 
     const navList = [
         { href: "/", label: "Home" },
@@ -34,13 +34,13 @@ export default function Header() {
                 </nav>
                 <div className="flex justify-end items-center space-x-4 text-lg px-10">
                     <Link href="/cart">
-                        <FaShoppingCart size={ 24 } className="text-gray-700" />
-                        {/* { cart.totalQuantity > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                                { cart.totalQuantity }
-                            </span>
-                        ) } */}
+                        <FaShoppingCart size={ 24 } className="text-white hover:text-gray-300" />
                     </Link>
+                    {/* { cart.totalQuantity > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            { cart.totalQuantity }
+                        </span>
+                    ) } */}
                     { isClient ? <UserActions user={ user } /> : <SignActions /> }
                 </div>
             </div>
