@@ -1,4 +1,5 @@
 import Title from "@/components/shared/title";
+import GlobalSettings from "@/configurations/global-settings";
 import { decrementQuantity, incrementQuantity, removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
 import sharedService from "@/services/sharedService";
 import Image from "next/image";
@@ -8,13 +9,61 @@ import { FaTrash } from "react-icons/fa6";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 
+export default function Cart() {
+    const dispatch = useDispatch();
+    const cart = useSelector((state) => state.cart);
+    const [haveProduct, setHaveProduct] = useState(false);
+
+    const handleRemove = (id) => {
+        dispatch(removeItemFromCart(id));
+    };
+
+    const handleIncrement = (id) => {
+        dispatch(incrementQuantity(id));
+    };
+
+    const handleDecrement = (id) => {
+        dispatch(decrementQuantity(id));
+    };
+
+    useEffect(() => {
+        setHaveProduct(cart.items.length > 0);
+        if (cart.items.length === 0) {
+            dispatch(resetCart());
+        }
+    }, [cart.items, dispatch]);
+
+    return (
+        <>
+            <Title label={ `${GlobalSettings.Settings.name} - Cart` } />
+            <div className="container mx-auto py-8">
+                <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+                <h3 className="text-2xl mb-6">Review the items in your cart and complete your purchase.</h3>
+                { haveProduct ? (
+                    <>
+                        <CartList
+                            items={ cart.items }
+                            handleRemove={ handleRemove }
+                            handleIncrement={ handleIncrement }
+                            handleDecrement={ handleDecrement }
+                        />
+                        <CartTotal totalPrice={ cart.totalPrice } totalQuantity={ cart.totalQuantity } />
+                    </>
+                ) : (
+                    <EmptyCartMessage />
+                ) }
+            </div>
+        </>
+    );
+}
+
 const CartList = ({ items, handleRemove, handleIncrement, handleDecrement }) => {
     const count = 1; //level
     return (
         <div className="space-y-6">
             { items.map((item) => {
-                const formattedPrice = sharedService.formatVietnamDong(item.price);
-                const formattedTotalPrice = sharedService.formatVietnamDong(item.price * count);
+                let formattedPrice = sharedService.formatVietnamDong(item.price);
+                let formattedTotalPrice = sharedService.formatVietnamDong(item.price * count);
                 return (
                     <div
                         key={ item.id }
@@ -97,7 +146,7 @@ const CartTotal = ({ totalPrice, totalQuantity }) => {
             <h2 className="text-2xl font-bold">Total Price: ${ formattedTotalPrice }</h2>
             <h3 className="text-xl">Total Quantity: { totalQuantity }</h3>
             <Link
-                href="/checkout"
+                href="/cart/checkout"
                 className="px-6 py-3 bg-primary-green text-white font-bold rounded hover:bg-green-600 transition-colors"
             >
                 Proceed to Checkout
@@ -117,51 +166,3 @@ const EmptyCartMessage = () => (
         </Link>
     </div>
 );
-
-export default function Cart() {
-    const dispatch = useDispatch();
-    const cart = useSelector((state) => state.cart);
-    const [haveProduct, setHaveProduct] = useState(false);
-
-    const handleRemove = (id) => {
-        dispatch(removeItemFromCart(id));
-    };
-
-    const handleIncrement = (id) => {
-        dispatch(incrementQuantity(id));
-    };
-
-    const handleDecrement = (id) => {
-        dispatch(decrementQuantity(id));
-    };
-
-    useEffect(() => {
-        setHaveProduct(cart.items.length > 0);
-        if (cart.items.length === 0) {
-            dispatch(resetCart());
-        }
-    }, [cart.items, dispatch]);
-
-    return (
-        <>
-            <Title label="Cart" />
-            <div className="container mx-auto py-8">
-                <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
-                <h3 className="text-2xl mb-6">Review the items in your cart and complete your purchase.</h3>
-                { haveProduct ? (
-                    <>
-                        <CartList
-                            items={ cart.items }
-                            handleRemove={ handleRemove }
-                            handleIncrement={ handleIncrement }
-                            handleDecrement={ handleDecrement }
-                        />
-                        <CartTotal totalPrice={ cart.totalPrice } totalQuantity={ cart.totalQuantity } />
-                    </>
-                ) : (
-                    <EmptyCartMessage />
-                ) }
-            </div >
-        </>
-    );
-}

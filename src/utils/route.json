@@ -2,6 +2,7 @@
     "about": "/about",
     "buy together": "/products/buy-together",
     "cart": "/cart",
+    "checkout": "/cart/checkout",
     "contact": "/contact",
     "home": "/",
     "product detail": "/products/detail/[slug]",
