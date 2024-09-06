@@ -1,14 +1,12 @@
 "use client";
 
-import Head from "next/head";
+import Title from "@/components/shared/title";
+import GlobalSettings from "@/configurations/global-settings";
 
 export default function Contact() {
     return (
         <>
-            <Head>
-                <title>Contact</title>
-                <meta name="description" content="Welcome to the home page of my website." />
-            </Head>
+            <Title label={ `${GlobalSettings.Settings.name} - Contact` } />
             <div className="container mx-auto py-8">
                 <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
                 <form className="max-w-lg mx-auto">

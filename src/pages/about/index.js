@@ -1,15 +1,13 @@
 "use client";
 
-import Head from "next/head";
+import Title from "@/components/shared/title";
+import GlobalSettings from "@/configurations/global-settings";
 import Image from "next/image";
 
 export default function About() {
     return (
         <>
-            <Head>
-                <title>About Us</title>
-                <meta name="description" content="Learn more about us on this page." />
-            </Head>
+            <Title label={ `${GlobalSettings.Settings.name} - About Us` } />
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-4xl font-bold mb-4 text-center">About Us</h1>
                 <p className="text-lg leading-relaxed mb-6 text-center">

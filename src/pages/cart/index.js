@@ -1,6 +1,6 @@
+import Title from "@/components/shared/title";
 import { decrementQuantity, incrementQuantity, removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
 import sharedService from "@/services/sharedService";
-import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 
 const CartList = ({ items, handleRemove, handleIncrement, handleDecrement }) => {
-    const count = 1;
+    const count = 1; //level
     return (
         <div className="space-y-6">
             { items.map((item) => {
@@ -20,13 +20,18 @@ const CartList = ({ items, handleRemove, handleIncrement, handleDecrement }) => 
                         key={ item.id }
                         className="grid grid-cols-[100px_1fr_auto] items-center gap-4 border-b pb-4"
                     >
-                        <Image
-                            className="rounded-lg object-cover"
-                            src="/download.jpg"
-                            width={ 100 }
-                            height={ 100 }
-                            alt={ item.name }
-                        />
+                        <div className="flex justify-center">
+                            <div className="flex border-4 size-32 rounded-lg border-rich-brown mb-2">
+                                <Image
+                                    className="rounded-lg object-cover"
+                                    src={ item.images[0] }
+                                    alt={ item.name }
+                                    width={ 100 }
+                                    height={ 100 }
+                                    objectFit="cover"
+                                />
+                            </div>
+                        </div>
 
                         <div className="space-y-1">
                             <h3 className="font-semibold text-lg">{ item.name }</h3>
@@ -139,13 +144,7 @@ export default function Cart() {
 
     return (
         <>
-            <Head>
-                <title>Cart</title>
-                <meta
-                    name="description"
-                    content="Review and manage the items in your shopping cart. Update quantities, remove items, and proceed to checkout for a seamless shopping experience."
-                />
-            </Head>
+            <Title label="Cart" />
             <div className="container mx-auto py-8">
                 <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
                 <h3 className="text-2xl mb-6">Review the items in your cart and complete your purchase.</h3>
@@ -162,7 +161,7 @@ export default function Cart() {
                 ) : (
                     <EmptyCartMessage />
                 ) }
-            </div>
+            </div >
         </>
     );
 }

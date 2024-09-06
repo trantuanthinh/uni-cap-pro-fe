@@ -1,3 +1,4 @@
+import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
 import dataManagement from "@/services/data-manage";
@@ -123,149 +124,152 @@ export default function SignUp() {
     }
 
     return (
-        <div className="flex items-center py-6 justify-center min-h-screen bg-background-base">
-            <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
-                <h1 className="text-center text-3xl text-text-title font-bold mb-6">Sign Up</h1>
+        <>
+            <Title label={ `${GlobalSettings.Settings.name} - Sign Up` } />
+            <div className="flex items-center py-6 justify-center min-h-screen bg-background-base">
+                <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
+                    <h1 className="text-center text-3xl text-text-title font-bold mb-6">Sign Up</h1>
 
-                { errors.server && <p className="text-red-500 mb-4">{ errors.server }</p> }
+                    { errors.server && <p className="text-red-500 mb-4">{ errors.server }</p> }
 
-                <form onSubmit={ handleSubmit }>
-                    <div className="mb-4">
-                        <label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
-                            Full Name
-                        </label>
-                        <input
-                            type="text"
-                            id="fullname"
-                            value={ fullname }
-                            onChange={ handleChange("fullname", setFullname) }
-                            onBlur={ handleBlur("fullname") }
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required
-                        />
-                        { errors.fullname && <p className="text-red-500 text-sm">{ errors.fullname }</p> }
-                    </div>
+                    <form onSubmit={ handleSubmit }>
+                        <div className="mb-4">
+                            <label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                id="fullname"
+                                value={ fullname }
+                                onChange={ handleChange("fullname", setFullname) }
+                                onBlur={ handleBlur("fullname") }
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                            { errors.fullname && <p className="text-red-500 text-sm">{ errors.fullname }</p> }
+                        </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                            Username
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={ username }
-                            onChange={ handleChange("username", setUsername) }
-                            onBlur={ handleBlur("username") }
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required
-                        />
-                        { errors.username && <p className="text-red-500 text-sm">{ errors.username }</p> }
-                    </div>
+                        <div className="mb-4">
+                            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                                Username
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                value={ username }
+                                onChange={ handleChange("username", setUsername) }
+                                onBlur={ handleBlur("username") }
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                            { errors.username && <p className="text-red-500 text-sm">{ errors.username }</p> }
+                        </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={ email }
-                            onChange={ handleChange("email", setEmail) }
-                            onBlur={ handleBlur("email") }
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required
-                        />
-                        { errors.email && <p className="text-red-500 text-sm">{ errors.email }</p> }
-                    </div>
+                        <div className="mb-4">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                value={ email }
+                                onChange={ handleChange("email", setEmail) }
+                                onBlur={ handleBlur("email") }
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                            { errors.email && <p className="text-red-500 text-sm">{ errors.email }</p> }
+                        </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                            Phone Number
-                        </label>
-                        <input
-                            type="text"
-                            id="phone"
-                            value={ phoneNumber }
-                            onChange={ handleChange("phone", setPhoneNumber) }
-                            onBlur={ handleBlur("phone") }
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required
-                        />
-                        { errors.phone && <p className="text-red-500 text-sm">{ errors.phone }</p> }
-                    </div>
+                        <div className="mb-4">
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                                Phone Number
+                            </label>
+                            <input
+                                type="text"
+                                id="phone"
+                                value={ phoneNumber }
+                                onChange={ handleChange("phone", setPhoneNumber) }
+                                onBlur={ handleBlur("phone") }
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                            { errors.phone && <p className="text-red-500 text-sm">{ errors.phone }</p> }
+                        </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={ password }
-                            onChange={ handleChange("password", setPassword) }
-                            onBlur={ handleBlur("password") }
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required
-                        />
-                        { errors.password && <p className="text-red-500 text-sm">{ errors.password }</p> }
-                    </div>
+                        <div className="mb-4">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={ password }
+                                onChange={ handleChange("password", setPassword) }
+                                onBlur={ handleBlur("password") }
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                            { errors.password && <p className="text-red-500 text-sm">{ errors.password }</p> }
+                        </div>
 
-                    <div className="mb-6">
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                            Confirm Password
-                        </label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            value={ confirmPassword }
-                            onChange={ handleChange("confirmPassword", setConfirmPassword) }
-                            onBlur={ handleBlur("confirmPassword") }
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required
-                        />
-                        { errors.confirmPassword && (
-                            <p className="text-red-500 text-sm">{ errors.confirmPassword }</p>
-                        ) }
-                    </div>
+                        <div className="mb-6">
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                                Confirm Password
+                            </label>
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                value={ confirmPassword }
+                                onChange={ handleChange("confirmPassword", setConfirmPassword) }
+                                onBlur={ handleBlur("confirmPassword") }
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                            { errors.confirmPassword && (
+                                <p className="text-red-500 text-sm">{ errors.confirmPassword }</p>
+                            ) }
+                        </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="userType" className="block text-sm font-medium text-gray-700">
-                            User Type
-                        </label>
-                        <select
-                            id="userType"
-                            value={ userType }
-                            onChange={ (e) => setUserType(e.target.value) }
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required
+                        <div className="mb-4">
+                            <label htmlFor="userType" className="block text-sm font-medium text-gray-700">
+                                User Type
+                            </label>
+                            <select
+                                id="userType"
+                                value={ userType }
+                                onChange={ (e) => setUserType(e.target.value) }
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            >
+                                <option value="" disabled>
+                                    Select a type
+                                </option>
+                                { userTypeList &&
+                                    userTypeList.map((userType) => (
+                                        <option key={ userType } value={ userType }>
+                                            { userType }
+                                        </option>
+                                    )) }
+                            </select>
+                            { errors.userType && <p className="text-red-500 text-sm">{ errors.userType }</p> }
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="w-full bg-primary-green hover:bg-green-700 text-white py-2 px-4 rounded"
                         >
-                            <option value="" disabled>
-                                Select a type
-                            </option>
-                            { userTypeList &&
-                                userTypeList.map((userType) => (
-                                    <option key={ userType } value={ userType }>
-                                        { userType }
-                                    </option>
-                                )) }
-                        </select>
-                        { errors.userType && <p className="text-red-500 text-sm">{ errors.userType }</p> }
+                            Sign Up
+                        </button>
+                    </form>
+
+                    <div className="mt-4 text-center">
+                        <Link href="/sign-in" className="text-indigo-600 hover:text-indigo-800">
+                            Already have an account? Sign in here.
+                        </Link>
                     </div>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-primary-green hover:bg-green-700 text-white py-2 px-4 rounded"
-                    >
-                        Sign Up
-                    </button>
-                </form>
-
-                <div className="mt-4 text-center">
-                    <Link href="/sign-in" className="text-indigo-600 hover:text-indigo-800">
-                        Already have an account? Sign in here.
-                    </Link>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
