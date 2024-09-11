@@ -35,7 +35,6 @@ export default function Home({ }) {
                     <ProductList type={ "buy-together" } title={ "Buy Together" } orderList={ orderList } pageSize={ 8 } />
                 </section>
                 <section>
-                    {/* <ProductList type={ "buy-together" } title={ "Buy Together" } productList={ orderList } pageSize={ 8 } /> */ }
                 </section>
                 <section></section>
                 <section></section>

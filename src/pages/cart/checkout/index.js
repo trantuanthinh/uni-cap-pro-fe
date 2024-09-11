@@ -33,7 +33,12 @@ export default function Checkout() {
                 { haveProduct && (
                     <>
                         <CartList items={ cart.items } />
-                        <CartTotal totalPrice={ cart.totalPrice } totalQuantity={ cart.totalQuantity } submitOrder={ submitOrder } shareOrder={ shareOrder } />
+                        <CartTotal
+                            totalPrice={ cart.totalPrice }
+                            totalQuantity={ cart.totalQuantity }
+                            submitOrder={ submitOrder }
+                            shareOrder={ shareOrder }
+                        />
                     </>
                 ) }
             </div>
@@ -88,13 +93,19 @@ const CartTotal = ({ totalPrice, totalQuantity, submitOrder, shareOrder }) => {
             <h2 className="text-2xl font-bold">Total Price: ${ formattedTotalPrice }</h2>
             <h3 className="text-xl">Total Quantity: { totalQuantity }</h3>
             <div className="flex flex-row space-x-5">
-                <button onClick={ submitOrder } className="px-6 py-3 bg-primary-green text-white font-bold rounded hover:bg-green-600 transition-colors">
+                <button
+                    onClick={ submitOrder }
+                    className="px-6 py-3 bg-primary-green text-white font-bold rounded hover:bg-green-600 transition-colors"
+                >
                     Order
                 </button>
-                <button onClick={ submitOrder } className="px-6 py-3 bg-primary-green text-white font-bold rounded hover:bg-green-600 transition-colors">
+                <button
+                    onClick={ submitOrder }
+                    className="px-6 py-3 bg-primary-green text-white font-bold rounded hover:bg-green-600 transition-colors"
+                >
                     Share Order
                 </button>
             </div>
-        </div >
+        </div>
     );
 };

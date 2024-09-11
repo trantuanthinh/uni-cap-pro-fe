@@ -32,9 +32,11 @@ export const cartSlice = createSlice({
             const item = state.items.find((item) => item.id === action.payload);
 
             if (item) {
-                item.totalItemQuantity += 1;
-                state.totalPrice += item.price;
-                state.totalQuantity += 1;
+                if (item.totalItemQuantity < 10) {
+                    item.totalItemQuantity += 1;
+                    state.totalPrice += item.price;
+                    state.totalQuantity += 1;
+                }
             }
         },
 
@@ -46,10 +48,6 @@ export const cartSlice = createSlice({
                     item.totalItemQuantity -= 1;
                     state.totalPrice -= item.price;
                     state.totalQuantity -= 1;
-                } else {
-                    state.items = state.items.filter((i) => i.id !== item.id);
-                    state.totalPrice -= item.totalItemPrice;
-                    state.totalQuantity -= item.totalItemQuantity;
                 }
             }
         },
