@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import sharedService from "@/services/sharedService";c
+import sharedService from "@/services/sharedService";
 import Image from "next/image";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";

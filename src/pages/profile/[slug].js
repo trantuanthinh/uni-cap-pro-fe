@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useSelector } from "react-redux";
 import Title from "@/components/shared/title";
@@ -18,6 +18,12 @@ export default function ProfileLayout({ children }) {
         setIsMounted(true);
     }, []);
 
+    const tabList = [
+        { title: "Overview", content: <OverviewContent /> },
+        { title: "Orders", content: <OrdersContent /> },
+        { title: "Cart", content: <CartContent /> },
+    ];
+
     return (
         <>
             <Title label={ `${GlobalSettings.Settings.name} - ${user?.username}` } />
@@ -36,33 +42,15 @@ export default function ProfileLayout({ children }) {
                     </div>
 
                     <div className="mb-6 border-b">
-                        <nav className="flex space-x-4">
-                            <div className="flex w-full flex-col">
-                                <Tabs aria-label="Options" radius="md" color="success">
-                                    <Tab key="photos" title="Photos">
-                                        <Card>
-                                            <CardBody>
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                            </CardBody>
-                                        </Card>
-                                    </Tab>
-                                    <Tab key="music" title="Music">
-                                        <Card>
-                                            <CardBody>
-                                                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                                            </CardBody>
-                                        </Card>
-                                    </Tab>
-                                    <Tab key="videos" title="Videos">
-                                        <Card>
-                                            <CardBody>
-                                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                                            </CardBody>
-                                        </Card>
-                                    </Tab>
-                                </Tabs>
-                            </div>
-                        </nav>
+                        <Tabs aria-label="Options" radius="md" color="success">
+                            { tabList.map((tab) => (
+                                <Tab key={ tab.title } title={ tab.title }>
+                                    <Card>
+                                        <CardBody>{ tab.content }</CardBody>
+                                    </Card>
+                                </Tab>
+                            )) }
+                        </Tabs>
                     </div>
 
                     {/* Main Content */ }
@@ -73,13 +61,22 @@ export default function ProfileLayout({ children }) {
     );
 }
 
-// Avatar Component
 const Avatar = ({ avatar = null, username }) => {
     if (avatar) {
         return <Image className="rounded-full" src={ avatar } alt={ username } width={ 96 } height={ 96 } />;
     } else {
-        return (
-            <span className="text-gray-600 font-bold text-5xl">{ username?.charAt(0).toUpperCase() }</span>
-        );
+        return <span className="text-gray-600 font-bold text-5xl">{ username?.charAt(0).toUpperCase() }</span>;
     }
+};
+
+const OverviewContent = () => {
+    return <p>Overview Content</p>;
+};
+
+const OrdersContent = () => {
+    return <p>Orders Content</p>;
+};
+
+const CartContent = () => {
+    return <p>Cart Content</p>;
 };

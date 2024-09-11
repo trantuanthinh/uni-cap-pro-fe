@@ -42,7 +42,7 @@ export default function Header() {
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 { navList.map((item) => (
                     <NavbarItem key={ item.href }>
-                        <Link color="foreground" href={ item.href }>
+                        <Link color="foreground" href={ item.href } underline="hover">
                             { item.label }
                         </Link>
                     </NavbarItem>
@@ -64,7 +64,7 @@ export default function Header() {
 
                 { isMounted ? <UserActions user={ user } /> : <SignActions /> }
             </NavbarContent>
-        </Navbar>
+        </Navbar >
     );
 }
 
