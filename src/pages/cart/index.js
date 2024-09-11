@@ -1,3 +1,5 @@
+"use client";
+
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import { decrementQuantity, incrementQuantity, removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";

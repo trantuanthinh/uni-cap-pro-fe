@@ -11,7 +11,9 @@
   "dependencies": {
     "@nextui-org/react": "^2.4.6",
     "@reduxjs/toolkit": "^2.2.7",
+    "framer-motion": "^11.5.4",
     "lodash": "^4.17.21",
+    "moment": "^2.30.1",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",

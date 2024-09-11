@@ -1,18 +1,5 @@
 import Image from "next/image";
 
-// Avatar Component
-const Avatar = ({ avatar, username }) => {
-    if (avatar) {
-        return <Image className="rounded-full" src={ avatar } alt={ username } width={ 40 } height={ 40 } />;
-    } else {
-        return (
-            <div className="bg-gray-200 rounded-full size-10 flex items-center justify-center">
-                <span className="text-gray-600 font-bold text-lg">{ username.charAt(0).toUpperCase() }</span>
-            </div>
-        );
-    }
-};
-
 // CommentCard Component
 export default function CommentCard({ avatar = null, username, comment, timestamp }) {
     return (
@@ -28,3 +15,15 @@ export default function CommentCard({ avatar = null, username, comment, timestam
         </div>
     );
 }
+// Avatar Component
+const Avatar = ({ avatar, username }) => {
+    if (avatar) {
+        return <Image className="rounded-full" src={ avatar } alt={ username } width={ 40 } height={ 40 } />;
+    } else {
+        return (
+            <div className="bg-gray-200 rounded-full size-10 flex items-center justify-center">
+                <span className="text-gray-600 font-bold text-lg">{ username.charAt(0).toUpperCase() }</span>
+            </div>
+        );
+    }
+};

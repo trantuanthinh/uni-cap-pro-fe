@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import sharedService from "@/services/sharedService";
+import sharedService from "@/services/sharedService";c
 import Image from "next/image";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
@@ -19,7 +19,9 @@ export default function Checkout() {
     }, [cart.items, dispatch]);
 
     function submitOrder() {
-        console.log("submit order");
+        // const dataJson = {
+        //     productId:
+        // };
     }
 
     function shareOrder() {
@@ -100,7 +102,7 @@ const CartTotal = ({ totalPrice, totalQuantity, submitOrder, shareOrder }) => {
                     Order
                 </button>
                 <button
-                    onClick={ submitOrder }
+                    onClick={ shareOrder }
                     className="px-6 py-3 bg-primary-green text-white font-bold rounded hover:bg-green-600 transition-colors"
                 >
                     Share Order
