@@ -104,6 +104,10 @@ class APIService {
         return this.#getItem("orders", id);
     }
 
+    async postOrder(data) {
+        return this.#postItem("orders", data);
+    }
+
     // discounts
     async getDiscounts() {
         return this.#getItems("discounts");

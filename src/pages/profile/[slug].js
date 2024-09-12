@@ -1,12 +1,12 @@
 "use client";
 
-import { useSelector } from "react-redux";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
+import sharedService from "@/services/sharedService";
+import { Card, CardBody, Tab, Tabs } from "@nextui-org/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import sharedService from "@/services/sharedService";
-import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
+import { useSelector } from "react-redux";
 
 export default function ProfileLayout({ children }) {
     const user = useSelector((state) => state.user);
@@ -18,10 +18,22 @@ export default function ProfileLayout({ children }) {
         setIsMounted(true);
     }, []);
 
-    const tabList = [
-        { title: "Overview", content: <OverviewContent /> },
-        { title: "Orders", content: <OrdersContent /> },
-        { title: "Cart", content: <CartContent /> },
+    const tabs = [
+        {
+            id: "Overview",
+            label: "Overview",
+            content: <OverviewContent />,
+        },
+        {
+            id: "Orders",
+            label: "Orders",
+            content: <OrdersContent />,
+        },
+        {
+            id: "Cart",
+            label: "Cart",
+            content: <CartContent />,
+        },
     ];
 
     return (
@@ -43,8 +55,8 @@ export default function ProfileLayout({ children }) {
 
                     <div className="mb-6 border-b">
                         <Tabs aria-label="Options" radius="md" color="success">
-                            { tabList.map((tab) => (
-                                <Tab key={ tab.title } title={ tab.title }>
+                            { tabs.map((tab) => (
+                                <Tab key={ tab.id } title={ tab.label }>
                                     <Card>
                                         <CardBody>{ tab.content }</CardBody>
                                     </Card>

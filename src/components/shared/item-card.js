@@ -3,15 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaStar } from "react-icons/fa";
 import AddToCartButton from "./add-to-cart-button";
-import BuyTogetherButton from "./buy-together-button";
+import ShareBuyButton from "./share-buy-button";
 
 export default function ItemCard({ id, product, level = 0, type = "cart" }) {
     let button;
 
     if (type === "cart") {
         button = <AddToCartButton item={ product } />;
-    } else if (type === "buy-together") {
-        button = <BuyTogetherButton item={ product } />;
+    } else if (type === "sharebuy") {
+        button = <ShareBuyButton item={ product } />;
     }
 
     const starRating =
@@ -52,12 +52,9 @@ export default function ItemCard({ id, product, level = 0, type = "cart" }) {
                         <span className="ml-1">({ product.total_Rating_Quantity })</span>
                     </div>
                     <div className="text-text-title font-bold text-3xl">{ product.name }</div>
-                    <div className="text-text-base text-base line-clamp-2 mt-3 mb-2">
-                        { product.description }
-                    </div>
+                    <div className="text-text-base text-base line-clamp-2 mt-3 mb-2">{ product.description }</div>
                 </div>
             </Link>
-
 
             <div className="flex flex-row justify-between space-x-5">
                 { level > 0 && (

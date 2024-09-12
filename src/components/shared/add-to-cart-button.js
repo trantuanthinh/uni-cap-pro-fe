@@ -1,4 +1,5 @@
 import { addToCart } from "@/redux/slicers/cartSlice";
+import { Button } from "@nextui-org/react";
 import { useDispatch } from "react-redux";
 
 export default function AddToCartButton({ item }) {
@@ -6,11 +7,11 @@ export default function AddToCartButton({ item }) {
 
     function handleAddToCart() {
         dispatch(addToCart(item));
-    };
+    }
 
     return (
-        <button onClick={ handleAddToCart } className="text-lg text-white bg-red-500 p-2 rounded-lg">
+        <Button onClick={ handleAddToCart } className="text-lg" color="primary" radius="small">
             Add to cart
-        </button>
+        </Button>
     );
 }

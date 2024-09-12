@@ -1,12 +1,14 @@
 class HTTPService {
     async getItems(url) {
         try {
-            const response = await fetch(url, {
+            const request = {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
-            });
+            };
+
+            const response = await fetch(url, request);
 
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -22,12 +24,14 @@ class HTTPService {
 
     async getItem(url) {
         try {
-            const response = await fetch(url, {
+            const request = {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
-            });
+            };
+
+            const response = await fetch(url, request);
 
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -43,13 +47,15 @@ class HTTPService {
 
     async postItem(url, data) {
         try {
-            const response = await fetch(url, {
+            const request = {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data),
-            });
+            };
+
+            const response = await fetch(url, request);
 
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -65,13 +71,15 @@ class HTTPService {
 
     async patchItem(url, data) {
         try {
-            const response = await fetch(url, {
+            const request = {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data),
-            });
+            };
+
+            const response = await fetch(url, request);
 
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -87,12 +95,14 @@ class HTTPService {
 
     async deleteItem(url) {
         try {
-            const response = await fetch(url, {
+            const request = {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
                 },
-            });
+            };
+
+            const response = await fetch(url, request);
 
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: ${response.statusText}`);

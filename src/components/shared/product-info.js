@@ -1,10 +1,10 @@
 import sharedService from "@/services/sharedService";
-import Image from "next/image";
-import { FaStar } from "react-icons/fa";
-import AddToCartButton from "./add-to-cart-button";
 import { Button } from "@nextui-org/react";
-import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
+import Image from "next/image";
 import { useState } from "react";
+import { FaStar } from "react-icons/fa";
+import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
+import { AddToCartButton } from "./add-to-cart-button";
 
 export default function ProductInfo({ product }) {
     const [quantity, setQuantity] = useState(1);

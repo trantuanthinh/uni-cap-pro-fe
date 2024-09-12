@@ -26,16 +26,15 @@ export default function Home({ }) {
     return (
         <>
             <Title label={ `${GlobalSettings.Settings.name} - Home` } />
-            <main className="grid grid-flow-row gap-y-20 px-20 py-5">
+            <main className="grid grid-flow-row gap-y-2 px-20">
                 <section className="flex flex-col items-center justify-center">
                     <ProductList type={ "cart" } title={ "Productions" } productList={ productList } pageSize={ 8 } />
                 </section>
 
                 <section className="flex flex-col items-center justify-center">
-                    <ProductList type={ "buy-together" } title={ "Buy Together" } orderList={ orderList } pageSize={ 8 } />
+                    <ProductList type={ "sharebuy" } title={ "Buy Together" } orderList={ orderList } pageSize={ 8 } />
                 </section>
-                <section>
-                </section>
+                <section></section>
                 <section></section>
                 <section></section>
             </main>

@@ -1,20 +1,19 @@
-import { useEffect, useState } from "react";
-import { FaShoppingCart, FaUser } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
 import {
+    Button,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
+    Link,
     Navbar,
     NavbarBrand,
     NavbarContent,
     NavbarItem,
-    Link,
-    Button,
-    Dropdown,
-    DropdownTrigger,
-    DropdownMenu,
-    DropdownItem,
-    Badge,
 } from "@nextui-org/react";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { FaShoppingCart, FaUser } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Header() {
     const user = useSelector((state) => state.user);
@@ -64,7 +63,7 @@ export default function Header() {
 
                 { isMounted ? <UserActions user={ user } /> : <SignActions /> }
             </NavbarContent>
-        </Navbar >
+        </Navbar>
     );
 }
 
