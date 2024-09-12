@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     items: [],
+    totalQuantity: 0,
 };
 
 export const cartSlice = createSlice({
@@ -17,8 +18,10 @@ export const cartSlice = createSlice({
                     ...newItem,
                     totalItemQuantity: 1,
                 });
+                state.totalQuantity += 1;
             } else {
                 existingItem.totalItemQuantity += 1;
+                state.totalQuantity += 1;
             }
         },
 
@@ -28,6 +31,7 @@ export const cartSlice = createSlice({
             if (item) {
                 if (item.totalItemQuantity < 10) {
                     item.totalItemQuantity += 1;
+                    state.totalQuantity += 1;
                 }
             }
         },
@@ -38,7 +42,6 @@ export const cartSlice = createSlice({
             if (item) {
                 if (item.totalItemQuantity > 1) {
                     item.totalItemQuantity -= 1;
-                    state.totalPrice -= item.price;
                     state.totalQuantity -= 1;
                 }
             }

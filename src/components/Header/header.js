@@ -16,6 +16,7 @@ import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function Header() {
+    const router = useRouter();
     const user = useSelector((state) => state.user);
     const cart = useSelector((state) => state.cart);
     const [isMounted, setIsMounted] = useState(false);
@@ -50,15 +51,11 @@ export default function Header() {
 
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Link href="/cart">
+                    <Button onPress={ () => router.push("/cart") } color="warning">
+                        {/* <Badge color="danger" content={ cart?.totalQuantity } shape="circle"> */ }
                         <FaShoppingCart size={ 24 } className="text-white hover:text-gray-300" />
-                        {/* <Badge
-                                color="danger"
-                                content={ cart.totalQuantity }
-                                shape="circle"
-                            >
-                            </Badge> */}
-                    </Link>
+                        {/* </Badge> */ }
+                    </Button>
                 </NavbarItem>
 
                 { isMounted ? <UserActions user={ user } /> : <SignActions /> }

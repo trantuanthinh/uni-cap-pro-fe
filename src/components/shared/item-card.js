@@ -40,7 +40,6 @@ export default function ItemCard({ id, product, level = 0, type = "cart" }) {
                             alt={ product.name }
                             width={ 240 }
                             height={ 240 }
-                            objectFit="cover"
                         />
                     </div>
                 </div>

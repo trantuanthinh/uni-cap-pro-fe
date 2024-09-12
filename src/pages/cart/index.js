@@ -1,11 +1,12 @@
 "use client";
 
+import Dialog from "@/components/shared/default-dialog";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import { decrementQuantity, incrementQuantity, removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
-import { Button, ButtonGroup, Card, CardBody, Link, Tab, Tabs, useDisclosure } from "@nextui-org/react";
+import { Button, ButtonGroup, Card, CardBody, Link, Tab, Tabs } from "@nextui-org/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa6";
@@ -30,18 +31,18 @@ export default function Cart() {
         dispatch(decrementQuantity(id));
     }
 
-    async function handleBuy(item) {
+    async function handleOrder(item, isShare) {
         let dataJson = {
             productId: item?.id,
             userId: user?.id,
             quantity: item?.totalItemQuantity,
             price: item?.price * item?.totalItemQuantity,
-            isShare: false,
+            isShare: isShare,
         };
         try {
             let response = await apiService.postOrder(dataJson);
             if (response.ok) {
-                console.log(response, "post order ok");
+                handleRemove(item.id);
             }
         } catch (error) {
             console.log("Error: ", error.message);
@@ -73,7 +74,7 @@ export default function Cart() {
                             handleRemove={ handleRemove }
                             handleIncrement={ handleIncrement }
                             handleDecrement={ handleDecrement }
-                            handleBuy={ handleBuy }
+                            handleOrder={ handleOrder }
                         />
                     </>
                 ) : (
@@ -95,7 +96,7 @@ const EmptyCartMessage = () => (
     </div>
 );
 
-const CartList = ({ items, handleRemove, handleIncrement, handleDecrement, handleBuy }) => {
+const CartList = ({ items, handleRemove, handleIncrement, handleDecrement, handleOrder }) => {
     const count = 1; //level
     const tabs = [
         {
@@ -107,7 +108,7 @@ const CartList = ({ items, handleRemove, handleIncrement, handleDecrement, handl
                     handleRemove={ handleRemove }
                     handleIncrement={ handleIncrement }
                     handleDecrement={ handleDecrement }
-                    handleBuy={ handleBuy }
+                    handleBuy={ handleOrder }
                 />
             ),
         },
@@ -130,7 +131,17 @@ const CartList = ({ items, handleRemove, handleIncrement, handleDecrement, handl
     );
 };
 
-const ItemList = ({ items, handleRemove, handleIncrement, handleDecrement, handleBuy }) => {
+const ItemList = ({ items, handleRemove, handleIncrement, handleDecrement, handleOrder }) => {
+    const [dialogInfo, setDialogInfo] = useState({ itemId: null, action: "" });
+
+    const openDialog = (itemId, action) => {
+        setDialogInfo({ itemId, action });
+    };
+
+    const closeDialog = () => {
+        setDialogInfo({ itemId: null, action: "" });
+    };
+
     return (
         <>
             { Array.isArray(items) &&
@@ -139,6 +150,9 @@ const ItemList = ({ items, handleRemove, handleIncrement, handleDecrement, handl
                     const formattedTotalPrice = sharedService.formatVietnamDong(
                         item?.totalItemQuantity * item?.price
                     );
+
+                    const isDialogOpen = dialogInfo.itemId === item.id;
+
                     return (
                         <div
                             key={ `${item.id}-${index}` }
@@ -152,7 +166,6 @@ const ItemList = ({ items, handleRemove, handleIncrement, handleDecrement, handl
                                         alt={ item.name }
                                         width={ 100 }
                                         height={ 100 }
-                                        objectFit="cover"
                                     />
                                 </div>
                             </div>
@@ -161,7 +174,7 @@ const ItemList = ({ items, handleRemove, handleIncrement, handleDecrement, handl
                                 <p className="font-bold text-xl">{ item.name }</p>
                                 <span className="text-red-500">{ formattedPrice }</span>
                                 <div className="col-span-2">
-                                    <p className="text-lg font-semibold">Total Price: ${ formattedTotalPrice }</p>
+                                    <p className="text-lg font-semibold">Total Price: { formattedTotalPrice }</p>
                                 </div>
                             </div>
 
@@ -185,12 +198,21 @@ const ItemList = ({ items, handleRemove, handleIncrement, handleDecrement, handl
                                         </Button>
                                         <Button
                                             className="hover:bg-danger-300"
-                                            onClick={ () => handleRemove(item.id) }
+                                            onClick={ () => openDialog(item.id, "remove") }
                                             color="danger"
                                             variant="flat"
                                         >
                                             <FaTrash />
                                         </Button>
+                                        { dialogInfo.action === "remove" && isDialogOpen && (
+                                            <Dialog
+                                                title={ `Confirm Remove ${item.name}` }
+                                                content={ `Are you sure you want to remove ${item.name} from your cart?` }
+                                                isOpen={ isDialogOpen }
+                                                onOpenChange={ closeDialog }
+                                                onSubmit={ () => handleRemove(item.id) }
+                                            />
+                                        ) }
                                     </ButtonGroup>
                                 </div>
 
@@ -198,75 +220,42 @@ const ItemList = ({ items, handleRemove, handleIncrement, handleDecrement, handl
                                     <div className="row-start-2 px-2">
                                         <Button
                                             className="w-full flex items-center justify-center p-2 rounded-md bg-gray-100  transition-colors hover:bg-success-500"
-                                            onClick={ () => handleRemove(item.id) }
+                                            onClick={ () => openDialog(item.id, "share") }
                                         >
                                             Share Buy
                                         </Button>
+                                        { dialogInfo.action === "share" && isDialogOpen && (
+                                            <Dialog
+                                                title={ `Confirm Share Buy ${item.name}` }
+                                                content={ `Are you sure you want to share buy ${item.name}?` }
+                                                isOpen={ isDialogOpen }
+                                                onOpenChange={ closeDialog }
+                                                onSubmit={ () => handleOrder(item, true) }
+                                            />
+                                        ) }
                                     </div>
                                     <div className="row-start-2 px-2">
                                         <Button
                                             className="w-full flex items-center justify-center p-2 rounded-md bg-gray-100 transition-colors hover:bg-success-500"
-                                            onClick={ () => handleBuy(item) }
+                                            onClick={ () => openDialog(item.id, "buy") }
                                         >
                                             Buy
                                         </Button>
+                                        { dialogInfo.action === "buy" && isDialogOpen && (
+                                            <Dialog
+                                                title={ `Confirm Buy ${item.name}` }
+                                                content={ `Are you sure you want to buy ${item.name}?` }
+                                                isOpen={ isDialogOpen }
+                                                onOpenChange={ closeDialog }
+                                                onSubmit={ () => handleOrder(item, false) }
+                                            />
+                                        ) }
                                     </div>
                                 </div>
                             </div>
                         </div>
                     );
                 }) }
-        </>
-    );
-};
-
-const PopUp = () => {
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-    return (
-        <>
-            <Button onPress={ onOpen }>Open Modal</Button>
-            <Modal
-                isOpen={ isOpen }
-                onOpenChange={ onOpenChange }
-                isDismissable={ false }
-                isKeyboardDismissDisabled={ true }
-            >
-                <ModalContent>
-                    { (onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
-                            <ModalBody>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus
-                                    non risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed
-                                    porttitor quam.
-                                </p>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus
-                                    non risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed
-                                    porttitor quam.
-                                </p>
-                                <p>
-                                    Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
-                                    dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. Velit
-                                    duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. Et mollit
-                                    incididunt nisi consectetur esse laborum eiusmod pariatur proident Lorem
-                                    eiusmod et. Culpa deserunt nostrud ad veniam.
-                                </p>
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="danger" variant="light" onPress={ onClose }>
-                                    Close
-                                </Button>
-                                <Button color="primary" onPress={ onClose }>
-                                    Action
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    ) }
-                </ModalContent>
-            </Modal>
         </>
     );
 };
