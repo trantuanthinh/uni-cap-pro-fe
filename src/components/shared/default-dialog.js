@@ -1,8 +1,8 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 
-export default function Dialog({ isOpen, onOpenChange, onSubmit, title, content }) {
-    function handleButtonClick(onClose) {
-        onSubmit();
+export default function Dialog({ isOpen = true, onOpenChange = true, onSubmit = null, title, content }) {
+    function handleConfirm(onClose) {
+        onSubmit?.();
         onClose();
     }
 
@@ -19,8 +19,9 @@ export default function Dialog({ isOpen, onOpenChange, onSubmit, title, content 
                             <Button color="danger" variant="light" onClick={ onClose }>
                                 Close
                             </Button>
-                            <Button color="primary" onClick={ () => handleButtonClick(onClose) }>
-                                Confirm
+
+                            <Button auto color="primary" onClick={ () => handleConfirm(onClose) }>
+                                { onSubmit ? "Confirm" : "Close" }
                             </Button>
                         </ModalFooter>
                     </>

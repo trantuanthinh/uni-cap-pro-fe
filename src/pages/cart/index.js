@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa6";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 export default function Cart() {
     const dispatch = useDispatch();
@@ -30,6 +31,7 @@ export default function Cart() {
     function handleDecrement(id) {
         dispatch(decrementQuantity(id));
     }
+    const notify = () => toast("Wow so easy!");
 
     async function handleOrder(item, isShare) {
         let dataJson = {
@@ -43,11 +45,11 @@ export default function Cart() {
             let response = await apiService.postOrder(dataJson);
             if (response.ok) {
                 handleRemove(item.id);
+                toast.success("Order created successfully");
             }
         } catch (error) {
             console.log("Error: ", error.message);
         }
-        // dispatch(decrementQuantity(id));
     }
 
     useEffect(() => {
@@ -108,7 +110,7 @@ const CartList = ({ items, handleRemove, handleIncrement, handleDecrement, handl
                     handleRemove={ handleRemove }
                     handleIncrement={ handleIncrement }
                     handleDecrement={ handleDecrement }
-                    handleBuy={ handleOrder }
+                    handleOrder={ handleOrder }
                 />
             ),
         },

@@ -13,6 +13,7 @@ export default function Home({ }) {
     }, []);
 
     function getData() {
+        const filterOrder = { isShare: true, isPaid: true };
         Promise.all([apiService.getProducts(), apiService.getOrders()])
             .then(([productResponse, orderResponse]) => {
                 setProductList(productResponse.data);

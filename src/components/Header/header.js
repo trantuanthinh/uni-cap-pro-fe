@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
+import { clearUser } from "@/redux/slicers/userSlice";
 
 export default function Header() {
     const router = useRouter();
@@ -52,9 +53,7 @@ export default function Header() {
             <NavbarContent justify="end">
                 <NavbarItem>
                     <Button onPress={ () => router.push("/cart") } color="warning">
-                        {/* <Badge color="danger" content={ cart?.totalQuantity } shape="circle"> */ }
                         <FaShoppingCart size={ 24 } className="text-white hover:text-gray-300" />
-                        {/* </Badge> */ }
                     </Button>
                 </NavbarItem>
 
@@ -68,12 +67,12 @@ const SignActions = () => {
     return (
         <>
             <NavbarItem>
-                <Button as={ Link } color="primary" href="/sign-in" variant="flat">
+                <Button as={ Link } color="primary" href="/sign-in" variant="solid">
                     Sign In
                 </Button>
             </NavbarItem>
             <NavbarItem>
-                <Button as={ Link } color="primary" href="/sign-up" variant="flat">
+                <Button as={ Link } color="primary" href="/sign-up" variant="solid">
                     Sign Up
                 </Button>
             </NavbarItem>
@@ -90,40 +89,38 @@ const UserActions = ({ user }) => {
         { href: "/settings", label: "Settings" },
     ];
 
-    function handleLogout() {
+    const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         dispatch(clearUser());
         router.push("/");
-    }
+    };
 
     return (
         <>
             <NavbarItem>
-                <div className="relative">
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <Button variant="bordered" auto>
-                                <FaUser />
-                                <span className="ml-2">{ user?.username }</span>
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu aria-label="User Actions">
-                            { actionList.map(({ href, label }) => (
-                                <DropdownItem key={ label }>
-                                    <Link href={ href } className="block px-4 py-2">
-                                        { label }
-                                    </Link>
-                                </DropdownItem>
-                            )) }
-                            <DropdownItem key="logout" color="danger">
-                                <button onClick={ handleLogout } className="w-full text-left">
-                                    Log out
-                                </button>
+                <Dropdown>
+                    <DropdownTrigger>
+                        <Button variant="bordered" auto>
+                            <FaUser />
+                            <span className="ml-2">{ user?.username }</span>
+                        </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="User Actions">
+                        { actionList.map(({ href, label }) => (
+                            <DropdownItem key={ label }>
+                                <Link href={ href } className="block px-4 py-2">
+                                    { label }
+                                </Link>
                             </DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
-                </div>
+                        )) }
+                        <DropdownItem key="logout" color="danger">
+                            <button onClick={ handleLogout } className="w-full text-left">
+                                Log out
+                            </button>
+                        </DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
             </NavbarItem>
         </>
     );
