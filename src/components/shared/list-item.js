@@ -7,7 +7,7 @@ export default function ListItem({ productList = null, orderList = null, pageSiz
                 productList
                     .slice(0, pageSize)
                     .map((product, index) => (
-                        <ItemCard key={ `${product.id}-${index}` } id={ product.id } product={ product } type={ type } />
+                        <ItemCard key={ `${ product.id }-${ index }` } id={ product.id } product={ product } type={ type } />
                     )) }
 
             { orderList &&
@@ -15,7 +15,7 @@ export default function ListItem({ productList = null, orderList = null, pageSiz
                     .slice(0, pageSize)
                     .map((order, index) => (
                         <ItemCard
-                            key={ `${order.id}-${index}` }
+                            key={ `${ order.id }-${ index }` }
                             level={ order.level }
                             id={ order.product.id }
                             product={ order.product }

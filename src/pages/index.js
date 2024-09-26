@@ -16,8 +16,8 @@ export default function Home({ }) {
         const filterOrder = { isShare: true, isPaid: true };
         Promise.all([apiService.getProducts(), apiService.getOrders()])
             .then(([productResponse, orderResponse]) => {
-                setProductList(productResponse.data);
-                setOrderList(orderResponse.data);
+                setProductList(productResponse.result.data);
+                setOrderList(orderResponse.result.data);
             })
             .catch((error) => {
                 console.log("Error: ", error);
@@ -26,14 +26,14 @@ export default function Home({ }) {
 
     return (
         <>
-            <Title label={ `${GlobalSettings.Settings.name} - Home` } />
+            <Title label={`${GlobalSettings.Settings.name} - Home`} />
             <main className="grid grid-flow-row gap-y-2 px-20">
                 <section className="flex flex-col items-center justify-center">
-                    <ProductList type={ "cart" } title={ "Productions" } productList={ productList } pageSize={ 8 } />
+                    <ProductList type={"cart"} title={"Productions"} productList={productList} pageSize={8} />
                 </section>
 
                 <section className="flex flex-col items-center justify-center">
-                    <ProductList type={ "sharebuy" } title={ "Buy Together" } orderList={ orderList } pageSize={ 8 } />
+                    <ProductList type={"sharebuy"} title={"Buy Together"} orderList={orderList} pageSize={8} />
                 </section>
                 <section></section>
                 <section></section>

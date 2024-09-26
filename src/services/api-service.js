@@ -10,6 +10,7 @@ class APIService {
         return id ? `${this.#rootAPI}/${path}/${id}` : `${this.#rootAPI}/${path}`;
     }
 
+    //#region core 
     async #getItems(url) {
         const fullUrl = this.#buildUrl(url);
         try {
@@ -60,22 +61,23 @@ class APIService {
         throw error;
     }
 
-    // Auth
+
+    //#region auth
     async signin(data) {
         return this.#postItem("auth/signin", data);
     }
 
-    // User
+    async signup(data) {
+        return this.#postItem("auth/signup", data);
+    }
+
+    //#region users
     async getUsers() {
         return this.#getItems("users");
     }
 
     async getUser(id) {
         return this.#getItem("users", id);
-    }
-
-    async postUser(data) {
-        return this.#postItem("users", data);
     }
 
     async patchUser(id, data) {
@@ -86,7 +88,7 @@ class APIService {
         return this.#deleteItem("users", id);
     }
 
-    // products
+    //#region products
     async getProducts() {
         return this.#getItems("products");
     }
@@ -95,7 +97,7 @@ class APIService {
         return this.#getItem("products", id);
     }
 
-    // orders
+    //#region orders
     async getOrders() {
         return this.#getItems("orders");
     }
@@ -108,7 +110,7 @@ class APIService {
         return this.#postItem("orders", data);
     }
 
-    // discounts
+    //#region discounts
     async getDiscounts() {
         return this.#getItems("discounts");
     }

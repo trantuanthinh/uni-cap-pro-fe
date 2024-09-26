@@ -6,19 +6,18 @@ import { FaStar } from "react-icons/fa";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import { AddToCartButton } from "./add-to-cart-button";
 
-export default function ProductInfo({ product }) {
-    const [quantity, setQuantity] = useState(1);
+export default function ProductInfo({ product = null }) {
+    const [ quantity, setQuantity ] = useState(1);
 
     const formattedPrice = sharedService.formatVietnamDong(product.price);
-    const starRating =
-        product.total_Rating_Value === 0 ? 0 : product.total_Rating_Value / product.total_Rating_Quantity;
+    const starRating = product.total_Rating_Value === 0 ? 0 : product.total_Rating_Value / product.total_Rating_Quantity;
     return (
         <>
             <div className="grid gap-4 md:gap-8">
                 <div className="flex items-center justify-center w-full">
                     <Image
                         className="w-[85%] h-[auto] rounded-lg"
-                        src={ product.images[0] }
+                        src={ product.images[ 0 ] }
                         alt={ product.name }
                         width={ 600 }
                         height={ 600 }
@@ -75,7 +74,6 @@ export default function ProductInfo({ product }) {
                         <div className="flex items-center justify-between">
                             <h3 className="text-sm text-gray-600">Quantity</h3>
                         </div>
-
                     </div>
                     <div className="flex flex-row gap-x-10 text-2xl font-bold">
                         <span className="text-3xl">{ formattedPrice }</span>
@@ -91,25 +89,15 @@ export default function ProductInfo({ product }) {
                     </div>
                 </div>
                 <div className="flex items-center mt-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={ () => setQuantity(Math.max(1, quantity - 1)) }
-                    >
+                    <Button type="button" variant="outline" size="icon" onClick={ () => setQuantity(Math.max(1, quantity - 1)) }>
                         <IoMdRemoveCircleOutline size={ 24 } />
                     </Button>
                     <span className="mx-4 text-xl font-semibold">{ quantity }</span>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={ () => setQuantity(Math.min(10, quantity + 1)) }
-                    >
+                    <Button type="button" variant="outline" size="icon" onClick={ () => setQuantity(Math.min(10, quantity + 1)) }>
                         <IoMdAddCircleOutline size={ 24 } />
                     </Button>
+                    {/* <AddToCartButton item={ product } /> */}
                 </div>
-                <AddToCartButton />
             </div>
         </>
     );
