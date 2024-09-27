@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
-import { AddToCartButton } from "./add-to-cart-button";
+import AddToCartButton from "./add-to-cart-button";
 
 export default function ProductInfo({ product = null }) {
     const [ quantity, setQuantity ] = useState(1);
@@ -14,9 +14,9 @@ export default function ProductInfo({ product = null }) {
     return (
         <>
             <div className="grid gap-4 md:gap-8">
-                <div className="flex items-center justify-center w-full">
+                <div className="flex justify-center w-full">
                     <Image
-                        className="w-[85%] h-[auto] rounded-lg"
+                        className="w-[90%] h-[80%] rounded-lg"
                         src={ product.images[ 0 ] }
                         alt={ product.name }
                         width={ 600 }
@@ -96,8 +96,9 @@ export default function ProductInfo({ product = null }) {
                     <Button type="button" variant="outline" size="icon" onClick={ () => setQuantity(Math.min(10, quantity + 1)) }>
                         <IoMdAddCircleOutline size={ 24 } />
                     </Button>
-                    {/* <AddToCartButton item={ product } /> */}
+                    {/* <AddToCartButton item={ product } /> */ }
                 </div>
+                <AddToCartButton item={ product } />
             </div>
         </>
     );
