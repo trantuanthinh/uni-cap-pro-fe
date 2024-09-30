@@ -111,6 +111,7 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
     const dispatch = useDispatch();
     const [ dialogIdInfo, setDialogIdInfo ] = useState(null);
     const [ selected, setSelected ] = useState([]);
+    const [ selectedTypes, setSelectedTypes ] = useState({}); // Track selected type for each item
 
     function openDialog(itemId) {
         setDialogIdInfo(itemId);
@@ -126,7 +127,7 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
         if (!selected.includes(item.id)) {
             setSelected([ ...selected, item.id ]); // Ensure the item is selected when quantity increases
         }
-        addItemToCheckout(item);
+        addToCheckout(item);
     }
 
     function handleDecrement(item) {
@@ -136,7 +137,8 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
     }
 
     function addToCheckout(item) {
-        dispatch(addItemToCheckout(item));
+        let buyType = selectedTypes[ `${ item.id }` ] || "personal"; // Default to 'personal' if not set
+        dispatch(addItemToCheckout({ ...item, buyType })); // Add buyType to item when dispatching
     }
 
     return (
@@ -150,15 +152,15 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
                 return (
                     <div key={ item.id } className="grid grid-cols-[20px_100px_1fr_auto] items-center gap-4 border-b pb-4">
                         <Checkbox
-                            value={ item.id } // Changed from item to item.id
-                            isSelected={ selected.includes(item.id) } // Check if item is selected by ID
+                            value={ item.id }
+                            isSelected={ selected.includes(item.id) }
                             onChange={ () => {
                                 if (selected.includes(item.id)) {
                                     setSelected(selected.filter((itemId) => itemId !== item.id)); // Uncheck
-                                    removeFromCheckout(item.id); // Remove from checkout when unchecked
+                                    removeFromCheckout(item.id);
                                 } else {
                                     setSelected([ ...selected, item.id ]); // Check
-                                    addToCheckout(item); // Add to checkout when checked
+                                    addToCheckout(item);
                                 }
                             } }
                         />
@@ -201,7 +203,6 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
                                     <FaTrash />
                                 </Button>
                             </ButtonGroup>
-                            {/* Dialog for confirming item removal */ }
                             <Dialog
                                 title={ `Confirm Remove ${ item.name }` }
                                 content={ `Are you sure you want to remove ${ item.name } from your cart?` }
@@ -209,12 +210,16 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
                                 onOpenChange={ closeDialog }
                                 onSubmit={ () => removeFromCart(item.id) }
                             />
-                            <RadioGroup label="Select your buy type">
-                                <div className="flex flex-row space-x-2">
-                                    <Radio value={ `${ item.id }-personal` }>Personal Buy</Radio>
-                                    <Radio value={ `${ item.id }-shared` }>Shared Buy</Radio>
-                                </div>
-                            </RadioGroup>
+                            <div className="flex justify-end">
+                                <RadioGroup
+                                    label="Buy Type"
+                                    isRequired
+                                    value={ selectedTypes[ item.id ] || "personal" } // Set default value: personal
+                                    onValueChange={ (value) => setSelectedTypes({ ...selectedTypes, [ item.id ]: value }) } // Update state
+                                >
+                                    <Radio value="shared">Shared Buy</Radio>
+                                </RadioGroup>
+                            </div>
                         </div>
                     </div>
                 );
@@ -223,7 +228,7 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
     );
 };
 
-const CheckoutList = ({ items }) => {
+const CheckoutList = ({ items, removeFromCheckout, removeFromCart }) => {
     const [ dialogIdInfo, setDialogIdInfo ] = useState(null);
 
     function openDialog(itemId) {
@@ -245,8 +250,8 @@ const CheckoutList = ({ items }) => {
         try {
             let response = await apiService.postOrder(dataJson);
             if (response.ok) {
-                removeItemFromCart(item.id);
                 removeFromCheckout(item.id);
+                removeFromCart(item.id);
                 toast.success("Order created successfully");
             }
         } catch (error) {
@@ -278,6 +283,7 @@ const CheckoutList = ({ items }) => {
                         <div className="space-y-1">
                             <p className="font-bold text-xl">{ item.name }</p>
                             <span className="text-red-500">{ formattedPrice }</span>
+                            { item.buyType }
                             <div className="col-span-2">
                                 <p className="text-lg font-semibold">Total Price: { formattedTotalPrice }</p>
                             </div>
@@ -292,15 +298,14 @@ const CheckoutList = ({ items }) => {
                                     variant="flat">
                                     Buy
                                 </Button>
-                                { isDialogOpen && (
-                                    <Dialog
-                                        title={ `Confirm Buy ${ item.name }` }
-                                        content={ `Are you sure you want to remove ${ item.name } from your cart?` }
-                                        isOpen={ isDialogOpen }
-                                        onOpenChange={ closeDialog }
-                                        onSubmit={ () => handleOrder(item.id) }
-                                    />
-                                ) }
+
+                                <Dialog
+                                    title={ `Confirm Buy ${ item.name }` }
+                                    content={ `Are you sure you want to remove ${ item.name } from your cart?` }
+                                    isOpen={ isDialogOpen }
+                                    onOpenChange={ closeDialog }
+                                    onSubmit={ () => handleOrder(item.id) }
+                                />
                             </div>
                         </div>
                     </div>
