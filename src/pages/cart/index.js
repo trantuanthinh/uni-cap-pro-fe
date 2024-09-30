@@ -3,8 +3,8 @@
 import Dialog from "@/components/shared/default-dialog";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
-import { decrementQuantity, incrementQuantity, resetCart } from "@/redux/slicers/cartSlice";
-import { addItemToCheckout } from "@/redux/slicers/checkoutSlice";
+import { decrementQuantity, incrementQuantity, removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
+import { addItemToCheckout, removeItemFromCheckout } from "@/redux/slicers/checkoutSlice";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import {
@@ -18,7 +18,7 @@ import {
     Radio,
     RadioGroup,
     Tab,
-    Tabs
+    Tabs,
 } from "@nextui-org/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -38,10 +38,10 @@ export default function Cart() {
     // const [ activeTab, setActiveTab ] = useState("checkout");
 
     function removeFromCheckout(id) {
-        dispatch(removeItemFromCart(id));
+        dispatch(removeItemFromCheckout(id));
     }
 
-    function removeItemFromCart(id) {
+    function removeFromCart(id) {
         dispatch(removeItemFromCart(id));
         removeFromCheckout(id);
     }
@@ -67,13 +67,15 @@ export default function Cart() {
                     <Tab title="Cart Items" key="cart">
                         <Card>
                             <CardBody className="space-y-2">
-                                { haveProduct ?
+                                { haveProduct ? (
                                     <CartList
                                         items={ cart.items }
                                         removeFromCheckout={ removeFromCheckout }
-                                        removeItemFromCart={ removeItemFromCart }
-                                    /> : <p>Don't Have Any Items In Your Cart</p>
-                                }
+                                        removeFromCart={ removeFromCart }
+                                    />
+                                ) : (
+                                    <p>Don't Have Any Items In Your Cart</p>
+                                ) }
                             </CardBody>
                             <CardFooter className="flex justify-end">
                                 <Button onClick={ () => setActiveTab("checkout") }>Checkout</Button>
@@ -82,7 +84,7 @@ export default function Cart() {
                     </Tab>
 
                     <Tab title="Checkout Items" key="checkout">
-                        <Card >
+                        <Card>
                             <CardBody className="space-y-2">
                                 <CheckoutList items={ checkout.checkoutItems } />
                             </CardBody>
@@ -99,25 +101,31 @@ export default function Cart() {
     );
 }
 
-const CartList = ({ items, removeFromCheckout, removeItemFromCart }) => {
+const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
     const dispatch = useDispatch();
     const [ dialogIdInfo, setDialogIdInfo ] = useState(null);
     const [ selected, setSelected ] = useState([]);
 
     function openDialog(itemId) {
-        setDialogIdInfo({ itemId });
-    };
+        setDialogIdInfo(itemId);
+    }
 
     function closeDialog() {
         setDialogIdInfo(null);
-    };
+    }
 
     function handleIncrement(id) {
         dispatch(incrementQuantity(id));
+        if (!selected.includes(id)) {
+            setSelected([ ...selected, id ]); // Ensure the item is selected when quantity increases
+        }
     }
 
     function handleDecrement(id) {
         dispatch(decrementQuantity(id));
+        if (items.find((item) => item.id === id)?.totalItemQuantity <= 1) {
+            setSelected(selected.filter((itemId) => itemId !== id)); // Remove the item from selected if quantity goes to zero
+        }
     }
 
     function addToCheckout(item) {
@@ -125,9 +133,8 @@ const CartList = ({ items, removeFromCheckout, removeItemFromCart }) => {
     }
 
     return (
-        <CheckboxGroup label="Select Items" value={ selected } onValueChange={ setSelected } onChange={ addToCheckout(selected)
-        }>
-            { items?.map((item, index) => {
+        <CheckboxGroup label="Select Items" value={ selected } onValueChange={ setSelected }>
+            { items?.map((item) => {
                 const formattedPrice = sharedService.formatVietnamDong(item?.price);
                 const formattedTotalPrice = sharedService.formatVietnamDong(item?.totalItemQuantity * item?.price);
 
@@ -135,7 +142,17 @@ const CartList = ({ items, removeFromCheckout, removeItemFromCart }) => {
 
                 return (
                     <div key={ item.id } className="grid grid-cols-[20px_100px_1fr_auto] items-center gap-4 border-b pb-4">
-                        <Checkbox value={ item } />
+                        <Checkbox
+                            value={ item.id }
+                            isSelected={ selected.includes(item.id) }
+                            onChange={ () => {
+                                if (selected.includes(item.id)) {
+                                    setSelected(selected.filter((itemId) => itemId !== item.id)); // Uncheck
+                                } else {
+                                    setSelected([ ...selected, item.id ]); // Check
+                                }
+                            } }
+                        />
                         <div className="flex justify-center">
                             <div className="flex border-4 size-32 rounded-lg border-rich-brown mb-2">
                                 <Image
@@ -174,16 +191,15 @@ const CartList = ({ items, removeFromCheckout, removeItemFromCart }) => {
                                     variant="flat">
                                     <FaTrash />
                                 </Button>
-                                { isDialogOpen && (
-                                    <Dialog
-                                        title={ `Confirm Remove ${ item.name }` }
-                                        content={ `Are you sure you want to remove ${ item.name } from your cart?` }
-                                        isOpen={ isDialogOpen }
-                                        onOpenChange={ closeDialog }
-                                        onSubmit={ () => removeItemFromCart(item.id) }
-                                    />
-                                ) }
                             </ButtonGroup>
+                            {/* Dialog for confirming item removal */ }
+                            <Dialog
+                                title={ `Confirm Remove ${ item.name }` }
+                                content={ `Are you sure you want to remove ${ item.name } from your cart?` }
+                                isOpen={ isDialogOpen }
+                                onOpenChange={ closeDialog }
+                                onSubmit={ () => removeFromCart(item.id) }
+                            />
                             <RadioGroup label="Select your buy type">
                                 <div className="flex flex-row space-x-2">
                                     <Radio value={ `${ item.id }-personal` }>Personal Buy</Radio>
@@ -194,7 +210,7 @@ const CartList = ({ items, removeFromCheckout, removeItemFromCart }) => {
                     </div>
                 );
             }) }
-        </CheckboxGroup >
+        </CheckboxGroup>
     );
 };
 
@@ -203,11 +219,11 @@ const CheckoutList = ({ items }) => {
 
     function openDialog(itemId) {
         setDialogIdInfo(itemId);
-    };
+    }
 
     function closeDialog() {
         setDialogIdInfo(null);
-    };
+    }
 
     async function handleOrder(item, isShare) {
         let dataJson = {
