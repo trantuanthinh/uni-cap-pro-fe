@@ -20,11 +20,11 @@ export default function Header() {
     const router = useRouter();
     const user = useSelector((state) => state.user);
     const cart = useSelector((state) => state.cart);
-    const [haveUser, setHaveUser] = useState(false);
+    const [ haveUser, setHaveUser ] = useState(false);
 
     useEffect(() => {
         setHaveUser(Boolean(user));
-    }, [user]);
+    }, [ user ]);
 
     const navList = [
         { href: "/", label: "Home" },
@@ -52,7 +52,7 @@ export default function Header() {
 
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Button onPress={ () => router.push("/cart") } color="warning">
+                    <Button as={ Link } href="/cart" color="warning">
                         <FaShoppingCart size={ 24 } className="text-white hover:text-gray-300" />
                     </Button>
                 </NavbarItem>
