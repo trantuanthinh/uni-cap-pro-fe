@@ -13,7 +13,7 @@ export const checkoutSlice = createSlice({
             const newItem = action.payload;
             state.items.push({
                 ...newItem,
-                buyType: newItem.buyType,
+                isShare: newItem.isShare,
             });
             state.totalQuantity += 1;
         },

@@ -5,7 +5,6 @@ import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import { decrementQuantity, incrementQuantity, removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
 import { addItemToCheckout, removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
-import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import {
     Button,
@@ -25,13 +24,11 @@ import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa6";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
 
 export default function Cart() {
     const dispatch = useDispatch();
     const cart = useSelector((state) => state.cart);
     const checkout = useSelector((state) => state.checkout);
-    const user = useSelector((state) => state.user);
     const [ haveProduct, setHaveProduct ] = useState(false);
 
     const [ activeTab, setActiveTab ] = useState("cart");
@@ -137,8 +134,16 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
     }
 
     function addToCheckout(item) {
-        let buyType = selectedTypes[ `${ item.id }` ] || "personal"; // Default to 'personal' if not set
-        dispatch(addItemToCheckout({ ...item, buyType })); // Add buyType to item when dispatching
+        let isShare = selectedTypes[ `${ item.id }` ] ?? false; // Default 'false' if not set
+        dispatch(addItemToCheckout({ ...item, isShare })); // Add isShare to item when dispatching
+    }
+
+    function handleChangeType(value, item) {
+        setSelectedTypes({ ...selectedTypes, [ item.id ]: value });
+        if (selected.includes(item.id)) {
+            removeFromCheckout(item.id);
+            dispatch(addItemToCheckout({ ...item, isShare: true }));
+        }
     }
 
     return (
@@ -214,10 +219,10 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
                                 <RadioGroup
                                     label="Buy Type"
                                     isRequired
-                                    value={ selectedTypes[ item.id ] || "personal" } // Set default value: personal
-                                    onValueChange={ (value) => setSelectedTypes({ ...selectedTypes, [ item.id ]: value }) } // Update state
+                                    value={ selectedTypes[ item.id ] ?? false } // Set default value: false
+                                    onValueChange={ (value) => handleChangeType(value, item) } // Update state
                                 >
-                                    <Radio value="shared">Shared Buy</Radio>
+                                    <Radio value={ true }>Shared Buy</Radio>
                                 </RadioGroup>
                             </div>
                         </div>
@@ -229,6 +234,7 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
 };
 
 const CheckoutList = ({ items, removeFromCheckout, removeFromCart }) => {
+    const user = useSelector((state) => state.user);
     const [ dialogIdInfo, setDialogIdInfo ] = useState(null);
 
     function openDialog(itemId) {
@@ -239,13 +245,13 @@ const CheckoutList = ({ items, removeFromCheckout, removeFromCart }) => {
         setDialogIdInfo(null);
     }
 
-    async function handleOrder(item, isShare) {
+    async function handleOrder(item) {
         let dataJson = {
             productId: item?.id,
             userId: user?.id,
             quantity: item?.totalItemQuantity,
             price: item?.price * item?.totalItemQuantity,
-            isShare: isShare,
+            isShare: item.isShare,
         };
         try {
             let response = await apiService.postOrder(dataJson);
@@ -283,7 +289,11 @@ const CheckoutList = ({ items, removeFromCheckout, removeFromCart }) => {
                         <div className="space-y-1">
                             <p className="font-bold text-xl">{ item.name }</p>
                             <span className="text-red-500">{ formattedPrice }</span>
-                            { item.buyType }
+                            { item.isShare ? (
+                                <p className="text-red-500">Shared Buy</p>
+                            ) : (
+                                <p className="text-red-500">Individual Buy</p>
+                            ) }
                             <div className="col-span-2">
                                 <p className="text-lg font-semibold">Total Price: { formattedTotalPrice }</p>
                             </div>
@@ -304,7 +314,7 @@ const CheckoutList = ({ items, removeFromCheckout, removeFromCart }) => {
                                     content={ `Are you sure you want to remove ${ item.name } from your cart?` }
                                     isOpen={ isDialogOpen }
                                     onOpenChange={ closeDialog }
-                                    onSubmit={ () => handleOrder(item.id) }
+                                    onSubmit={ () => handleOrder(item) }
                                 />
                             </div>
                         </div>
