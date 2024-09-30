@@ -23,8 +23,6 @@ export const checkoutSlice = createSlice({
             const existingItem = state.items.find((item) => item.id === id);
 
             if (existingItem) {
-                state.totalPrice -= existingItem.price * existingItem.totalItemQuantity;
-                state.totalQuantity -= existingItem.totalItemQuantity;
                 state.items = state.items.filter((item) => item.id !== id);
             }
         },
@@ -35,6 +33,6 @@ export const checkoutSlice = createSlice({
     },
 });
 
-export const { addToCheckoutCart, resetCheckoutCart } = checkoutSlice.actions;
+export const { addItemToCheckout, removeItemFromCheckout, resetCheckoutCart } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

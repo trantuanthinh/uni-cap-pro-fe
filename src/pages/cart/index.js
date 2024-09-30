@@ -3,7 +3,8 @@
 import Dialog from "@/components/shared/default-dialog";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
-import { resetCart } from "@/redux/slicers/cartSlice";
+import { decrementQuantity, incrementQuantity, resetCart } from "@/redux/slicers/cartSlice";
+import { addItemToCheckout } from "@/redux/slicers/checkoutSlice";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import {
@@ -36,33 +37,13 @@ export default function Cart() {
     const [ activeTab, setActiveTab ] = useState("cart");
     // const [ activeTab, setActiveTab ] = useState("checkout");
 
-    function removeItemFromCheckout(id) {
+    function removeFromCheckout(id) {
         dispatch(removeItemFromCart(id));
     }
 
     function removeItemFromCart(id) {
         dispatch(removeItemFromCart(id));
-        dispatch(removeItemFromCheckout(id));
-    }
-
-    async function handleOrder(item, isShare) {
-        let dataJson = {
-            productId: item?.id,
-            userId: user?.id,
-            quantity: item?.totalItemQuantity,
-            price: item?.price * item?.totalItemQuantity,
-            isShare: isShare,
-        };
-        try {
-            let response = await apiService.postOrder(dataJson);
-            if (response.ok) {
-                removeItemFromCart(item.id);
-                removeItemFromCheckout(item.id);
-                toast.success("Order created successfully");
-            }
-        } catch (error) {
-            console.log("Error: ", error.message);
-        }
+        removeFromCheckout(id);
     }
 
     useEffect(() => {
@@ -86,14 +67,14 @@ export default function Cart() {
                     <Tab title="Cart Items" key="cart">
                         <Card>
                             <CardBody className="space-y-2">
-                                <CartList
-                                    items={ cart.items }
-                                    removeItemFromCheckout={ removeItemFromCheckout }
-                                    removeItemFromCart={ removeItemFromCart }
-                                    handleOrder={ handleOrder }
-                                />
+                                { haveProduct ?
+                                    <CartList
+                                        items={ cart.items }
+                                        removeFromCheckout={ removeFromCheckout }
+                                        removeItemFromCart={ removeItemFromCart }
+                                    /> : <p>Don't Have Any Items In Your Cart</p>
+                                }
                             </CardBody>
-
                             <CardFooter className="flex justify-end">
                                 <Button onClick={ () => setActiveTab("checkout") }>Checkout</Button>
                             </CardFooter>
@@ -103,7 +84,7 @@ export default function Cart() {
                     <Tab title="Checkout Items" key="checkout">
                         <Card >
                             <CardBody className="space-y-2">
-                                <CheckoutList items={ checkout.checkoutItems } handleOrder={ handleOrder } />
+                                <CheckoutList items={ checkout.checkoutItems } />
                             </CardBody>
                             <CardFooter className="flex justify-end space-x-5">
                                 <Button onClick={ () => setActiveTab("cart") } color="danger">
@@ -118,7 +99,7 @@ export default function Cart() {
     );
 }
 
-const CartList = ({ items, removeItemFromCheckout, removeItemFromCart }) => {
+const CartList = ({ items, removeFromCheckout, removeItemFromCart }) => {
     const dispatch = useDispatch();
     const [ dialogIdInfo, setDialogIdInfo ] = useState(null);
     const [ selected, setSelected ] = useState([]);
@@ -139,11 +120,13 @@ const CartList = ({ items, removeItemFromCheckout, removeItemFromCart }) => {
         dispatch(decrementQuantity(id));
     }
 
-    function addItemToCheckout(id) {
-        dispatch(addItemToCheckout(id));
+    function addToCheckout(item) {
+        dispatch(addItemToCheckout(item));
     }
+
     return (
-        <CheckboxGroup label="Select Items" value={ selected } onValueChange={ setSelected }>
+        <CheckboxGroup label="Select Items" value={ selected } onValueChange={ setSelected } onChange={ addToCheckout(selected)
+        }>
             { items?.map((item, index) => {
                 const formattedPrice = sharedService.formatVietnamDong(item?.price);
                 const formattedTotalPrice = sharedService.formatVietnamDong(item?.totalItemQuantity * item?.price);
@@ -152,7 +135,7 @@ const CartList = ({ items, removeItemFromCheckout, removeItemFromCart }) => {
 
                 return (
                     <div key={ item.id } className="grid grid-cols-[20px_100px_1fr_auto] items-center gap-4 border-b pb-4">
-                        <Checkbox value={ item.id } onClick={ () => addItemToCheckout(item) } />
+                        <Checkbox value={ item } />
                         <div className="flex justify-center">
                             <div className="flex border-4 size-32 rounded-lg border-rich-brown mb-2">
                                 <Image
@@ -211,21 +194,40 @@ const CartList = ({ items, removeItemFromCheckout, removeItemFromCart }) => {
                     </div>
                 );
             }) }
-        </CheckboxGroup>
+        </CheckboxGroup >
     );
 };
 
-const CheckoutList = ({ items, handleOrder }) => {
+const CheckoutList = ({ items }) => {
     const [ dialogIdInfo, setDialogIdInfo ] = useState(null);
 
-    const openDialog = (itemId) => {
+    function openDialog(itemId) {
         setDialogIdInfo(itemId);
     };
 
-    const closeDialog = () => {
+    function closeDialog() {
         setDialogIdInfo(null);
     };
 
+    async function handleOrder(item, isShare) {
+        let dataJson = {
+            productId: item?.id,
+            userId: user?.id,
+            quantity: item?.totalItemQuantity,
+            price: item?.price * item?.totalItemQuantity,
+            isShare: isShare,
+        };
+        try {
+            let response = await apiService.postOrder(dataJson);
+            if (response.ok) {
+                removeItemFromCart(item.id);
+                removeFromCheckout(item.id);
+                toast.success("Order created successfully");
+            }
+        } catch (error) {
+            console.log("Error: ", error.message);
+        }
+    }
     return (
         <>
             { items?.map((item, index) => {
