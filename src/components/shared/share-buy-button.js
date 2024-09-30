@@ -1,12 +1,15 @@
 import { Button } from "@nextui-org/react";
+import { useDispatch } from "react-redux";
 
 export default function ShareBuyButton({ item }) {
-    function handleShareBuy() {
-        console.log("buy together", item);
+    const dispatch = useDispatch();
+
+    function handleAddToCheckoutCart() {
+        dispatch(addSharedItemToCheckoutCart(item));
     }
 
     return (
-        <Button onClick={ handleShareBuy } className="text-lg" color="secondary" radius="small">
+        <Button onClick={ handleAddToCheckoutCart } className="text-lg" color="secondary" radius="small">
             Buy Together
         </Button>
     );

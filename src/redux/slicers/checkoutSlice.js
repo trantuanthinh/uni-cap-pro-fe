@@ -8,43 +8,17 @@ export const checkoutSlice = createSlice({
     name: "checkout",
     initialState,
     reducers: {
-        addToCart: (state, action) => {
+        addItemToCheckout: (state, action) => {
             const newItem = action.payload;
-            const existingItem = state.items.find((item) => item.id === newItem.id);
+            console.log("🚀 ~ action:", action);
+            console.log("🚀 ~ action.payload:", action.payload);
 
-            if (!existingItem) {
-                state.items.push({
-                    ...newItem,
-                    totalItemQuantity: 1,
-                });
-            } else {
-                existingItem.totalItemQuantity += 1;
-            }
+            // state.items.push({
+            //     ...newItem,
+            // });
         },
 
-        incrementQuantity: (state, action) => {
-            const item = state.items.find((item) => item.id === action.payload);
-
-            if (item) {
-                if (item.totalItemQuantity < 10) {
-                    item.totalItemQuantity += 1;
-                }
-            }
-        },
-
-        decrementQuantity: (state, action) => {
-            const item = state.items.find((item) => item.id === action.payload);
-
-            if (item) {
-                if (item.totalItemQuantity > 1) {
-                    item.totalItemQuantity -= 1;
-                    state.totalPrice -= item.price;
-                    state.totalQuantity -= 1;
-                }
-            }
-        },
-
-        removeItemFromCart: (state, action) => {
+        removeItemFromCheckout: (state, action) => {
             const id = action.payload;
             const existingItem = state.items.find((item) => item.id === id);
 
@@ -55,13 +29,12 @@ export const checkoutSlice = createSlice({
             }
         },
 
-        resetCart: (state) => {
+        resetCheckoutCart: (state) => {
             return initialState;
         },
     },
 });
 
-export const { addToCart, incrementQuantity, decrementQuantity, removeItemFromCart, resetCart } =
-    checkoutSlice.actions;
+export const { addToCheckoutCart, resetCheckoutCart } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;

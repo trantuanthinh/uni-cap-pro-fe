@@ -28,10 +28,10 @@ export default function SignIn() {
             let response = await apiService.signin(dataJSON);
 
             if (response && response.ok) {
-                const { token, data } = response;
+                const { token, result } = response;
                 localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(data));
-                dispatch(setUser(data));
+                localStorage.setItem("user", JSON.stringify(result));
+                dispatch(setUser(result));
                 router.push("/");
             } else {
                 setErrors((prevErrors) => ({
@@ -53,7 +53,7 @@ export default function SignIn() {
             if (!eval(field)) {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    [field]: `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`,
+                    [field]: `${ field.charAt(0).toUpperCase() + field.slice(1) } is required.`,
                 }));
             }
         };
@@ -61,7 +61,7 @@ export default function SignIn() {
 
     return (
         <>
-            <Title label={ `${GlobalSettings.Settings.name} - Sign In` } />
+            <Title label={ `${ GlobalSettings.Settings.name } - Sign In` } />
             <div className="flex items-center justify-center min-h-screen bg-background-base">
                 <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
                     <h1 className="text-2xl font-bold mb-6">Sign In</h1>

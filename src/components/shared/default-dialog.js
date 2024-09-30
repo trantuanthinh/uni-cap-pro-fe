@@ -7,7 +7,7 @@ export default function Dialog({ isOpen = true, onOpenChange = true, onSubmit = 
     }
 
     return (
-        <Modal isOpen={ isOpen } onOpenChange={ onOpenChange } size="md" backdrop={ "opaque" } isDismissable={ false }>
+        <Modal isOpen={ isOpen } size="md" backdrop={ "opaque" } isDismissable={ false }>
             <ModalContent>
                 { (onClose) => (
                     <>

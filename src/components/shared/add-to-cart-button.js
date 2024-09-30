@@ -10,7 +10,7 @@ export default function AddToCartButton({ item = null }) {
     }
 
     return (
-        <Button onClick={handleAddToCart} className="text-lg" color="primary" radius="small">
+        <Button onClick={ handleAddToCart } className="text-lg" color="primary" radius="small">
             Add to cart
         </Button>
     );

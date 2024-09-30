@@ -7,7 +7,7 @@ class APIService {
     // rootAPI = `${process.env.API_URL || 'http://localhost:5130/api'}`;
 
     #buildUrl(path, id = null) {
-        return id ? `${this.#rootAPI}/${path}/${id}` : `${this.#rootAPI}/${path}`;
+        return id ? `${ this.#rootAPI }/${ path }/${ id }` : `${ this.#rootAPI }/${ path }`;
     }
 
     //#region core 
@@ -57,7 +57,7 @@ class APIService {
     }
 
     #handleError(context, error) {
-        console.error(`${context} ${error.message}`);
+        console.error(`${ context } ${ error.message }`);
         throw error;
     }
 
@@ -108,6 +108,10 @@ class APIService {
 
     async postOrder(data) {
         return this.#postItem("orders", data);
+    }
+
+    async postBuyTogetherOrder(orderId, data) {
+        return this.#postItem(`orders/buy-together/${ orderId }`, data);
     }
 
     //#region discounts

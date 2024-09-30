@@ -1,3 +1,4 @@
+import { clearUser } from "@/redux/slicers/userSlice";
 import {
     Button,
     Dropdown,
@@ -14,16 +15,15 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { clearUser } from "@/redux/slicers/userSlice";
 
 export default function Header() {
     const router = useRouter();
     const user = useSelector((state) => state.user);
     const cart = useSelector((state) => state.cart);
-    const [isMounted, setIsMounted] = useState(false);
+    const [haveUser, setHaveUser] = useState(false);
 
     useEffect(() => {
-        setIsMounted(Boolean(user));
+        setHaveUser(Boolean(user));
     }, [user]);
 
     const navList = [
@@ -56,8 +56,7 @@ export default function Header() {
                         <FaShoppingCart size={ 24 } className="text-white hover:text-gray-300" />
                     </Button>
                 </NavbarItem>
-
-                { isMounted ? <UserActions user={ user } /> : <SignActions /> }
+                { haveUser ? <UserActions user={ user } /> : <SignActions /> }
             </NavbarContent>
         </Navbar>
     );
@@ -85,7 +84,7 @@ const UserActions = ({ user }) => {
     const router = useRouter();
 
     const actionList = [
-        { href: `/profile/${user?.username}`, label: "Profile" },
+        { href: `/profile/${ user?.username }`, label: "Profile" },
         { href: "/settings", label: "Settings" },
     ];
 
