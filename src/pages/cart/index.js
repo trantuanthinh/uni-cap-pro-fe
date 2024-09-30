@@ -4,7 +4,7 @@ import Dialog from "@/components/shared/default-dialog";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import { decrementQuantity, incrementQuantity, removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
-import { addItemToCheckout, removeItemFromCheckout } from "@/redux/slicers/checkoutSlice";
+import { addItemToCheckout, removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import {
@@ -48,6 +48,7 @@ export default function Cart() {
 
     useEffect(() => {
         setHaveProduct(cart.items.length > 0);
+        dispatch(resetCheckoutCart());
         if (cart.items.length === 0) {
             dispatch(resetCart());
         }
@@ -86,10 +87,15 @@ export default function Cart() {
                     <Tab title="Checkout Items" key="checkout">
                         <Card>
                             <CardBody className="space-y-2">
-                                <CheckoutList items={ checkout.checkoutItems } />
+                                <CheckoutList items={ checkout.items } />
                             </CardBody>
                             <CardFooter className="flex justify-end space-x-5">
-                                <Button onClick={ () => setActiveTab("cart") } color="danger">
+                                <Button
+                                    onClick={ () => {
+                                        setActiveTab("cart");
+                                        dispatch(resetCheckoutCart());
+                                    } }
+                                    color="danger">
                                     Back
                                 </Button>
                             </CardFooter>
@@ -114,18 +120,19 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
         setDialogIdInfo(null);
     }
 
-    function handleIncrement(id) {
-        dispatch(incrementQuantity(id));
-        if (!selected.includes(id)) {
-            setSelected([ ...selected, id ]); // Ensure the item is selected when quantity increases
+    function handleIncrement(item) {
+        removeFromCheckout(item.id);
+        dispatch(incrementQuantity(item.id));
+        if (!selected.includes(item.id)) {
+            setSelected([ ...selected, item.id ]); // Ensure the item is selected when quantity increases
         }
+        addItemToCheckout(item);
     }
 
-    function handleDecrement(id) {
-        dispatch(decrementQuantity(id));
-        if (items.find((item) => item.id === id)?.totalItemQuantity <= 1) {
-            setSelected(selected.filter((itemId) => itemId !== id)); // Remove the item from selected if quantity goes to zero
-        }
+    function handleDecrement(item) {
+        removeFromCheckout(item.id);
+        dispatch(decrementQuantity(item.id));
+        addItemToCheckout(item);
     }
 
     function addToCheckout(item) {
@@ -143,13 +150,15 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
                 return (
                     <div key={ item.id } className="grid grid-cols-[20px_100px_1fr_auto] items-center gap-4 border-b pb-4">
                         <Checkbox
-                            value={ item.id }
-                            isSelected={ selected.includes(item.id) }
+                            value={ item.id } // Changed from item to item.id
+                            isSelected={ selected.includes(item.id) } // Check if item is selected by ID
                             onChange={ () => {
                                 if (selected.includes(item.id)) {
                                     setSelected(selected.filter((itemId) => itemId !== item.id)); // Uncheck
+                                    removeFromCheckout(item.id); // Remove from checkout when unchecked
                                 } else {
                                     setSelected([ ...selected, item.id ]); // Check
+                                    addToCheckout(item); // Add to checkout when checked
                                 }
                             } }
                         />
@@ -175,13 +184,13 @@ const CartList = ({ items, removeFromCheckout, removeFromCart }) => {
 
                         <div className="grid grid-flow-row gap-3">
                             <ButtonGroup>
-                                <Button className="hover:bg-success-500" onClick={ () => handleDecrement(item.id) }>
+                                <Button className="hover:bg-success-500" onClick={ () => handleDecrement(item) }>
                                     <IoMdRemoveCircleOutline size={ 24 } />
                                 </Button>
                                 <div className="w-12 flex justify-center">
                                     <p className="mx-4 text-xl font-bold">{ item.totalItemQuantity }</p>
                                 </div>
-                                <Button className="hover:bg-success-500" onClick={ () => handleIncrement(item.id) }>
+                                <Button className="hover:bg-success-500" onClick={ () => handleIncrement(item) }>
                                     <IoMdAddCircleOutline size={ 24 } />
                                 </Button>
                                 <Button

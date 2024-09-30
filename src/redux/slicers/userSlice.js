@@ -5,7 +5,7 @@ const initialState = null;
 
 export const userSlice = createSlice({
     name: "user",
-    initialState,
+    initialState: initialState,
     reducers: {
         setUser: (state, action) => action.payload,
         clearUser: () => initialState,

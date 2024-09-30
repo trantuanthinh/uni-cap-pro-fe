@@ -2,20 +2,19 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     items: [],
+    totalQuantity: 0,
 };
 
 export const checkoutSlice = createSlice({
     name: "checkout",
-    initialState,
+    initialState: initialState,
     reducers: {
         addItemToCheckout: (state, action) => {
             const newItem = action.payload;
-            console.log("🚀 ~ action:", action);
-            console.log("🚀 ~ action.payload:", action.payload);
-
-            // state.items.push({
-            //     ...newItem,
-            // });
+            state.items.push({
+                ...newItem,
+            });
+            state.totalQuantity += 1;
         },
 
         removeItemFromCheckout: (state, action) => {
@@ -24,6 +23,7 @@ export const checkoutSlice = createSlice({
 
             if (existingItem) {
                 state.items = state.items.filter((item) => item.id !== id);
+                state.totalQuantity -= 1;
             }
         },
 
