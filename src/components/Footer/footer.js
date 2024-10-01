@@ -1,4 +1,4 @@
-import LinkList from "../shared/link-list";
+import LinkList from "../shared/lists/link-list";
 
 export default function Footer() {
     const linkList = [

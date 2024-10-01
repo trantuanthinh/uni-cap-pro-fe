@@ -7,14 +7,7 @@ import GlobalSettings from "@/configurations/global-settings";
 import { removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
 import { removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
 import apiService from "@/services/api-service";
-import {
-    Button,
-    Card,
-    CardBody,
-    CardFooter,
-    Tab,
-    Tabs
-} from "@nextui-org/react";
+import { Button, Card, CardBody, CardFooter, Tab, Tabs } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -44,7 +37,6 @@ export default function Cart() {
             price: item?.price * item?.totalItemQuantity,
             isShare: item.isShare,
         };
-        console.log("🚀 ~ handleOrder ~ dataJson:", dataJson);
         try {
             let response = await apiService.postOrder(dataJson);
             if (response.ok) {
@@ -118,5 +110,3 @@ export default function Cart() {
         </>
     );
 }
-
-

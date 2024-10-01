@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
-import AddToCartButton from "./add-to-cart-button";
+import AddToCartButton from "./buttons/add-to-cart-button";
 
 export default function ProductInfo({ product = null }) {
     const [ quantity, setQuantity ] = useState(1);

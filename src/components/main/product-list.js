@@ -1,4 +1,4 @@
-import LinkButton from "../shared/link-button";
+import LinkButton from "../shared/buttons/link-button";
 import ListItem from "../shared/list-item";
 
 export default function ProductList({ type, title, productList = null, orderList = null, pageSize = 16 }) {

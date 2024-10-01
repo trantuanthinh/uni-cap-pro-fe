@@ -2,8 +2,8 @@ import sharedService from "@/services/sharedService";
 import Image from "next/image";
 import Link from "next/link";
 import { FaStar } from "react-icons/fa";
-import AddToCartButton from "./add-to-cart-button";
-import ShareBuyButton from "./share-buy-button";
+import AddToCartButton from "./buttons/add-to-cart-button";
+import ShareBuyButton from "./buttons/share-buy-button";
 
 export default function ItemCard({ id, product, level = 0, type = "cart" }) {
     let button;
@@ -31,12 +31,12 @@ export default function ItemCard({ id, product, level = 0, type = "cart" }) {
 
     return (
         <div className="grid grid-flow-row grid-rows-1 overflow-hidden shadow-xl p-4 m-5 bg-white transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-100">
-            <Link href={ `/products/detail/${id}` }>
+            <Link href={ `/products/detail/${ id }` }>
                 <div className="flex justify-center">
                     <div className="flex border-4 size-52 rounded-lg border-rich-brown mb-2">
                         <Image
                             className="rounded object-cover"
-                            src={ product.images[0] }
+                            src={ product.images[ 0 ] }
                             alt={ product.name }
                             width={ 240 }
                             height={ 240 }
