@@ -1,3 +1,8 @@
+import sharedService from "@/services/sharedService";
+import { Button } from "@nextui-org/react";
+import Image from "next/image";
+import Dialog from "./default-dialog";
+
 const { useState } = require("react");
 
 export default function CheckoutList({ items = null, handleOrder }) {
@@ -70,4 +75,4 @@ export default function CheckoutList({ items = null, handleOrder }) {
             }) }
         </>
     );
-};
+}

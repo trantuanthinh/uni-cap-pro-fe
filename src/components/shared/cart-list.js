@@ -1,7 +1,13 @@
 import { decrementQuantity, incrementQuantity } from "@/redux/slicers/cartSlice";
 import { addItemToCheckout } from "@/redux/slicers/checkoutSlice";
+import sharedService from "@/services/sharedService";
+import { Button, ButtonGroup, Checkbox, CheckboxGroup, Radio, RadioGroup } from "@nextui-org/react";
+import Image from "next/image";
 import { useState } from "react";
+import { FaTrash } from "react-icons/fa";
+import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import { useDispatch } from "react-redux";
+import Dialog from "./default-dialog";
 
 export default function CartList({ items = null, removeFromCheckout, removeFromCart }) {
     const dispatch = useDispatch();
