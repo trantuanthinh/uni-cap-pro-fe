@@ -6,7 +6,7 @@ export class SharedService {
     #formatTimeString = "HH:mm";
 
     isString(value) {
-        return typeof value === 'string' || value instanceof String;
+        return typeof value === "string" || value instanceof String;
     }
 
     isNumber(value) {
@@ -14,7 +14,7 @@ export class SharedService {
     }
 
     isNullOrEmpty(data) {
-        return data === null || data === "" || data === undefined;
+        return data === null || data === "" || data === undefined || (typeof data === "object" && Object.keys(data).length === 0);
     }
 
     formatVietnamDong(number) {
@@ -22,9 +22,9 @@ export class SharedService {
             return "";
         }
 
-        return Number(number).toLocaleString('vi-VN', {
-            style: 'currency',
-            currency: 'VND'
+        return Number(number).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
         });
     }
 

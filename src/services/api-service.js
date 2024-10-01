@@ -6,13 +6,27 @@ class APIService {
     // Alternatively, you can use process.env for different environments
     // rootAPI = `${process.env.API_URL || 'http://localhost:5130/api'}`;
 
-    #buildUrl(path, id = null) {
-        return id ? `${ this.#rootAPI }/${ path }/${ id }` : `${ this.#rootAPI }/${ path }`;
+    #buildUrl(path, id, option) {
+        let fullUrl = `${ this.#rootAPI }/${ path }`;
+        if (id) {
+            fullUrl += `/${ id }`;
+        }
+
+        if (option) {
+            let queryParams = [];
+
+            for (let key in option) {
+                queryParams.push(`${ key }=${ encodeURIComponent(option[ key ]) }`);
+            }
+
+            fullUrl += `?${ queryParams.join("&") }`;
+        }
+        return fullUrl;
     }
 
-    //#region core 
-    async #getItems(url) {
-        const fullUrl = this.#buildUrl(url);
+    //#region core
+    async #getItems(url, option) {
+        let fullUrl = this.#buildUrl(url, null, option);
         try {
             return await httpService.getItems(fullUrl);
         } catch (error) {
@@ -20,8 +34,8 @@ class APIService {
         }
     }
 
-    async #getItem(url, id) {
-        const fullUrl = this.#buildUrl(url, id);
+    async #getItem(url, id, option = null) {
+        let fullUrl = this.#buildUrl(url, id, option);
         try {
             return await httpService.getItem(fullUrl);
         } catch (error) {
@@ -29,8 +43,8 @@ class APIService {
         }
     }
 
-    async #postItem(url, data) {
-        const fullUrl = this.#buildUrl(url);
+    async #postItem(url, data, option = null) {
+        let fullUrl = this.#buildUrl(url, option);
         try {
             return await httpService.postItem(fullUrl, data);
         } catch (error) {
@@ -38,8 +52,8 @@ class APIService {
         }
     }
 
-    async #patchItem(url, id, data) {
-        const fullUrl = this.#buildUrl(url, id);
+    async #patchItem(url, id, data, option = null) {
+        let fullUrl = this.#buildUrl(url, id, option);
         try {
             return await httpService.patchItem(fullUrl, data);
         } catch (error) {
@@ -47,8 +61,8 @@ class APIService {
         }
     }
 
-    async #deleteItem(url, id) {
-        const fullUrl = this.#buildUrl(url, id);
+    async #deleteItem(url, id, option = null) {
+        let fullUrl = this.#buildUrl(url, id, option);
         try {
             return await httpService.deleteItem(fullUrl);
         } catch (error) {
@@ -61,7 +75,6 @@ class APIService {
         throw error;
     }
 
-
     //#region auth
     async signin(data) {
         return this.#postItem("auth/signin", data);
@@ -72,8 +85,8 @@ class APIService {
     }
 
     //#region users
-    async getUsers() {
-        return this.#getItems("users");
+    async getUsers(option) {
+        return this.#getItems("users", option);
     }
 
     async getUser(id) {
@@ -89,8 +102,8 @@ class APIService {
     }
 
     //#region products
-    async getProducts() {
-        return this.#getItems("products");
+    async getProducts(option) {
+        return this.#getItems("products", option);
     }
 
     async getProduct(id) {
@@ -98,8 +111,8 @@ class APIService {
     }
 
     //#region orders
-    async getOrders() {
-        return this.#getItems("orders");
+    async getOrders(option) {
+        return this.#getItems("orders", option);
     }
 
     async getOrder(id) {
@@ -115,8 +128,8 @@ class APIService {
     }
 
     //#region discounts
-    async getDiscounts() {
-        return this.#getItems("discounts");
+    async getDiscounts(option) {
+        return this.#getItems("discounts", option);
     }
 
     async getDiscounts(id) {
