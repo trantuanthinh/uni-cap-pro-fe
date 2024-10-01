@@ -9,15 +9,24 @@ export default function Products() {
     const router = useRouter();
     const { Page } = router.query;
     const [ list, setList ] = useState([]);
-    const pageSize = 8; // Define pageSize or pass it as a prop if needed
+    const [ totalPages, setTotalPages ] = useState(0);
+    const pageSize = 8;
 
     useEffect(() => {
         if (router.isReady) {
-            const option = sharedService.isNullOrEmpty(Page) ? {} : { page: Page };
+            let option = sharedService.isNullOrEmpty(Page) ? {} : { page: Page };
             apiService
                 .getProducts(option)
                 .then((productRes) => {
                     setList(productRes.result.data);
+                    setTotalPages(Math.ceil(productRes.result.totalRecords / pageSize));
+
+                    if (Number(Page) > totalPages && totalPages > 0) {
+                        router.push({
+                            pathname: router.pathname,
+                            query: { ...router.query, Page: 1 },
+                        });
+                    }
                 })
                 .catch((error) => {
                     console.log("Error: ", error);
@@ -41,7 +50,8 @@ export default function Products() {
                     loop
                     showControls
                     color="success"
-                    total={ 10 }
+                    radius="lg"
+                    total={ totalPages }
                     page={ Number(Page) || 1 }
                     onChange={ handlePageChange }
                 />
