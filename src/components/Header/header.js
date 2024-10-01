@@ -30,7 +30,7 @@ export default function Header() {
         { href: "/", label: "Home" },
         { href: "/about", label: "About" },
         { href: "/contact", label: "Contact" },
-        { href: "/products/all", label: "Products" },
+        { href: "/products?Page=1", label: "Products" },
         { href: "/products/buy-together", label: "Buy Together" },
     ];
 

@@ -15,14 +15,14 @@ export default function Home({ }) {
     function getData() {
         let filterProduct = { page: 1, pageSize: 8 };
         let filterOrder = {
-            Filter: "isShare=true and isPaid=false",
+            Filter: "isShare=true && isPaid=false",
             page: 1,
             pageSize: 8,
         };
         Promise.all([ apiService.getProducts(filterProduct), apiService.getOrders(filterOrder) ])
-            .then(([ productResponse, orderResponse ]) => {
-                setProductList(productResponse.result.data);
-                setOrderList(orderResponse.result.data);
+            .then(([ productRes, orderRes ]) => {
+                setProductList(productRes.result.data);
+                setOrderList(orderRes.result.data);
             })
             .catch((error) => {
                 console.log("Error: ", error);
