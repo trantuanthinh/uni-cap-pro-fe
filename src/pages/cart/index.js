@@ -1,7 +1,7 @@
 "use client";
 
-import CartList from "@/components/shared/cart-list";
-import CheckoutList from "@/components/shared/checkout-list";
+import CartList from "@/components/shared/lists/cart-list";
+import CheckoutList from "@/components/shared/lists/checkout-list";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import { removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";

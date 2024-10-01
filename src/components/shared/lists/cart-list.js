@@ -7,7 +7,7 @@ import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import { useDispatch } from "react-redux";
-import Dialog from "./default-dialog";
+import Dialog from "../default-dialog";
 
 export default function CartList({ items = null, removeFromCheckout, removeFromCart }) {
     const dispatch = useDispatch();
