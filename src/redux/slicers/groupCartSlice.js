@@ -5,11 +5,11 @@ const initialState = {
     totalQuantity: 0,
 };
 
-export const cartSlice = createSlice({
-    name: "cart",
+export const groupCartSlice = createSlice({
+    name: "groupCart",
     initialState: initialState,
     reducers: {
-        addItemToCart: (state, action) => {
+        addItemToGroupCart: (state, action) => {
             const newItem = action.payload;
             const existingItem = state.items.find((item) => item.id === newItem.id);
 
@@ -47,7 +47,7 @@ export const cartSlice = createSlice({
             }
         },
 
-        removeItemFromCart: (state, action) => {
+        removeItemFromGroupCart: (state, action) => {
             const id = action.payload;
             const existingItem = state.items.find((item) => item.id === id);
 
@@ -58,13 +58,13 @@ export const cartSlice = createSlice({
             }
         },
 
-        resetCart: (state) => {
+        resetGroupCart: (state) => {
             return initialState;
         },
     },
 });
 
-export const { addItemToCart, incrementQuantity, decrementQuantity, removeItemFromCart, resetCart } =
-    cartSlice.actions;
+export const { addItemToGroupCart, incrementQuantity, decrementQuantity, removeItemFromGroupCart, resetGroupCart } =
+    groupCartSlice.actions;
 
-export default cartSlice.reducer;
+export default groupCartSlice.reducer;

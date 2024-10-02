@@ -3,6 +3,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import cartReducer from "./slicers/cartSlice";
 import checkoutReducer from "./slicers/checkoutSlice";
+import groupCartReducer from "./slicers/groupCartSlice";
 import userReducer from "./slicers/userSlice";
 
 // Function to load the persisted state from localStorage
@@ -45,6 +46,7 @@ export const store = configureStore({
         user: userReducer,
         cart: cartReducer,
         checkout: checkoutReducer,
+        groupCart: groupCartReducer,
     },
     preloadedState: persistedState,
 });

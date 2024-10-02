@@ -53,33 +53,34 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
 
     return (
         <CheckboxGroup label="Select Items" value={ selected } onValueChange={ setSelected }>
-            { items?.map((item) => {
-                const formattedPrice = sharedService.formatVietnamDong(item?.price);
-                const formattedTotalPrice = sharedService.formatVietnamDong(item?.totalItemQuantity * item?.price);
+            { items?.map((product) => {
+                const formattedPrice = sharedService.formatVietnamDong(product?.price);
+                const formattedTotalPrice = sharedService.formatVietnamDong(product?.totalItemQuantity * product?.price);
 
-                const isDialogOpen = dialogIdInfo === item.id;
+                const isDialogOpen = dialogIdInfo === product.id;
 
                 return (
-                    <div key={ item.id } className="grid grid-cols-[20px_100px_1fr_auto] items-center gap-4 border-b pb-4">
+                    <div key={ product.id } className="grid grid-cols-[20px_100px_1fr_auto] items-center gap-4 border-b pb-4">
                         <Checkbox
-                            value={ item.id }
-                            isSelected={ selected.includes(item.id) }
+                            value={ product.id }
+                            isSelected={ selected.includes(product.id) }
                             onChange={ () => {
-                                if (selected.includes(item.id)) {
-                                    setSelected(selected.filter((itemId) => itemId !== item.id)); // Uncheck
-                                    removeFromCheckout(item.id);
-                                } else {
-                                    setSelected([ ...selected, item.id ]); // Check
-                                    addToCheckout(item);
-                                }
+                                const isSelected = selected.includes(product.id);
+                                const newSelected = isSelected
+                                    ? selected.filter((itemId) => itemId !== product.id) // Uncheck
+                                    : [ ...selected, product.id ]; // Check
+
+                                setSelected(newSelected);
+                                isSelected ? removeFromCheckout(product.id) : addToCheckout(product);
                             } }
+
                         />
                         <div className="flex justify-center">
                             <div className="flex border-4 size-32 rounded-lg border-rich-brown mb-2">
                                 <Image
                                     className="rounded-lg object-cover"
-                                    src={ item.images[ 0 ] }
-                                    alt={ item.name }
+                                    src={ product.images[ 0 ] }
+                                    alt={ product.name }
                                     width={ 100 }
                                     height={ 100 }
                                 />
@@ -87,7 +88,7 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
                         </div>
 
                         <div className="space-y-1">
-                            <p className="font-bold text-xl">{ item.name }</p>
+                            <p className="font-bold text-xl">{ product.name }</p>
                             <span className="text-red-500">{ formattedPrice }</span>
                             <div className="col-span-2">
                                 <p className="text-lg font-semibold">Total Price: { formattedTotalPrice }</p>
@@ -96,36 +97,36 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
 
                         <div className="grid grid-flow-row gap-3">
                             <ButtonGroup>
-                                <Button className="hover:bg-success-500" onClick={ () => handleDecrement(item) }>
+                                <Button className="hover:bg-success-500" onClick={ () => handleDecrement(product) }>
                                     <IoMdRemoveCircleOutline size={ 24 } />
                                 </Button>
                                 <div className="w-12 flex justify-center">
-                                    <p className="mx-4 text-xl font-bold">{ item.totalItemQuantity }</p>
+                                    <p className="mx-4 text-xl font-bold">{ product.totalItemQuantity }</p>
                                 </div>
-                                <Button className="hover:bg-success-500" onClick={ () => handleIncrement(item) }>
+                                <Button className="hover:bg-success-500" onClick={ () => handleIncrement(product) }>
                                     <IoMdAddCircleOutline size={ 24 } />
                                 </Button>
                                 <Button
                                     className="hover:bg-danger-300"
-                                    onClick={ () => openDialog(item.id) }
+                                    onClick={ () => openDialog(product.id) }
                                     color="danger"
                                     variant="flat">
                                     <FaTrash />
                                 </Button>
                             </ButtonGroup>
                             <Dialog
-                                title={ `Confirm Remove ${ item.name }` }
-                                content={ `Are you sure you want to remove ${ item.name } from your cart?` }
+                                title={ `Confirm Remove ${ product.name }` }
+                                content={ `Are you sure you want to remove ${ product.name } from your cart?` }
                                 isOpen={ isDialogOpen }
                                 onOpenChange={ closeDialog }
-                                onSubmit={ () => removeFromCart(item.id) }
+                                onSubmit={ () => removeFromCart(product.id) }
                             />
                             <div className="flex justify-end">
                                 <RadioGroup
                                     label="Buy Type"
                                     isRequired
-                                    value={ selectedTypes[ item.id ] ?? false } // Set default value: false
-                                    onValueChange={ (value) => handleChangeType(value, item) } // Update state
+                                    value={ selectedTypes[ product.id ] ?? false } // Set default value: false
+                                    onValueChange={ (value) => handleChangeType(value, product) } // Update state
                                 >
                                     <Radio value={ true }>Shared Buy</Radio>
                                 </RadioGroup>

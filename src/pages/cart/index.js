@@ -2,21 +2,26 @@
 
 import CartList from "@/components/shared/lists/cart-list";
 import CheckoutList from "@/components/shared/lists/checkout-list";
+import GroupCartList from "@/components/shared/lists/group-cart-list";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import { removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
 import { removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
+import { removeItemFromGroupCart, resetGroupCart } from "@/redux/slicers/groupCartSlice";
 import apiService from "@/services/api-service";
-import { Button, Card, CardBody, CardFooter, Tab, Tabs } from "@nextui-org/react";
+import { Button, Card, CardBody, CardFooter, Divider, Tab, Tabs } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 export default function Cart() {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user);
     const cart = useSelector((state) => state.cart);
     const checkout = useSelector((state) => state.checkout);
+    const groupCart = useSelector((state) => state.groupCart);
     const [ haveProduct, setHaveProduct ] = useState(false);
+    const [ haveJoinedProduct, setHaveJoinedProduct ] = useState(false);
 
     const [ activeTab, setActiveTab ] = useState("cart");
 
@@ -26,6 +31,11 @@ export default function Cart() {
 
     function removeFromCart(id) {
         dispatch(removeItemFromCart(id));
+        removeFromCheckout(id);
+    }
+
+    function removeFromGroupCart(id) {
+        dispatch(removeItemFromGroupCart(id));
         removeFromCheckout(id);
     }
 
@@ -57,6 +67,15 @@ export default function Cart() {
         }
     }, [ cart.items, dispatch ]);
 
+    useEffect(() => {
+        setHaveJoinedProduct(groupCart.items.length > 0);
+        console.log("🚀 ~ useEffect ~ groupCart.items:", groupCart.items);
+        dispatch(resetCheckoutCart());
+        if (groupCart.items.length === 0) {
+            dispatch(resetGroupCart());
+        }
+    }, [ groupCart.items, dispatch ]);
+
     return (
         <>
             <Title label={ `${ GlobalSettings.Settings.name } - Cart` } />
@@ -81,6 +100,19 @@ export default function Cart() {
                                     <p>Don't Have Any Items In Your Cart</p>
                                 ) }
                             </CardBody>
+                            <Divider />
+                            <CardBody className="space-y-2">
+                                { haveJoinedProduct ? (
+                                    <GroupCartList
+                                        items={ groupCart.items }
+                                        removeFromCheckout={ removeFromCheckout }
+                                        removeFromGroupCart={ removeFromGroupCart }
+                                    />
+                                ) : (
+                                    <p>Don't Have Any Items In Your Group Cart</p>
+                                ) }
+                            </CardBody>
+                            <Divider />
                             <CardFooter className="flex justify-end">
                                 <Button onClick={ () => setActiveTab("checkout") }>Checkout</Button>
                             </CardFooter>

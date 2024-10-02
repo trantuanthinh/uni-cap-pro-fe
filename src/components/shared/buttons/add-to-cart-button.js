@@ -1,12 +1,16 @@
-import { addToCart } from "@/redux/slicers/cartSlice";
+import { addItemToCart } from "@/redux/slicers/cartSlice";
 import { Button } from "@nextui-org/react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
 export default function AddToCartButton({ item = null }) {
     const dispatch = useDispatch();
 
     function handleAddToCart() {
-        dispatch(addToCart(item));
+        if (item) {
+            dispatch(addItemToCart(item));
+        }
+        toast.success("Added to Cart");
     }
 
     return (

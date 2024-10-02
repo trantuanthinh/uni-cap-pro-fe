@@ -2,16 +2,17 @@ import sharedService from "@/services/sharedService";
 import Image from "next/image";
 import Link from "next/link";
 import { FaStar } from "react-icons/fa";
-import ShareBuyButton from "../buttons/share-buy-button";
+import JoinedBuyButton from "../buttons/join-buy-button";
 
-export default function SharedItemCard({ id, product, level = 0 }) {
+export default function SharedItemCard({ order }) {
+    const product = order.product;
     const starRating = product.total_Rating_Quantity === 0 ? 0 : product.total_Rating_Value / product.total_Rating_Quantity;
     const formattedPrice = sharedService.formatVietnamDong(product.price);
 
     let discountPrice;
-    if (level > 0) {
+    if (order.level > 0) {
         for (let item of product.discount.discount_Details) {
-            if (item.level == level) {
+            if (item.level == order.level) {
                 discountPrice = sharedService.formatVietnamDong(product.price - product.price * item.amount);
                 break;
             }
@@ -20,7 +21,7 @@ export default function SharedItemCard({ id, product, level = 0 }) {
 
     return (
         <div className="grid grid-flow-row grid-rows-1 overflow-hidden shadow-xl p-4 m-5 bg-white transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-100">
-            <Link href={ `/products/detail/${ id }` }>
+            <Link href={ `/products/detail/${ product.id }` }>
                 <div className="flex justify-center">
                     <div className="flex border-4 size-52 rounded-lg border-rich-brown mb-2">
                         <Image
@@ -45,9 +46,9 @@ export default function SharedItemCard({ id, product, level = 0 }) {
             </Link>
 
             <div className="flex flex-row justify-between space-x-5">
-                { level > 0 && (
+                { order.level > 0 && (
                     <div className="text-red-500 font-bold text-sm flex items-center">
-                        Joined: <span className="ml-2 text-base">{ level }</span>
+                        Joined: <span className="ml-2 text-base">{ order.level }</span>
                     </div>
                 ) }
                 <div className="text-red-500 font-bold text-lg flex items-center">
@@ -56,7 +57,7 @@ export default function SharedItemCard({ id, product, level = 0 }) {
                 </div>
             </div>
 
-            <ShareBuyButton item={ product } />
+            <JoinedBuyButton item={ order } />
         </div>
     );
 }
