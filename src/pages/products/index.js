@@ -26,6 +26,7 @@ export default function Products() {
                 })
                 .catch((error) => {
                     console.log("Error: ", error);
+                    toast.error("Error: ", error.message);
                 });
         }
     }, [ router.isReady, Page ]);

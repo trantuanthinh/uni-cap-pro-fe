@@ -3,6 +3,7 @@ import ProductInfo from "@/components/shared/product-info";
 import apiService from "@/services/api-service";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function ProductDetail() {
     const router = useRouter();
@@ -15,7 +16,10 @@ export default function ProductDetail() {
             apiService
                 .getProduct(slug)
                 .then((response) => setProduct(response.result))
-                .catch((error) => console.log("Error fetching product: ", error));
+                .catch((error) => {
+                    console.log("Error fetching product: ", error);
+                    toast.error("Error: ", error.message);
+                });
         }
     }, [ slug, router.isReady ]);
     return (

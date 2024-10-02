@@ -41,7 +41,7 @@ export default function Cart() {
     async function handleOrder(item) {
         let dataJson;
         switch (item.cart_type) {
-            case ("cart"):
+            case "cart":
                 dataJson = {
                     productId: item?.id,
                     userId: user?.id,
@@ -49,34 +49,35 @@ export default function Cart() {
                     price: item?.price * item?.totalItemQuantity,
                     isShare: item.isShare,
                 };
-                // try {
-                //     let response = await apiService.postOrder(dataJson);
-                //     if (response.ok) {
-                //         removeFromCheckout(item.id);
-                //         removeFromCart(item.id);
-                //         toast.success("Order created successfully");
-                //     }
-                // } catch (error) {
-                //     console.log("Error: ", error.message);
-                // }
+                try {
+                    let response = await apiService.postOrder(dataJson);
+                    if (response.ok) {
+                        removeFromCheckout(item.id);
+                        removeFromCart(item.id);
+                        toast.success("Order created successfully");
+                    }
+                } catch (error) {
+                    console.log("Error: ", error.message);
+                    toast.error("Error: ", error.message);
+                }
                 break;
-            case ("group-cart"):
+            case "group-cart":
                 dataJson = {
                     userId: user?.id,
                     quantity: item?.totalItemQuantity,
                     price: item?.product.price * item?.totalItemQuantity,
                 };
-                console.log("🚀 ~ handleOrder ~ dataJson:", dataJson);
-                // try {
-                //     let response = await apiService.postBuyTogetherOrder(dataJson);
-                //     if (response.ok) {
-                //         removeFromCheckout(item.id);
-                //         removeFromGroupCart(item.id);
-                //         toast.success("Order created successfully");
-                //     }
-                // } catch (error) {
-                //     console.log("Error: ", error.message);
-                // }
+                try {
+                    let response = await apiService.postBuyTogetherOrder(dataJson);
+                    if (response.ok) {
+                        removeFromCheckout(item.id);
+                        removeFromGroupCart(item.id);
+                        toast.success("Order created successfully");
+                    }
+                } catch (error) {
+                    console.log("Error: ", error.message);
+                    toast.error("Error: ", error.message);
+                }
                 break;
             default:
                 toast.error("Something went wrong");

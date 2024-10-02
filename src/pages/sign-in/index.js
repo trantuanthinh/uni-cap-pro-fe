@@ -11,9 +11,9 @@ export default function SignIn() {
     const router = useRouter();
     const dispatch = useDispatch();
 
-    const [username, setIdentifier] = useState("");
-    const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState({
+    const [ username, setIdentifier ] = useState("");
+    const [ password, setPassword ] = useState("");
+    const [ errors, setErrors ] = useState({
         username: "",
         password: "",
     });
@@ -53,7 +53,7 @@ export default function SignIn() {
             if (!eval(field)) {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    [field]: `${ field.charAt(0).toUpperCase() + field.slice(1) } is required.`,
+                    [ field ]: `${ field.charAt(0).toUpperCase() + field.slice(1) } is required.`,
                 }));
             }
         };
@@ -99,8 +99,7 @@ export default function SignIn() {
 
                         <button
                             type="submit"
-                            className="w-full bg-primary-green hover:bg-green-700 text-white py-2 px-4 rounded"
-                        >
+                            className="w-full bg-primary-green hover:bg-green-700 text-white py-2 px-4 rounded">
                             Sign In
                         </button>
                     </form>

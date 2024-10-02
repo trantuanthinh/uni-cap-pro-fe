@@ -4,6 +4,7 @@ import sharedService from "@/services/sharedService";
 import { Pagination } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function SharedProducts() {
     const router = useRouter();
@@ -32,7 +33,8 @@ export default function SharedProducts() {
                     setTotalPages(calculatedTotalPages);
                 })
                 .catch((error) => {
-                    console.log("Error: ", error);
+                    console.log("Error: ", error.message);
+                    toast.error("Error: ", error.message);
                 });
         }
     }, [ router.isReady, currentPage ]);

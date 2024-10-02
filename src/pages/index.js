@@ -3,6 +3,7 @@ import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Home({ }) {
     const page = 1;
@@ -27,7 +28,8 @@ export default function Home({ }) {
                 setOrderList(orderRes.result.data);
             })
             .catch((error) => {
-                console.log("Error: ", error);
+                console.log("Error: ", error.message);
+                toast.error("Error: ", error.message);
             });
     }
 
