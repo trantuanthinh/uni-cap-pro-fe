@@ -53,7 +53,7 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
     }
 
     return (
-        <CheckboxGroup label="Select Items" value={ selected } onValueChange={ setSelected }>
+        <CheckboxGroup label="Choose Your Items and Types" value={ selected } onValueChange={ setSelected }>
             { items?.map((product) => {
                 const formattedPrice = sharedService.formatVietnamDong(product?.price);
                 const formattedTotalPrice = sharedService.formatVietnamDong(product?.totalItemQuantity * product?.price);
@@ -125,6 +125,7 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
                                 <RadioGroup
                                     label="Buy Type"
                                     isRequired
+                                    orientation="horizontal"
                                     value={ selectedTypes[ product.id ] ?? false } // Set default value: false
                                     onValueChange={ (value) => handleChangeType(value, product) } // Update state
                                 >

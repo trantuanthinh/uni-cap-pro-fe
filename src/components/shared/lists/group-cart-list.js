@@ -42,7 +42,7 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
     }
 
     return (
-        <CheckboxGroup label="Select Items" value={ selected } onValueChange={ setSelected }>
+        <CheckboxGroup label="Choose Your Joined Items" value={ selected } onValueChange={ setSelected }>
             { items.map((item) => {
                 const product = item.product;
 
@@ -50,6 +50,8 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
 
                 const formattedPrice = sharedService.formatVietnamDong(product.price);
                 const formattedTotalPrice = sharedService.formatVietnamDong(item.totalItemQuantity * product.price);
+
+                const formattedTotalOrderPrice = sharedService.formatVietnamDong(item.totalItemQuantity * item.total_Price);
                 const isDialogOpen = dialogIdInfo === item.id;
 
                 return (
@@ -113,6 +115,7 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
                                 onOpenChange={ closeDialog }
                                 onSubmit={ () => removeFromGroupCart(item.id) }
                             />
+                            <p>Total Price of the Order: { formattedTotalOrderPrice }</p>
                         </div>
                     </div>
                 );
