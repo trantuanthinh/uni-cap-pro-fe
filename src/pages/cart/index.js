@@ -8,7 +8,6 @@ import GlobalSettings from "@/configurations/global-settings";
 import { removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
 import { removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
 import { removeItemFromGroupCart, resetGroupCart } from "@/redux/slicers/groupCartSlice";
-import apiService from "@/services/api-service";
 import { Button, Card, CardBody, CardFooter, Divider, Tab, Tabs } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,22 +39,48 @@ export default function Cart() {
     }
 
     async function handleOrder(item) {
-        let dataJson = {
-            productId: item?.id,
-            userId: user?.id,
-            quantity: item?.totalItemQuantity,
-            price: item?.price * item?.totalItemQuantity,
-            isShare: item.isShare,
-        };
-        try {
-            let response = await apiService.postOrder(dataJson);
-            if (response.ok) {
-                removeFromCheckout(item.id);
-                removeFromCart(item.id);
-                toast.success("Order created successfully");
-            }
-        } catch (error) {
-            console.log("Error: ", error.message);
+        let dataJson;
+        switch (item.cart_type) {
+            case ("cart"):
+                dataJson = {
+                    productId: item?.id,
+                    userId: user?.id,
+                    quantity: item?.totalItemQuantity,
+                    price: item?.price * item?.totalItemQuantity,
+                    isShare: item.isShare,
+                };
+                // try {
+                //     let response = await apiService.postOrder(dataJson);
+                //     if (response.ok) {
+                //         removeFromCheckout(item.id);
+                //         removeFromCart(item.id);
+                //         toast.success("Order created successfully");
+                //     }
+                // } catch (error) {
+                //     console.log("Error: ", error.message);
+                // }
+                break;
+            case ("group-cart"):
+                dataJson = {
+                    userId: user?.id,
+                    quantity: item?.totalItemQuantity,
+                    price: item?.product.price * item?.totalItemQuantity,
+                };
+                console.log("🚀 ~ handleOrder ~ dataJson:", dataJson);
+                // try {
+                //     let response = await apiService.postBuyTogetherOrder(dataJson);
+                //     if (response.ok) {
+                //         removeFromCheckout(item.id);
+                //         removeFromGroupCart(item.id);
+                //         toast.success("Order created successfully");
+                //     }
+                // } catch (error) {
+                //     console.log("Error: ", error.message);
+                // }
+                break;
+            default:
+                toast.error("Something went wrong");
+                break;
         }
     }
 
@@ -69,7 +94,6 @@ export default function Cart() {
 
     useEffect(() => {
         setHaveJoinedProduct(groupCart.items.length > 0);
-        console.log("🚀 ~ useEffect ~ groupCart.items:", groupCart.items);
         dispatch(resetCheckoutCart());
         if (groupCart.items.length === 0) {
             dispatch(resetGroupCart());

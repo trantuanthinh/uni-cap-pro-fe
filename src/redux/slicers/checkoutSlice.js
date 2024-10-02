@@ -11,9 +11,11 @@ export const checkoutSlice = createSlice({
     reducers: {
         addItemToCheckout: (state, action) => {
             const newItem = action.payload;
+
             state.items.push({
                 ...newItem,
-                isShare: newItem.isShare,
+                isShare: newItem?.isShare,
+                cart_type: newItem?.cart_type,
             });
             state.totalQuantity += 1;
         },

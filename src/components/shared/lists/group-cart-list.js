@@ -14,27 +14,32 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
     const [ dialogIdInfo, setDialogIdInfo ] = useState(null);
     const [ selected, setSelected ] = useState([]);
 
-    const openDialog = (itemId) => setDialogIdInfo(itemId);
-    const closeDialog = () => setDialogIdInfo(null);
+    function openDialog(itemId) {
+        setDialogIdInfo(itemId);
+    }
+    function closeDialog() {
+        setDialogIdInfo(null);
+    }
 
-    const handleIncrement = (item) => {
-        removeFromCheckout(item.id);
+    function handleIncrement(item) {
         dispatch(incrementQuantity(item.id));
-        if (!selected.includes(item.id)) {
-            setSelected((prev) => [ ...prev, item.id ]); // Ensure the item is selected when quantity increases
+        if (selected.includes(item.id)) {
+            removeFromCheckout(item.id);
+            addToCheckout(item);
         }
-        addToCheckout(item);
-    };
+    }
 
-    const handleDecrement = (item) => {
-        removeFromCheckout(item.id);
+    function handleDecrement(item) {
         dispatch(decrementQuantity(item.id));
-        addToCheckout(item);
-    };
+        if (selected.includes(item.id)) {
+            removeFromCheckout(item.id);
+            addToCheckout(item);
+        }
+    }
 
-    const addToCheckout = (item) => {
-        dispatch(addItemToCheckout({ ...item, isShare: true })); // Add isShare to item when dispatching
-    };
+    function addToCheckout(item) {
+        dispatch(addItemToCheckout({ ...item, isShare: true, cart_type: "group-cart" })); // Add isShare to item when dispatching
+    }
 
     return (
         <CheckboxGroup label="Select Items" value={ selected } onValueChange={ setSelected }>
@@ -44,7 +49,7 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
                 if (!product) return null;
 
                 const formattedPrice = sharedService.formatVietnamDong(product.price);
-                const formattedTotalPrice = sharedService.formatVietnamDong(product.totalItemQuantity * product.price);
+                const formattedTotalPrice = sharedService.formatVietnamDong(item.totalItemQuantity * product.price);
                 const isDialogOpen = dialogIdInfo === item.id;
 
                 return (
@@ -53,15 +58,12 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
                             value={ item.id }
                             isSelected={ selected.includes(item.id) }
                             onChange={ () => {
-                                const newSelected = selected.includes(item.id)
-                                    ? selected.filter((itemId) => itemId !== item.id) // Uncheck
-                                    : [ ...selected, item.id ]; // Check
-
-                                setSelected(newSelected);
-                                if (newSelected.includes(item.id)) {
-                                    addToCheckout(item);
-                                } else {
+                                if (selected.includes(item.id)) {
+                                    setSelected(selected.filter((itemId) => itemId !== item.id)); // Uncheck
                                     removeFromCheckout(item.id);
+                                } else {
+                                    setSelected([ ...selected, item.id ]); // Check
+                                    addToCheckout(item);
                                 }
                             } }
                         />
@@ -100,8 +102,7 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
                                     className="hover:bg-danger-300"
                                     onClick={ () => openDialog(item.id) }
                                     color="danger"
-                                    variant="flat"
-                                >
+                                    variant="flat">
                                     <FaTrash />
                                 </Button>
                             </ButtonGroup>

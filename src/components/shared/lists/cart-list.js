@@ -24,30 +24,31 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
     }
 
     function handleIncrement(item) {
-        removeFromCheckout(item.id);
         dispatch(incrementQuantity(item.id));
-        if (!selected.includes(item.id)) {
-            setSelected([ ...selected, item.id ]); // Ensure the item is selected when quantity increases
+        if (selected.includes(item.id)) {
+            removeFromCheckout(item.id);
+            addToCheckout(item);
         }
-        addToCheckout(item);
     }
 
     function handleDecrement(item) {
-        removeFromCheckout(item.id);
         dispatch(decrementQuantity(item.id));
-        addToCheckout(item);
+        if (selected.includes(item.id)) {
+            removeFromCheckout(item.id);
+            addToCheckout(item);
+        }
     }
 
     function addToCheckout(item) {
-        let isShare = selectedTypes[ `${ item.id }` ] ?? false; // Default 'false' if not set
-        dispatch(addItemToCheckout({ ...item, isShare })); // Add isShare to item when dispatching
+        const isShare = selectedTypes[ item.id ] ?? false; // Default 'false' if not set
+        dispatch(addItemToCheckout({ ...item, isShare: isShare, cart_type: "cart" })); // Add isShare to item when dispatching
     }
 
     function handleChangeType(value, item) {
         setSelectedTypes({ ...selectedTypes, [ item.id ]: value });
         if (selected.includes(item.id)) {
             removeFromCheckout(item.id);
-            dispatch(addItemToCheckout({ ...item, isShare: true }));
+            dispatch(addItemToCheckout({ ...item, isShare: true, cart_type: "cart" }));
         }
     }
 
@@ -65,15 +66,14 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
                             value={ product.id }
                             isSelected={ selected.includes(product.id) }
                             onChange={ () => {
-                                const isSelected = selected.includes(product.id);
-                                const newSelected = isSelected
-                                    ? selected.filter((itemId) => itemId !== product.id) // Uncheck
-                                    : [ ...selected, product.id ]; // Check
-
-                                setSelected(newSelected);
-                                isSelected ? removeFromCheckout(product.id) : addToCheckout(product);
+                                if (selected.includes(product.id)) {
+                                    setSelected(selected.filter((itemId) => itemId !== product.id)); // Uncheck
+                                    removeFromCheckout(product.id);
+                                } else {
+                                    setSelected([ ...selected, product.id ]); // Check
+                                    addToCheckout(product);
+                                }
                             } }
-
                         />
                         <div className="flex justify-center">
                             <div className="flex border-4 size-32 rounded-lg border-rich-brown mb-2">
@@ -128,6 +128,9 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
                                     value={ selectedTypes[ product.id ] ?? false } // Set default value: false
                                     onValueChange={ (value) => handleChangeType(value, product) } // Update state
                                 >
+                                    <Radio default value={ false }>
+                                        Individual Buy
+                                    </Radio>
                                     <Radio value={ true }>Shared Buy</Radio>
                                 </RadioGroup>
                             </div>
