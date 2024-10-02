@@ -19,7 +19,6 @@ export default function CheckoutList({ items = null, handleOrder }) {
     return (
         <>
             { items && items?.map((item, index) => {
-                console.log("🚀 ~ {items&&items?.map ~ items:", items);
                 let product;
                 switch (item?.cart_type) {
                     case "cart":

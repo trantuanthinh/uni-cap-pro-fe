@@ -8,6 +8,7 @@ import GlobalSettings from "@/configurations/global-settings";
 import { removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
 import { removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
 import { removeItemFromGroupCart, resetGroupCart } from "@/redux/slicers/groupCartSlice";
+import apiService from "@/services/api-service";
 import { Button, Card, CardBody, CardFooter, Divider, Tab, Tabs } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,7 +69,7 @@ export default function Cart() {
                     price: item?.product.price * item?.totalItemQuantity,
                 };
                 try {
-                    let response = await apiService.postBuyTogetherOrder(dataJson);
+                    let response = await apiService.postBuyTogetherOrder(item.id, dataJson);
                     if (response.ok) {
                         removeFromCheckout(item.id);
                         removeFromGroupCart(item.id);
@@ -87,7 +88,7 @@ export default function Cart() {
 
     useEffect(() => {
         setHaveProduct(cart.items.length > 0);
-        dispatch(resetCheckoutCart());
+        // dispatch(resetCheckoutCart());
         if (cart.items.length === 0) {
             dispatch(resetCart());
         }
@@ -95,7 +96,7 @@ export default function Cart() {
 
     useEffect(() => {
         setHaveJoinedProduct(groupCart.items.length > 0);
-        dispatch(resetCheckoutCart());
+        // dispatch(resetCheckoutCart());
         if (groupCart.items.length === 0) {
             dispatch(resetGroupCart());
         }
