@@ -5,7 +5,7 @@ import { Pagination } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-export default function Products() {
+export default function SharedProducts() {
     const router = useRouter();
     const { Page } = router.query;
     const [ list, setList ] = useState([]);
@@ -15,20 +15,27 @@ export default function Products() {
 
     useEffect(() => {
         if (router.isReady) {
-            let option = sharedService.isNullOrEmpty(Page) ? {} : { page: Page };
+            let option = {
+                Filter: "isShare=true && isPaid=false",
+            };
+
+            if (!sharedService.isNullOrEmpty(Page)) {
+                option.page = Page;
+            }
             apiService
-                .getProducts(option)
-                .then((productRes) => {
-                    let res = productRes.result;
+                .getOrders(option)
+                .then((orderRes) => {
+                    let res = orderRes.result;
+                    let calculatedTotalPages = Math.ceil(res.totalRecords / res.pageSize);
                     setList(res.data);
                     setPageSize(res.pageSize);
-                    setTotalPages(Math.ceil(res.totalRecords / res.pageSize));
+                    setTotalPages(calculatedTotalPages);
                 })
                 .catch((error) => {
                     console.log("Error: ", error);
                 });
         }
-    }, [ router.isReady, Page ]);
+    }, [ router.isReady, currentPage ]);
 
     useEffect(() => {
         if (totalPages > 0 && currentPage > totalPages) {
@@ -50,14 +57,14 @@ export default function Products() {
         <>
             <div className="flex flex-col items-center justify-center max-w-screen-xl mx-auto py-6">
                 <h1 className="text-3xl font-bold mb-4">All Products</h1>
-                <ListItem list={ list } pageSize={ pageSize } type={ "product" } />
+                <ListItem list={ list } pageSize={ pageSize } type={ "shared-product" } />
                 <Pagination
                     loop
                     showControls
                     color="success"
                     radius="lg"
                     total={ totalPages }
-                    page={ Number(Page) || 1 }
+                    page={ currentPage }
                     onChange={ handlePageChange }
                 />
             </div>

@@ -1,26 +1,19 @@
-import ItemCard from "./item-card";
+import ItemCard from "./cards/item-card";
+import SharedItemCard from "./cards/shared-item-card";
 
-export default function ListItem({ productList = null, orderList = null, pageSize, type }) {
+export default function ListItem({ list = null, pageSize = 16, type = "product" }) {
     return (
         <div className="grid grid-cols-4 grid-flow-row">
-            { productList &&
-                productList
-                    .slice(0, pageSize)
-                    .map((product, index) => (
-                        <ItemCard key={ `${ product.id }-${ index }` } id={ product.id } product={ product } type={ type } />
-                    )) }
+            { type === "product" &&
+                list &&
+                list.slice(0, pageSize).map((product) => <ItemCard key={ product.id } id={ product.id } product={ product } />) }
 
-            { orderList &&
-                orderList
+            { type === "shared-product" &&
+                list &&
+                list
                     .slice(0, pageSize)
-                    .map((order, index) => (
-                        <ItemCard
-                            key={ `${ order.id }-${ index }` }
-                            level={ order.level }
-                            id={ order.product.id }
-                            product={ order.product }
-                            type={ type }
-                        />
+                    .map((order) => (
+                        <SharedItemCard key={ order.id } id={ order.product.id } level={ order.level } product={ order.product } />
                     )) }
         </div>
     );

@@ -5,6 +5,8 @@ import apiService from "@/services/api-service";
 import { useEffect, useState } from "react";
 
 export default function Home({ }) {
+    const page = 1;
+    const pageSize = 12;
     const [ productList, setProductList ] = useState([]);
     const [ orderList, setOrderList ] = useState([]);
 
@@ -13,11 +15,11 @@ export default function Home({ }) {
     }, []);
 
     function getData() {
-        let filterProduct = { page: 1, pageSize: 8 };
+        let filterProduct = { page: page, pageSize: pageSize };
         let filterOrder = {
             Filter: "isShare=true && isPaid=false",
-            page: 1,
-            pageSize: 8,
+            page: page,
+            pageSize: pageSize,
         };
         Promise.all([ apiService.getProducts(filterProduct), apiService.getOrders(filterOrder) ])
             .then(([ productRes, orderRes ]) => {
@@ -34,11 +36,11 @@ export default function Home({ }) {
             <Title label={ `${ GlobalSettings.Settings.name } - Home` } />
             <main className="grid grid-flow-row gap-y-2 px-20">
                 <section className="flex flex-col items-center justify-center">
-                    <ProductList type={ "cart" } title={ "Productions" } productList={ productList } pageSize={ 8 } />
+                    <ProductList title={ "Productions" } list={ productList } pageSize={ pageSize } type={ "product" } />
                 </section>
 
                 <section className="flex flex-col items-center justify-center">
-                    <ProductList type={ "sharebuy" } title={ "Buy Together" } orderList={ orderList } pageSize={ 8 } />
+                    <ProductList title={ "Buy Together" } list={ orderList } pageSize={ pageSize } type={ "shared-product" } />
                 </section>
                 <section></section>
                 <section></section>

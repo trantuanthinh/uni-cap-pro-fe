@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react";
 import Link from "next/link";
 
-export default function LinkButton({ label = "View More", href = "" }) {
+export default function LinkButton({ label = "View More", href = "#" }) {
     return (
         <Button
             as={ Link }
