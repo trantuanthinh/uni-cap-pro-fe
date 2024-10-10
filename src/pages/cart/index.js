@@ -105,7 +105,7 @@ export default function Cart() {
     return (
         <>
             <Title label={ `${ GlobalSettings.Settings.name } - Cart` } />
-            <div className="h-full container mx-auto py-8">
+            <div className="h-full container mx-auto py-8 px-8">
                 <div>
                     <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
                 </div>

@@ -101,6 +101,10 @@ class APIService {
         return this.#deleteItem("users", id);
     }
 
+    async getUserOrders(id, option) {
+        return this.#getItems(`users/orders/${ id }`, option);
+    }
+
     //#region products
     async getProducts(option) {
         return this.#getItems("products", option);

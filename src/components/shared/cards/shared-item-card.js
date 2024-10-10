@@ -10,7 +10,7 @@ export default function SharedItemCard({ order }) {
     const formattedPrice = sharedService.formatVietnamDong(product.price);
 
     let discountPrice;
-    if (order.level > 0) {
+    if (order.level > 1) {
         for (let item of product.discount.discount_Details) {
             if (item.level == order.level) {
                 discountPrice = sharedService.formatVietnamDong(product.price - product.price * item.amount);
@@ -45,15 +45,14 @@ export default function SharedItemCard({ order }) {
                 </div>
             </Link>
 
-            <div className="flex flex-row justify-between space-x-5">
-                { order.level > 0 && (
-                    <div className="text-red-500 font-bold text-sm flex items-center">
-                        Joined: <span className="ml-2 text-base">{ order.level }</span>
-                    </div>
-                ) }
-                <div className="text-red-500 font-bold text-lg flex items-center">
-                    Price: <span className="font-semibold">{ discountPrice }</span> { ` ` }
-                    <span className="text-xs line-through">{ formattedPrice }</span>
+            <div className="grid grid-cols-3 grid-rows-1 gap-2">
+                <div className="text-red-500 font-bold text-sm">
+                    Joined: <span className="ml-2 text-base">{ order.level }</span>
+                </div>
+
+                <div className="col-span-2 text-red-500 font-bold text-lg">
+                    Price: <span className="font-semibold">{ discountPrice || formattedPrice }</span> { ` ` }
+                    <span className="text-xs line-through">{ order.level > 1 ? formattedPrice : '' }</span>
                 </div>
             </div>
 
