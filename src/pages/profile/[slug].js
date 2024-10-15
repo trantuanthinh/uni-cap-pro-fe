@@ -12,32 +12,36 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
-const Avatar = ({ avatar = null, username }) => {
-    return avatar ? (
+const Avatar = ({ avatar = null, username }) => (
+    avatar ? (
         <Image className="rounded-full shadow-lg" src={ avatar } alt={ username } width={ 96 } height={ 96 } />
     ) : (
         <span className="text-gray-600 font-bold text-5xl">{ username?.charAt(0).toUpperCase() }</span>
-    );
-};
+    )
+);
 
 export default function ProfileLayout() {
     const user = useSelector((state) => state.user);
     const router = useRouter();
     const { slug } = router.query;
 
-    const [ isMounted, setIsMounted ] = useState(false);
     const [ orders, setOrders ] = useState([]);
+    const [ isMounted, setIsMounted ] = useState(false);
+    const [ isLoading, setIsLoading ] = useState(false);
 
     useEffect(() => {
         if (router.isReady && user) {
+            setIsLoading(true);
             apiService
                 .getUserOrders(user.id)
                 .then((orderRes) => {
                     setOrders(orderRes.result);
+                    setIsLoading(false);
                 })
                 .catch((error) => {
                     console.log("Error: ", error);
                     toast.error(error.message || "Failed to fetch orders");
+                    setIsLoading(false);
                 });
         }
     }, [ router.isReady, slug, user ]);
@@ -80,36 +84,42 @@ export default function ProfileLayout() {
                                     <CardBody>
                                         <div>
                                             <h2 className="text-xl font-semibold text-gray-900">Your Orders</h2>
-                                            { Array.isArray(orders) && orders.length > 0 ? (
-                                                orders.map((order) => (
-                                                    <div
-                                                        key={ order.id }
-                                                        className="mb-6 flex flex-row items-center space-x-4">
-                                                        <Image
-                                                            className="rounded-lg shadow-md"
-                                                            src={ order.product.images[ 0 ] }
-                                                            alt={ order.product.name }
-                                                            width={ 100 }
-                                                            height={ 100 }
-                                                        />
-                                                        <div className="flex flex-col space-y-1">
-                                                            <p className="font-semibold text-gray-900">{ order.name }</p>
-                                                            <p className="text-gray-600">Product: { order.product.name }</p>
-                                                            <p className="text-gray-600">Quantity: { order.quantity }</p>
-                                                            <p className="text-gray-600">Unit Price: { order.price }</p>
-                                                            <p className="text-gray-600">
-                                                                Total:{ " " }
-                                                                { sharedService.formatVietnamDong(
-                                                                    order.price * order.quantity
-                                                                ) }
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div>
-                                                    <p className="text-gray-500">You don't have any orders yet.</p>
+                                            { isLoading ? (
+                                                <div className="flex justify-center py-4">
+                                                    <p className="text-gray-600">Loading...</p>
                                                 </div>
+                                            ) : (
+                                                orders.length > 0 ? (
+                                                    orders.map((order) => (
+                                                        <div
+                                                            key={ order.id }
+                                                            className="mb-6 flex flex-row items-center space-x-4">
+                                                            <Image
+                                                                className="rounded-lg shadow-md"
+                                                                src={ order.product.images[ 0 ] }
+                                                                alt={ order.product.name }
+                                                                width={ 100 }
+                                                                height={ 100 }
+                                                            />
+                                                            <div className="flex flex-col space-y-1">
+                                                                <p className="font-semibold text-gray-900">{ order.name }</p>
+                                                                <p className="text-gray-600">Product: { order.product.name }</p>
+                                                                <p className="text-gray-600">Quantity: { order.quantity }</p>
+                                                                <p className="text-gray-600">Unit Price: { order.price }</p>
+                                                                <p className="text-gray-600">
+                                                                    Total:{ " " }
+                                                                    { sharedService.formatVietnamDong(
+                                                                        order.price * order.quantity
+                                                                    ) }
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="flex justify-center py-4">
+                                                        <p className="text-gray-500">You don't have any orders yet.</p>
+                                                    </div>
+                                                )
                                             ) }
                                             <LinkButton
                                                 href="/"
@@ -120,6 +130,59 @@ export default function ProfileLayout() {
                                     </CardBody>
                                 </Card>
                             </Tab>
+
+                            <Tab key="ManageProduct" title="Manage Products">
+                                <Card className="bg-white shadow-lg rounded-lg">
+                                    <CardBody>
+                                        <div>
+                                            <h2 className="text-xl font-semibold text-gray-900">Your Orders</h2>
+                                            { isLoading ? (
+                                                <div className="flex justify-center py-4">
+                                                    <p className="text-gray-600">Loading...</p>
+                                                </div>
+                                            ) : (
+                                                orders.length > 0 ? (
+                                                    orders.map((order) => (
+                                                        <div
+                                                            key={ order.id }
+                                                            className="mb-6 flex flex-row items-center space-x-4">
+                                                            <Image
+                                                                className="rounded-lg shadow-md"
+                                                                src={ order.product.images[ 0 ] }
+                                                                alt={ order.product.name }
+                                                                width={ 100 }
+                                                                height={ 100 }
+                                                            />
+                                                            <div className="flex flex-col space-y-1">
+                                                                <p className="font-semibold text-gray-900">{ order.name }</p>
+                                                                <p className="text-gray-600">Product: { order.product.name }</p>
+                                                                <p className="text-gray-600">Quantity: { order.quantity }</p>
+                                                                <p className="text-gray-600">Unit Price: { order.price }</p>
+                                                                <p className="text-gray-600">
+                                                                    Total:{ " " }
+                                                                    { sharedService.formatVietnamDong(
+                                                                        order.price * order.quantity
+                                                                    ) }
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="flex justify-center py-4">
+                                                        <p className="text-gray-500">You don't have any orders yet.</p>
+                                                    </div>
+                                                )
+                                            ) }
+                                            <LinkButton
+                                                href="/"
+                                                label="Go to Home"
+                                                className="mt-4 text-green-600 hover:text-green-800 transition-all"
+                                            />
+                                        </div>
+                                    </CardBody>
+                                </Card>
+                            </Tab>
+
                         </Tabs>
                     </div>
                 </div>
@@ -130,4 +193,6 @@ export default function ProfileLayout() {
             ) }
         </>
     );
-}
+};
+
+
