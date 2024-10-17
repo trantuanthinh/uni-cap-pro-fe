@@ -272,6 +272,13 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
                 <LoadingIndicator />
             ) : (
                 <>
+                    {products.length > 0 && (
+                        <ul>
+                            {products.map((discount) => (
+                                <li key={discount.id}>{discount.name}</li>
+                            ))}
+                        </ul>
+                    )}
                     <Button onClick={onOpen}>Add New Product</Button>
                     <Modal isOpen={isOpen} onOpenChange={onClose}>
                         <ModalContent>
