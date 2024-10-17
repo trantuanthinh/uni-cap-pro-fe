@@ -85,7 +85,7 @@ export default function SignUp() {
         };
 
         try {
-            let response = await apiService.postUser(JSON.stringify(dataJSON));
+            let response = await apiService.postUser(dataJSON);
 
             if (response && response.ok) {
                 alert("Successfully created account. Please sign in to continue.");
@@ -105,7 +105,7 @@ export default function SignUp() {
             if (!eval(field)) {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    [field]: `${field.charAt(0).toUpperCase() + field.slice(1)} is required.`,
+                    [field]: `${ field.charAt(0).toUpperCase() + field.slice(1) } is required.`,
                 }));
             }
         };
@@ -125,14 +125,14 @@ export default function SignUp() {
 
     return (
         <>
-            <Title label={ `${GlobalSettings.Settings.name} - Sign Up` } />
+            <Title label={`${ GlobalSettings.Settings.name } - Sign Up`} />
             <div className="flex items-center py-6 justify-center min-h-screen bg-background-base">
                 <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
                     <h1 className="text-center text-3xl text-text-title font-bold mb-6">Sign Up</h1>
 
-                    { errors.server && <p className="text-red-500 mb-4">{ errors.server }</p> }
+                    {errors.server && <p className="text-red-500 mb-4">{errors.server}</p>}
 
-                    <form onSubmit={ handleSubmit }>
+                    <form onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
                                 Full Name
@@ -140,13 +140,13 @@ export default function SignUp() {
                             <input
                                 type="text"
                                 id="fullname"
-                                value={ fullname }
-                                onChange={ handleChange("fullname", setFullname) }
-                                onBlur={ handleBlur("fullname") }
+                                value={fullname}
+                                onChange={handleChange("fullname", setFullname)}
+                                onBlur={handleBlur("fullname")}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
-                            { errors.fullname && <p className="text-red-500 text-sm">{ errors.fullname }</p> }
+                            {errors.fullname && <p className="text-red-500 text-sm">{errors.fullname}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -156,13 +156,13 @@ export default function SignUp() {
                             <input
                                 type="text"
                                 id="username"
-                                value={ username }
-                                onChange={ handleChange("username", setUsername) }
-                                onBlur={ handleBlur("username") }
+                                value={username}
+                                onChange={handleChange("username", setUsername)}
+                                onBlur={handleBlur("username")}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
-                            { errors.username && <p className="text-red-500 text-sm">{ errors.username }</p> }
+                            {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -172,13 +172,13 @@ export default function SignUp() {
                             <input
                                 type="email"
                                 id="email"
-                                value={ email }
-                                onChange={ handleChange("email", setEmail) }
-                                onBlur={ handleBlur("email") }
+                                value={email}
+                                onChange={handleChange("email", setEmail)}
+                                onBlur={handleBlur("email")}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
-                            { errors.email && <p className="text-red-500 text-sm">{ errors.email }</p> }
+                            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -188,13 +188,13 @@ export default function SignUp() {
                             <input
                                 type="text"
                                 id="phone"
-                                value={ phoneNumber }
-                                onChange={ handleChange("phone", setPhoneNumber) }
-                                onBlur={ handleBlur("phone") }
+                                value={phoneNumber}
+                                onChange={handleChange("phone", setPhoneNumber)}
+                                onBlur={handleBlur("phone")}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
-                            { errors.phone && <p className="text-red-500 text-sm">{ errors.phone }</p> }
+                            {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -204,13 +204,13 @@ export default function SignUp() {
                             <input
                                 type="password"
                                 id="password"
-                                value={ password }
-                                onChange={ handleChange("password", setPassword) }
-                                onBlur={ handleBlur("password") }
+                                value={password}
+                                onChange={handleChange("password", setPassword)}
+                                onBlur={handleBlur("password")}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
-                            { errors.password && <p className="text-red-500 text-sm">{ errors.password }</p> }
+                            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                         </div>
 
                         <div className="mb-6">
@@ -220,15 +220,15 @@ export default function SignUp() {
                             <input
                                 type="password"
                                 id="confirmPassword"
-                                value={ confirmPassword }
-                                onChange={ handleChange("confirmPassword", setConfirmPassword) }
-                                onBlur={ handleBlur("confirmPassword") }
+                                value={confirmPassword}
+                                onChange={handleChange("confirmPassword", setConfirmPassword)}
+                                onBlur={handleBlur("confirmPassword")}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
-                            { errors.confirmPassword && (
-                                <p className="text-red-500 text-sm">{ errors.confirmPassword }</p>
-                            ) }
+                            {errors.confirmPassword && (
+                                <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+                            )}
                         </div>
 
                         <div className="mb-4">
@@ -237,22 +237,22 @@ export default function SignUp() {
                             </label>
                             <select
                                 id="userType"
-                                value={ userType }
-                                onChange={ (e) => setUserType(e.target.value) }
+                                value={userType}
+                                onChange={(e) => setUserType(e.target.value)}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             >
                                 <option value="" disabled>
                                     Select a type
                                 </option>
-                                { userTypeList &&
+                                {userTypeList &&
                                     userTypeList.map((userType) => (
-                                        <option key={ userType } value={ userType }>
-                                            { userType }
+                                        <option key={userType} value={userType}>
+                                            {userType}
                                         </option>
-                                    )) }
+                                    ))}
                             </select>
-                            { errors.userType && <p className="text-red-500 text-sm">{ errors.userType }</p> }
+                            {errors.userType && <p className="text-red-500 text-sm">{errors.userType}</p>}
                         </div>
 
                         <button

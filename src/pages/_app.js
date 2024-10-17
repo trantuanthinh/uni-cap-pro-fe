@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }) {
                     <Header />
                     { showButton && (
                         <div className="fixed bottom-4 right-4">
-                            <Button onClick={ scrollToTop } className="bg-blue-500 text-white  rounded">
+                            <Button onClick={ scrollToTop } className="bg-sky-500/60 hover:bg-sky-500 text-white rounded">
                                 <FaChevronUp size={ 24 } />
                             </Button>
                         </div>

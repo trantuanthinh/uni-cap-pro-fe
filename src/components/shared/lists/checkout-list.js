@@ -1,7 +1,7 @@
 import sharedService from "@/services/sharedService";
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
-import Dialog from "../default-dialog";
+import ConfirmDialog from "../default-confirm-dialog";
 
 const { useState } = require("react");
 
@@ -72,7 +72,7 @@ export default function CheckoutList({ items = null, handleOrder }) {
                                     Buy
                                 </Button>
 
-                                <Dialog
+                                <ConfirmDialog
                                     title={ `Confirm Buy ${ product.name }` }
                                     content={ `Are you sure you want to remove ${ product.name } from your cart?` }
                                     isOpen={ isDialogOpen }

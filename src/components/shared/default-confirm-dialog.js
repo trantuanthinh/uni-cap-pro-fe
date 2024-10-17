@@ -1,6 +1,6 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 
-export default function Dialog({ isOpen = true, onOpenChange = true, onSubmit = null, title, content }) {
+export default function ConfirmDialog({ isOpen = true, onOpenChange = true, onSubmit = null, title, content }) {
     function handleConfirm(onClose) {
         onSubmit?.();
         onClose();

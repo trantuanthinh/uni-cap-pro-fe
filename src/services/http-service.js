@@ -11,7 +11,7 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Get Items Successfully", response);
@@ -34,7 +34,7 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Get Item Successfully", response);
@@ -58,7 +58,7 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Created Successfully", response);
@@ -82,7 +82,7 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Patched Successfully", response);
@@ -105,7 +105,7 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Deleted Successfully", response);

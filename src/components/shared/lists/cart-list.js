@@ -7,7 +7,7 @@ import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
 import { useDispatch } from "react-redux";
-import Dialog from "../default-dialog";
+import ConfirmDialog from "../default-confirm-dialog";
 
 export default function CartList({ items = null, removeFromCheckout, removeFromCart }) {
     const dispatch = useDispatch();
@@ -114,7 +114,7 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
                                     <FaTrash />
                                 </Button>
                             </ButtonGroup>
-                            <Dialog
+                            <ConfirmDialog
                                 title={ `Confirm Remove ${ product.name }` }
                                 content={ `Are you sure you want to remove ${ product.name } from your cart?` }
                                 isOpen={ isDialogOpen }

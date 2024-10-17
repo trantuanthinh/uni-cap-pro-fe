@@ -14,7 +14,12 @@ export class SharedService {
     }
 
     isNullOrEmpty(data) {
-        return data === null || data === "" || data === undefined || (typeof data === "object" && Object.keys(data).length === 0);
+        return (
+            data === null ||
+            data === "" ||
+            data === undefined ||
+            (typeof data === "object" && Object.keys(data).length === 0)
+        );
     }
 
     formatVietnamDong(number) {

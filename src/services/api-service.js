@@ -16,7 +16,7 @@ class APIService {
             let queryParams = [];
 
             for (let key in option) {
-                queryParams.push(`${ key }=${ encodeURIComponent(option[ key ]) }`);
+                queryParams.push(`${ key }=${ encodeURIComponent(option[key]) }`);
             }
 
             fullUrl += `?${ queryParams.join("&") }`;
@@ -112,6 +112,39 @@ class APIService {
 
     async getProduct(id) {
         return this.#getItem("products", id);
+    }
+
+    async postProduct(data) {
+        return this.#postItem("products", data);
+    }
+
+    async patchProduct(id, data) {
+        return this.#patchItem("products", id, data);
+    }
+
+    async deleteProduct(id) {
+        return this.#deleteItem("products", id);
+    }
+
+    //#region product_categories
+    async getProd_Categories(option) {
+        return this.#getItems("product_categories", option);
+    }
+
+    async getProd_Categories(id) {
+        return this.#getItem("product_categories", id);
+    }
+
+    async postProd_Categories(data) {
+        return this.#postItem("product_categories", data);
+    }
+
+    async patchProd_Categories(id, data) {
+        return this.#patchItem("product_categories", id, data);
+    }
+
+    async deleteProd_Categories(id) {
+        return this.#deleteItem("product_categories", id);
     }
 
     //#region orders
