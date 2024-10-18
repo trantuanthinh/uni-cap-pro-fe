@@ -1,6 +1,7 @@
 "use client";
 
 import LinkButton from "@/components/shared/buttons/link-button";
+import ConfirmDialog from "@/components/shared/default-confirm-dialog";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
@@ -197,18 +198,13 @@ const OrdersTab = ({ orders, isLoading }) => {
 };
 
 const ManageProductsTab = ({ user, products, isLoading }) => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddChange } = useDisclosure();
+    const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onOpenChange: onUpdateChange } = useDisclosure();
+    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteChange } = useDisclosure();
     const [categories, setCategories] = useState([]);
     const [discounts, setDiscounts] = useState([]);
-    const [errors, setErrors] = useState({});
-
-    const [name, setName] = useState("");
-    const [category, setCategory] = useState(null);
-    const [discount, setDiscount] = useState(null);
-    const [price, setPrice] = useState("");
-    const [quantity, setQuantity] = useState("");
-    const [description, setDescription] = useState("");
-    const [images, setImages] = useState([]);
+    const [isDialogOpen, setDialogOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
         Promise.all([apiService.getDiscounts(), apiService.getProd_Categories()]).then(([discounts, categories]) => {
@@ -217,31 +213,169 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
         });
     }, [user]);
 
-    function handleAddProduct() {
+    function handleDelete(id) {
+        apiService
+            .deleteProduct(id)
+            .then(() => {
+                toast.success("Product deleted successfully");
+                onClear();
+            })
+            .catch((error) => {
+                console.error("Error: ", error);
+                toast.error(error.message || "Failed to delete product");
+            });
+    }
+
+    function openDialog(id) {
+        setSelectedProduct(id);
+        setDialogOpen(true);
+    }
+
+    function closeDialog() {
+        setDialogOpen(false);
+        setSelectedProduct(null);
+    }
+
+    function handleUpdate(product) {
+        setSelectedProduct(product);
+        onUpdateOpen();
+    }
+
+    return (
+        <>
+            {isLoading ? (
+                <LoadingIndicator />
+            ) : (
+                <>
+                    <div className="grid grid-cols-3 grid-rows-1 gap-4">
+                        <div className="col-span-2 text-xl font-bold text-center">Manage Your Products</div>
+                        <div className="col-start-3 flex justify-end">
+                            <Button onClick={onAddOpen}>Add New Product</Button>
+                            <FormModal
+                                isOpen={isAddOpen}
+                                onChange={onAddChange}
+                                categories={categories}
+                                discounts={discounts}
+                                mode={"Add"}
+                            />
+                        </div>
+                    </div>
+
+                    {products.length > 0 &&
+                        products.map((item) => (
+                            <div key={item.id} className="flex flex-row items-center space-x-4">
+                                <div className="flex justify-center">
+                                    <Image
+                                        className="rounded-lg object-cover"
+                                        src={item.images[0]}
+                                        alt={item.name}
+                                        width={100}
+                                        height={100}
+                                    />
+                                </div>
+                                <span>{item.name}</span>
+                                <Button onClick={() => handleUpdate(item)}>Update</Button>
+                                <FormModal
+                                    isOpen={isUpdateOpen && selectedProduct?.id === item.id}
+                                    onChange={onUpdateChange}
+                                    categories={categories}
+                                    discounts={discounts}
+                                    product={item}
+                                    mode={"Update"}
+                                />
+
+                                <Button
+                                    className="hover:bg-danger-300"
+                                    onClick={() => openDialog(item.id)}
+                                    color="danger"
+                                    variant="flat">
+                                    Delete
+                                </Button>
+                                <ConfirmDialog
+                                    title={`Confirm Delete ${ item.name }`}
+                                    content={`Are you sure you want to remove your ${ item.name }?`}
+                                    isOpen={isDeleteOpen && selectedProduct?.id === item.id}
+                                    onOpenChange={onDeleteChange}
+                                    onSubmit={() => handleDelete(item.id)}
+                                />
+                            </div>
+                        ))}
+                </>
+            )}
+        </>
+    );
+};
+
+const FormModal = ({ isOpen, onChange, mode, categories, discounts, product = null }) => {
+    const isAddMode = mode === "Add";
+    const [name, setName] = useState("");
+    const [category, setCategory] = useState(null);
+    const [discount, setDiscount] = useState(null);
+    const [price, setPrice] = useState("");
+    const [quantity, setQuantity] = useState("");
+    const [description, setDescription] = useState("");
+    const [images, setImages] = useState([]);
+    const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        if (!isAddMode && product) {
+            // Populate fields with product data if in update mode
+            const { name, price, description, quantity, category, discount, images } = product;
+            setName(name);
+            setPrice(price);
+            setDescription(description);
+            setQuantity(quantity);
+            setCategory(category);
+            setDiscount(discount);
+            setImages(images || []);
+        } else {
+            // Clear form if in add mode
+            onClear();
+        }
+    }, [isAddMode, product]);
+
+    function handleSubmit() {
         if (!validateForm()) {
             return;
         }
 
         const dataJSON = {
-            categoryId: category.id,
+            categoryId: category?.id,
             ownerId: user.id,
             name,
             price,
             description,
-            discountId: discount.id,
+            quantity,
+            discountId: discount?.id,
         };
 
-        apiService
-            .postProduct(dataJSON)
-            .then(() => {
-                onClose();
-                toast.success("Product added successfully");
-                onClear();
-            })
-            .catch((error) => {
-                console.error("Error: ", error);
-                toast.error(error.message || "Failed to add product");
-            });
+        if (isAddMode) {
+            // Add product
+            apiService
+                .postProduct(dataJSON)
+                .then(() => {
+                    onChange();
+                    toast.success("Product added successfully");
+                    onClear();
+                })
+                .catch((error) => {
+                    console.error("Error: ", error);
+                    toast.error(error.message || "Failed to add product");
+                });
+        } else {
+            // Update product
+            apiService
+                .updateProduct(product.id, dataJSON)
+                .then(() => {
+                    onChange();
+                    toast.success("Product updated successfully");
+                    onClear();
+                })
+                .catch((error) => {
+                    console.error("Error: ", error);
+                    toast.error(error.message || "Failed to update product");
+                });
+        }
     }
 
     function validateForm() {
@@ -267,139 +401,118 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
     }
 
     return (
-        <>
-            {isLoading ? (
-                <LoadingIndicator />
-            ) : (
-                <>
-                    {products.length > 0 && (
-                        <ul>
-                            {products.map((discount) => (
-                                <li key={discount.id}>{discount.name}</li>
-                            ))}
-                        </ul>
-                    )}
-                    <Button onClick={onOpen}>Add New Product</Button>
-                    <Modal isOpen={isOpen} onOpenChange={onClose}>
-                        <ModalContent>
-                            {(onClose) => (
-                                <>
-                                    <form
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            handleAddProduct();
-                                        }}>
-                                        <ModalHeader className="flex flex-col gap-1">Add New Product</ModalHeader>
-                                        <ModalBody>
-                                            <Input
-                                                label="Name"
-                                                type="text"
-                                                id="name"
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
-                                            />
-                                            {errors.name && <p className="text-red-500">{errors.name}</p>}
+        <Modal isOpen={isOpen} onOpenChange={onChange} size="2xl">
+            <ModalContent>
+                {(onClose) => (
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSubmit();
+                        }}>
+                        <ModalHeader className="flex flex-col gap-1">
+                            {isAddMode ? "Add New Product" : "Update Product"}
+                        </ModalHeader>
+                        <ModalBody>
+                            <Input
+                                label="Name"
+                                type="text"
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                            {errors.name && <p className="text-red-500">{errors.name}</p>}
 
-                                            <Dropdown>
-                                                <DropdownTrigger>
-                                                    <Button variant="bordered" className="capitalize">
-                                                        {category ? category.name : "Select Category"}
-                                                    </Button>
-                                                </DropdownTrigger>
-                                                <DropdownMenu
-                                                    aria-label="Single selection example"
-                                                    variant="flat"
-                                                    disallowEmptySelection
-                                                    selectionMode="single"
-                                                    onSelectionChange={(key) => {
-                                                        const selectedCategory = categories.find(
-                                                            (item) => item.id === Array.from(key)[0]
-                                                        );
-                                                        setCategory(selectedCategory);
-                                                    }}>
-                                                    {categories.map((item) => (
-                                                        <DropdownItem key={item.id} value={item.id}>
-                                                            {item.name}
-                                                        </DropdownItem>
-                                                    ))}
-                                                </DropdownMenu>
-                                            </Dropdown>
-                                            {errors.category && <p className="text-red-500">{errors.category}</p>}
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button variant="bordered" className="capitalize">
+                                        {category ? category.name : "Select Category"}
+                                    </Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label="Select category"
+                                    variant="flat"
+                                    disallowEmptySelection
+                                    selectionMode="single"
+                                    onSelectionChange={(key) => {
+                                        const selectedCategory = categories.find((item) => item.id === Array.from(key)[0]);
+                                        setCategory(selectedCategory);
+                                    }}>
+                                    {categories.map((item) => (
+                                        <DropdownItem key={item.id} value={item.id}>
+                                            {item.name}
+                                        </DropdownItem>
+                                    ))}
+                                </DropdownMenu>
+                            </Dropdown>
+                            {errors.category && <p className="text-red-500">{errors.category}</p>}
 
-                                            <Dropdown>
-                                                <DropdownTrigger>
-                                                    <Button variant="bordered" className="capitalize">
-                                                        {discount ? discount.name : "Select Discount Type"}
-                                                    </Button>
-                                                </DropdownTrigger>
-                                                <DropdownMenu
-                                                    aria-label="Single selection example"
-                                                    variant="flat"
-                                                    disallowEmptySelection
-                                                    selectionMode="single"
-                                                    onSelectionChange={(key) => {
-                                                        const selectedDiscount = discounts.find(
-                                                            (item) => item.id === Array.from(key)[0]
-                                                        );
-                                                        setDiscount(selectedDiscount);
-                                                    }}>
-                                                    {discounts.map((item) => (
-                                                        <DropdownItem key={item.id} value={item.id}>
-                                                            {item.id}
-                                                            {item.summary}
-                                                        </DropdownItem>
-                                                    ))}
-                                                </DropdownMenu>
-                                            </Dropdown>
-                                            {errors.discount && <p className="text-red-500">{errors.discount}</p>}
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button variant="bordered" className="capitalize">
+                                        {discount ? discount.name : "Select Discount Type"}
+                                    </Button>
+                                </DropdownTrigger>
+                                <DropdownMenu
+                                    aria-label="Select discount"
+                                    variant="flat"
+                                    disallowEmptySelection
+                                    selectionMode="single"
+                                    onSelectionChange={(key) => {
+                                        const selectedDiscount = discounts.find((item) => item.id === Array.from(key)[0]);
+                                        setDiscount(selectedDiscount);
+                                    }}>
+                                    {discounts.map((item) => (
+                                        <DropdownItem key={item.id} value={item.id}>
+                                            {item.summary}
+                                        </DropdownItem>
+                                    ))}
+                                </DropdownMenu>
+                            </Dropdown>
+                            {errors.discount && <p className="text-red-500">{errors.discount}</p>}
 
-                                            <Input
-                                                label="Price"
-                                                type="number"
-                                                id="price"
-                                                value={price}
-                                                onChange={(e) => setPrice(e.target.value)}
-                                            />
-                                            {errors.price && <p className="text-red-500">{errors.price}</p>}
+                            <Input
+                                label="Price"
+                                type="number"
+                                id="price"
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                            />
+                            {errors.price && <p className="text-red-500">{errors.price}</p>}
 
-                                            <Input
-                                                label="Quantity"
-                                                type="number"
-                                                id="quantity"
-                                                value={quantity}
-                                                onChange={(e) => setQuantity(e.target.value)}
-                                            />
-                                            {errors.quantity && <p className="text-red-500">{errors.quantity}</p>}
+                            <Input
+                                label="Quantity"
+                                type="number"
+                                id="quantity"
+                                value={quantity}
+                                onChange={(e) => setQuantity(e.target.value)}
+                            />
+                            {errors.quantity && <p className="text-red-500">{errors.quantity}</p>}
 
-                                            <Textarea
-                                                label="Description"
-                                                id="description"
-                                                placeholder="Enter your description"
-                                                value={description}
-                                                onChange={(e) => setDescription(e.target.value)}
-                                            />
-                                        </ModalBody>
-                                        <ModalFooter>
-                                            <Button
-                                                color="danger"
-                                                variant="light"
-                                                onClick={() => {
-                                                    onClear();
-                                                    onClose();
-                                                }}>
-                                                Close
-                                            </Button>
-                                            <Button color="primary" type="submit">
-                                                Add Product
-                                            </Button>
-                                        </ModalFooter>
-                                    </form>
-                                </>
-                            )}
-                        </ModalContent>
-                    </Modal>
-                </>
-            )}
-        </>
+                            <Textarea
+                                label="Description"
+                                id="description"
+                                placeholder="Enter your description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button
+                                color="danger"
+                                variant="light"
+                                onClick={() => {
+                                    onClear();
+                                    onClose();
+                                }}>
+                                Close
+                            </Button>
+                            <Button color="primary" type="submit">
+                                {isAddMode ? "Add Product" : "Update Product"}
+                            </Button>
+                        </ModalFooter>
+                    </form>
+                )}
+            </ModalContent>
+        </Modal>
     );
 };
