@@ -254,6 +254,7 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
                             <FormModal
                                 isOpen={isAddOpen}
                                 onChange={onAddChange}
+                                user={user}
                                 categories={categories}
                                 discounts={discounts}
                                 mode={"Add"}
@@ -276,8 +277,10 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
                                 <span>{item.name}</span>
                                 <Button onClick={() => handleUpdate(item)}>Update</Button>
                                 <FormModal
+                                    key={item.id}
                                     isOpen={isUpdateOpen && selectedProduct?.id === item.id}
                                     onChange={onUpdateChange}
+                                    user={user}
                                     categories={categories}
                                     discounts={discounts}
                                     product={item}
@@ -295,7 +298,7 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
                                     title={`Confirm Delete ${ item.name }`}
                                     content={`Are you sure you want to remove your ${ item.name }?`}
                                     isOpen={isDeleteOpen && selectedProduct?.id === item.id}
-                                    onOpenChange={onDeleteChange}
+                                    onOpenChange={closeDialog}
                                     onSubmit={() => handleDelete(item.id)}
                                 />
                             </div>
@@ -306,8 +309,9 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
     );
 };
 
-const FormModal = ({ isOpen, onChange, mode, categories, discounts, product = null }) => {
+const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, product = null }) => {
     const isAddMode = mode === "Add";
+
     const [name, setName] = useState("");
     const [category, setCategory] = useState(null);
     const [discount, setDiscount] = useState(null);
@@ -319,7 +323,7 @@ const FormModal = ({ isOpen, onChange, mode, categories, discounts, product = nu
 
     useEffect(() => {
         if (!isAddMode && product) {
-            // Populate fields with product data if in update mode
+            console.log("🚀 ~ useEffect ~ isAddMode:", isAddMode);
             const { name, price, description, quantity, category, discount, images } = product;
             setName(name);
             setPrice(price);
@@ -329,7 +333,6 @@ const FormModal = ({ isOpen, onChange, mode, categories, discounts, product = nu
             setDiscount(discount);
             setImages(images || []);
         } else {
-            // Clear form if in add mode
             onClear();
         }
     }, [isAddMode, product]);
@@ -339,18 +342,16 @@ const FormModal = ({ isOpen, onChange, mode, categories, discounts, product = nu
             return;
         }
 
-        const dataJSON = {
-            categoryId: category?.id,
-            ownerId: user.id,
-            name,
-            price,
-            description,
-            quantity,
-            discountId: discount?.id,
-        };
-
         if (isAddMode) {
-            // Add product
+            let dataJSON = {
+                categoryId: category?.id,
+                ownerId: user?.id,
+                name,
+                price,
+                description,
+                // quantity,
+                discountId: discount?.id,
+            };
             apiService
                 .postProduct(dataJSON)
                 .then(() => {
@@ -363,9 +364,26 @@ const FormModal = ({ isOpen, onChange, mode, categories, discounts, product = nu
                     toast.error(error.message || "Failed to add product");
                 });
         } else {
-            // Update product
+            let requests = {
+                categoryId: category?.id,
+                ownerId: user?.id,
+                name,
+                price,
+                description,
+                // quantity,
+                discountId: discount?.id,
+            };
+
+            let fields = Object.keys(requests);
+            for (const field of fields) {
+                if (!requests[field]) {
+                    delete requests[field];
+                }
+            }
+
+            let dataJSON = { requests, fields };
             apiService
-                .updateProduct(product.id, dataJSON)
+                .patchProduct(product.id, dataJSON)
                 .then(() => {
                     onChange();
                     toast.success("Product updated successfully");
@@ -431,7 +449,7 @@ const FormModal = ({ isOpen, onChange, mode, categories, discounts, product = nu
                                 <DropdownMenu
                                     aria-label="Select category"
                                     variant="flat"
-                                    disallowEmptySelection
+                                    disallowEmptySelection={true}
                                     selectionMode="single"
                                     onSelectionChange={(key) => {
                                         const selectedCategory = categories.find((item) => item.id === Array.from(key)[0]);
@@ -455,7 +473,7 @@ const FormModal = ({ isOpen, onChange, mode, categories, discounts, product = nu
                                 <DropdownMenu
                                     aria-label="Select discount"
                                     variant="flat"
-                                    disallowEmptySelection
+                                    disallowEmptySelection={true}
                                     selectionMode="single"
                                     onSelectionChange={(key) => {
                                         const selectedDiscount = discounts.find((item) => item.id === Array.from(key)[0]);
