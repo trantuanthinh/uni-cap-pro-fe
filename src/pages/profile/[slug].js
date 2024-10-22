@@ -364,7 +364,7 @@ const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, produc
                     toast.error(error.message || "Failed to add product");
                 });
         } else {
-            let requests = {
+            let request = {
                 categoryId: category?.id,
                 ownerId: user?.id,
                 name,
@@ -374,20 +374,19 @@ const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, produc
                 discountId: discount?.id,
             };
 
-            let fields = Object.keys(requests);
+            let fields = Object.keys(request);
             for (const field of fields) {
-                if (!requests[field]) {
-                    delete requests[field];
+                if (!request[field]) {
+                    delete request[field];
                 }
             }
 
-            let dataJSON = { requests, fields };
+            let dataJSON = { request, fields };
             apiService
                 .patchProduct(product.id, dataJSON)
                 .then(() => {
                     onChange();
                     toast.success("Product updated successfully");
-                    onClear();
                 })
                 .catch((error) => {
                     console.error("Error: ", error);
