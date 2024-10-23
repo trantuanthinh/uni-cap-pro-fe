@@ -200,10 +200,9 @@ const OrdersTab = ({ orders, isLoading }) => {
 const ManageProductsTab = ({ user, products, isLoading }) => {
     const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddChange } = useDisclosure();
     const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onOpenChange: onUpdateChange } = useDisclosure();
-    const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onOpenChange: onDeleteChange } = useDisclosure();
+    const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [categories, setCategories] = useState([]);
     const [discounts, setDiscounts] = useState([]);
-    const [isDialogOpen, setDialogOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
@@ -218,7 +217,8 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
             .deleteProduct(id)
             .then(() => {
                 toast.success("Product deleted successfully");
-                onClear();
+                onClear(); // You need to implement this function to reload products or update state
+                closeDeleteDialog();
             })
             .catch((error) => {
                 console.error("Error: ", error);
@@ -226,13 +226,13 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
             });
     }
 
-    function openDialog(id) {
-        setSelectedProduct(id);
-        setDialogOpen(true);
+    function openDeleteDialog(product) {
+        setSelectedProduct(product);
+        setDeleteDialogOpen(true);
     }
 
-    function closeDialog() {
-        setDialogOpen(false);
+    function closeDeleteDialog() {
+        setDeleteDialogOpen(false);
         setSelectedProduct(null);
     }
 
@@ -264,8 +264,11 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
 
                     {products.length > 0 &&
                         products.map((item) => (
-                            <div key={item.id} className="flex flex-row items-center space-x-4">
-                                <div className="flex justify-center">
+                            <div
+                                key={item.id}
+                                className="flex flex-row items-center space-x-4 p-4 bg-white shadow-md rounded-lg mb-4"
+                            >
+                                <div className="flex-shrink-0">
                                     <Image
                                         className="rounded-lg object-cover"
                                         src={item.images[0]}
@@ -274,33 +277,42 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
                                         height={100}
                                     />
                                 </div>
-                                <span>{item.name}</span>
-                                <Button onClick={() => handleUpdate(item)}>Update</Button>
-                                <FormModal
-                                    key={item.id}
-                                    isOpen={isUpdateOpen && selectedProduct?.id === item.id}
-                                    onChange={onUpdateChange}
-                                    user={user}
-                                    categories={categories}
-                                    discounts={discounts}
-                                    product={item}
-                                    mode={"Update"}
-                                />
-
-                                <Button
-                                    className="hover:bg-danger-300"
-                                    onClick={() => openDialog(item.id)}
-                                    color="danger"
-                                    variant="flat">
-                                    Delete
-                                </Button>
-                                <ConfirmDialog
-                                    title={`Confirm Delete ${ item.name }`}
-                                    content={`Are you sure you want to remove your ${ item.name }?`}
-                                    isOpen={isDeleteOpen && selectedProduct?.id === item.id}
-                                    onOpenChange={closeDialog}
-                                    onSubmit={() => handleDelete(item.id)}
-                                />
+                                <div className="flex-grow">
+                                    <h3 className="text-lg font-semibold">{item.name}</h3>
+                                    <p className="text-sm text-gray-500">{item.description || 'No description available'}</p>
+                                </div>
+                                <div className="flex space-x-2">
+                                    <Button
+                                        onClick={() => handleUpdate(item)}
+                                        className="bg-blue-500 text-white hover:bg-blue-600"
+                                    >
+                                        Update
+                                    </Button>
+                                    <FormModal
+                                        key={item.id}
+                                        isOpen={isUpdateOpen && selectedProduct?.id === item.id}
+                                        onChange={onUpdateChange}
+                                        user={user}
+                                        categories={categories}
+                                        discounts={discounts}
+                                        product={item}
+                                        mode={"Update"}
+                                    />
+                                    <Button
+                                        className="bg-red-500 text-white hover:bg-red-600"
+                                        onClick={() => openDeleteDialog(item)}
+                                    >
+                                        Delete
+                                    </Button>
+                                    <ConfirmDialog
+                                        title={`Confirm Delete ${ selectedProduct?.name }`}
+                                        content={`Are you sure you want to remove your ${ selectedProduct?.name }?`}
+                                        isOpen={isDeleteDialogOpen && selectedProduct?.id === item.id}
+                                        onOpenChange={setDeleteDialogOpen}
+                                        onSubmit={() => handleDelete(item.id)}
+                                        onCancel={closeDeleteDialog}
+                                    />
+                                </div>
                             </div>
                         ))}
                 </>
@@ -308,6 +320,7 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
         </>
     );
 };
+
 
 const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, product = null }) => {
     const isAddMode = mode === "Add";
@@ -374,9 +387,9 @@ const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, produc
                 discountId: discount?.id,
             };
 
-            let fields = Object.keys(request);
-            for (const field of fields) {
-                if (!request[field]) {
+            let fields = [];
+            for (let field of fields) {
+                if (!request[field] || !sharedService.isNullOrEmpty(request[field])) {
                     delete request[field];
                 }
             }
