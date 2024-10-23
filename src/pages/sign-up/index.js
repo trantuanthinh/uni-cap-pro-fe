@@ -229,7 +229,7 @@ export default function SignUp() {
                                         className="focus:outline-none"
                                         type="button"
                                         onClick={toggleConfirmPasswordVisibility}
-                                        aria-label="toggle password visibility">
+                                        aria-label="toggle confirm password visibility">
                                         {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
                                     </button>
                                 }
