@@ -111,7 +111,7 @@ export default function ProfileLayout() {
 
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">{user?.username}</h1>
-                            <p className="text-gray-500">Joined In: {sharedService.formatDate(user?.created_At)}</p>
+                            <p className="text-gray-500">Joined In: {sharedService.formatToDate(user?.created_At)}</p>
                         </div>
                     </div>
 

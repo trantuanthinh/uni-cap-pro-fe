@@ -10,7 +10,7 @@ export class SharedService {
     }
 
     isNumber(value) {
-        return typeof value === "number" && !isNaN(Number(value));
+        return typeof value === "number" || !isNaN(Number(value));
     }
 
     isNullOrEmpty(data) {
@@ -42,14 +42,14 @@ export class SharedService {
         return regex.test(number);
     }
 
-    formatDate(data) {
+    formatToDate(data) {
         if (!this.isNullOrEmpty(data)) {
             return moment(data).format(this.#formatDateString);
         }
         return "";
     }
 
-    formatDateTime(data) {
+    formatToDateTime(data) {
         if (!this.isNullOrEmpty(data)) {
             return moment(data).format(this.#formatDateTimeString);
         }

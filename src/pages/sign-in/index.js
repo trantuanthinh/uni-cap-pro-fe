@@ -2,21 +2,26 @@ import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import { setUser } from "@/redux/slicers/userSlice";
 import apiService from "@/services/api-service";
+import { Input } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useDispatch } from "react-redux";
 
 export default function SignIn() {
     const router = useRouter();
     const dispatch = useDispatch();
-
+    const [isVisible, setIsVisible] = useState(false);
     const [username, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({
         username: "",
         password: "",
     });
+
+    const toggleVisibility = () => setIsVisible(!isVisible);
+
     async function handleSubmit(e) {
         e.preventDefault();
         let dataJSON = {
@@ -70,29 +75,36 @@ export default function SignIn() {
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
-                            <input
+                            <Input
                                 type="text"
                                 id="username"
                                 value={username}
                                 placeholder="Username or Phone Number"
                                 onChange={(e) => setIdentifier(e.target.value)}
                                 onBlur={handleBlur("username")}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
                             {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                         </div>
 
                         <div className="mb-6">
-                            <input
-                                type="password"
+                            <Input
+                                type={isVisible ? "text" : "password"}
                                 id="password"
                                 value={password}
                                 placeholder="Password"
                                 onChange={(e) => setPassword(e.target.value)}
                                 onBlur={handleBlur("password")}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
+                                endContent={
+                                    <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                                        {isVisible ? (
+                                            <IoMdEye size={24} />
+                                        ) : (
+                                            <IoMdEyeOff size={24} />
+                                        )}
+                                    </button>
+                                }
                             />
                             {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                         </div>

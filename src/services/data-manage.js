@@ -5,7 +5,7 @@ class DataManagement {
     };
 
     ACTIVE_STATUS = {
-        ACTUVE: "ACTIVE",
+        ACTIVE: "ACTIVE",
         INACTIVE: "INACTIVE",
     };
 }

@@ -3,10 +3,12 @@ import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
 import dataManagement from "@/services/data-manage";
 import sharedService from "@/services/sharedService";
+import { Input, Select, SelectItem } from "@nextui-org/react";
 import { debounce } from "lodash";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 export default function SignUp() {
     const router = useRouter();
@@ -19,7 +21,13 @@ export default function SignUp() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [userType, setUserType] = useState("");
 
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
+
     const userTypeList = Object.values(dataManagement.USER_TYPE);
+
+    const togglePasswordVisibility = () => setIsPasswordVisible(!isPasswordVisible);
+    const toggleConfirmPasswordVisibility = () => setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
 
     const [errors, setErrors] = useState({
         fullname: "",
@@ -34,11 +42,12 @@ export default function SignUp() {
     const checkPhoneNumber = useCallback(
         debounce((input) => {
             let checkIsNumber = sharedService.isNumber(input);
-            let checkValidPhoneNumber = sharedService.isVietnamesePhoneNumber(input);
+            // let checkValidPhoneNumber = sharedService.isVietnamesePhoneNumber(input);
 
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                phone: checkIsNumber && checkValidPhoneNumber ? "" : "Please enter a valid phone number.",
+                // phone: checkIsNumber && checkValidPhoneNumber ? "" : "Please enter a valid phone number.",
+                phone: checkIsNumber ? "" : "Please enter a valid phone number.",
             }));
         }, GlobalSettings.Settings.debounceTimer.valueChanges),
         []
@@ -83,7 +92,6 @@ export default function SignUp() {
             avatar: null,
             description: null,
         };
-
         try {
             let response = await apiService.postUser(dataJSON);
 
@@ -134,131 +142,119 @@ export default function SignUp() {
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
-                            <label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
-                                Full Name
-                            </label>
-                            <input
+                            <Input
+                                label="Full Name"
                                 type="text"
                                 id="fullname"
                                 value={fullname}
                                 onChange={handleChange("fullname", setFullname)}
                                 onBlur={handleBlur("fullname")}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
                             {errors.fullname && <p className="text-red-500 text-sm">{errors.fullname}</p>}
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                                Username
-                            </label>
-                            <input
+                            <Input
+                                label="Username"
                                 type="text"
                                 id="username"
                                 value={username}
                                 onChange={handleChange("username", setUsername)}
                                 onBlur={handleBlur("username")}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
                             {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email
-                            </label>
-                            <input
+                            <Input
+                                label="Email"
                                 type="email"
                                 id="email"
                                 value={email}
                                 onChange={handleChange("email", setEmail)}
                                 onBlur={handleBlur("email")}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
                             {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                                Phone Number
-                            </label>
-                            <input
+                            <Input
+                                label="Phone Number"
                                 type="text"
                                 id="phone"
                                 value={phoneNumber}
                                 onChange={handleChange("phone", setPhoneNumber)}
                                 onBlur={handleBlur("phone")}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
                             />
                             {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                Password
-                            </label>
-                            <input
-                                type="password"
+                            <Input
+                                label="Password"
+                                type={isPasswordVisible ? "text" : "password"}
                                 id="password"
                                 value={password}
                                 onChange={handleChange("password", setPassword)}
                                 onBlur={handleBlur("password")}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
+                                endContent={
+                                    <button
+                                        className="focus:outline-none"
+                                        type="button"
+                                        onClick={togglePasswordVisibility}
+                                        aria-label="toggle password visibility">
+                                        {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                    </button>
+                                }
                             />
                             {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                         </div>
 
                         <div className="mb-6">
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                                Confirm Password
-                            </label>
-                            <input
-                                type="password"
+                            <Input
+                                label="Confirm Password"
+                                type={isConfirmPasswordVisible ? "text" : "password"}
                                 id="confirmPassword"
                                 value={confirmPassword}
                                 onChange={handleChange("confirmPassword", setConfirmPassword)}
                                 onBlur={handleBlur("confirmPassword")}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required
+                                endContent={
+                                    <button
+                                        className="focus:outline-none"
+                                        type="button"
+                                        onClick={toggleConfirmPasswordVisibility}
+                                        aria-label="toggle password visibility">
+                                        {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                    </button>
+                                }
                             />
-                            {errors.confirmPassword && (
-                                <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
-                            )}
+                            {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="userType" className="block text-sm font-medium text-gray-700">
-                                User Type
-                            </label>
-                            <select
+                            <Select
+                                label="User Type"
                                 id="userType"
-                                value={userType}
-                                onChange={(e) => setUserType(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                required
-                            >
-                                <option value="" disabled>
-                                    Select a type
-                                </option>
+                                selectedKeys={new Set([userType])}
+                                onSelectionChange={(keys) => setUserType(Array.from(keys).join(""))}
+                                isRequired
+                                disabledKeys={["default"]}>
+                                <SelectItem key="default">Select a type</SelectItem>
                                 {userTypeList &&
-                                    userTypeList.map((userType) => (
-                                        <option key={userType} value={userType}>
-                                            {userType}
-                                        </option>
-                                    ))}
-                            </select>
+                                    userTypeList.map((userType) => <SelectItem key={userType}>{userType}</SelectItem>)}
+                            </Select>
                             {errors.userType && <p className="text-red-500 text-sm">{errors.userType}</p>}
                         </div>
 
                         <button
                             type="submit"
-                            className="w-full bg-primary-green hover:bg-green-700 text-white py-2 px-4 rounded"
-                        >
+                            className="w-full bg-primary-green hover:bg-green-700 text-white py-2 px-4 rounded">
                             Sign Up
                         </button>
                     </form>

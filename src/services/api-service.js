@@ -172,6 +172,11 @@ class APIService {
     async getDiscounts(id) {
         return this.#getItem("discounts", id);
     }
+
+    //#region comments
+    async getCommentsByProductId(productId, option) {
+        return this.#getItems(`comments/products/${ productId }`, option);
+    }
 }
 
 const apiService = new APIService();
