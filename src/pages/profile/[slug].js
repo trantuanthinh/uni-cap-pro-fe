@@ -54,7 +54,7 @@ export default function ProfileLayout() {
         tabs.push({
             key: "OrderContent",
             title: "OrderContent",
-            content: <OrdersTab router={router} orders={orders} isLoading={isLoading} />,
+            content: <OrdersTab router={router} user={user} orders={orders} isLoading={isLoading} />,
         });
     } else if (user && user.type === "PRODUCER") {
         tabs.push({
@@ -156,7 +156,7 @@ const OverviewTab = ({ user }) => {
     );
 };
 
-const OrdersTab = ({ orders, router, isLoading }) => {
+const OrdersTab = ({ user, orders, router, isLoading }) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [rating, setRating] = useState(0);
 
@@ -164,12 +164,13 @@ const OrdersTab = ({ orders, router, isLoading }) => {
         setRating(newRating);
     }
 
-    async function handleSubmit() {
+    async function handleSubmit(productId) {
         let content = document.getElementById("content").value;
-        let productId = "5f8f3b6b2b9d4400000a4b1a";
+        let userId = user.id;
         let dataJSON = {
-            rating,
+            userId,
             content,
+            rating,
         };
         try {
             let response = await apiService.postFeedbackByProductId(productId, dataJSON);
@@ -182,7 +183,6 @@ const OrdersTab = ({ orders, router, isLoading }) => {
             console.error("Failed to post user data:", error);
             toast.error("Error: ", error.message);
         }
-        console.log("🚀 ~ handleSubmit ~ dataJSON:", dataJSON);
     }
 
     return (
@@ -208,8 +208,9 @@ const OrdersTab = ({ orders, router, isLoading }) => {
                             <div className="col-span-2 space-y-2">
                                 <p className="font-semibold text-gray-900 text-lg">{order.product.name}</p>
                                 <p className="text-gray-600 text-sm">
-                                    Quantity: {order.quantity} - Unit Price: {order.price}
+                                    {sharedService.formatVietnamDong(order.price)}/{order.product.unitMeasure}
                                 </p>
+                                <p className="text-gray-600 text-sm">Quantity: {order.quantity}</p>
                                 <p className="text-gray-600 text-sm">
                                     Total: {sharedService.formatVietnamDong(order.price * order.quantity)}
                                 </p>
@@ -253,7 +254,7 @@ const OrdersTab = ({ orders, router, isLoading }) => {
                                                             <Button
                                                                 color="primary"
                                                                 onPress={() => {
-                                                                    handleSubmit();
+                                                                    handleSubmit(order.product.id);
                                                                     onClose();
                                                                 }}>
                                                                 Submit
