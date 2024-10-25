@@ -2,6 +2,7 @@
 
 import LinkButton from "@/components/shared/buttons/link-button";
 import ConfirmDialog from "@/components/shared/default-confirm-dialog";
+import LoadingIndicator from "@/components/shared/loading-indicator";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
@@ -36,7 +37,6 @@ export default function ProfileLayout() {
     const router = useRouter();
     const { slug } = router.query;
 
-    const [activeTab, setActiveTab] = useState("Overview");
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
     const [isMounted, setIsMounted] = useState(false);
@@ -48,17 +48,20 @@ export default function ProfileLayout() {
             title: "Overview",
             content: <OverviewTab user={user} />,
         },
-        {
+    ];
+    if (user && user.type === "COMPANY") {
+        tabs.push({
             key: "OrderContent",
             title: "OrderContent",
-            content: <OrdersTab orders={orders} isLoading={isLoading} />,
-        },
-        {
+            content: <OrdersTab router={router} orders={orders} isLoading={isLoading} />,
+        });
+    } else if (user && user.type === "PRODUCER") {
+        tabs.push({
             key: "ManageProduct",
             title: "Manage Products",
             content: <ManageProductsTab user={user} products={products} isLoading={isLoading} />,
-        },
-    ];
+        });
+    }
 
     useEffect(() => {
         if (router.isReady && user) {
@@ -134,12 +137,6 @@ export default function ProfileLayout() {
     );
 }
 
-const LoadingIndicator = () => (
-    <div className="flex justify-center py-10">
-        <p className="text-gray-600">Loading...</p>
-    </div>
-);
-
 const Avatar = ({ avatar = null, username }) =>
     avatar ? (
         <Image className="rounded-full shadow-lg" src={avatar} alt={username} width={96} height={96} />
@@ -158,39 +155,56 @@ const OverviewTab = ({ user }) => {
     );
 };
 
-const OrdersTab = ({ orders, isLoading }) => {
+const OrdersTab = ({ orders, router, isLoading }) => {
+    function handleReview() { }
     return (
         <>
-            <h2 className="text-xl font-semibold text-gray-900">Your Orders</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Orders</h2>
             {isLoading ? (
                 <LoadingIndicator />
-            ) : orders.length > 0 ? (
-                orders.map((order) => (
-                    <div key={order.id} className="mb-6 flex flex-row items-center space-x-4">
-                        <Image
-                            className="rounded-lg shadow-md"
-                            src={order.product.images[0]}
-                            alt={order.product.name}
-                            width={100}
-                            height={100}
-                        />
-                        <div className="flex flex-col space-y-1">
-                            <p className="font-semibold text-gray-900">{order.name}</p>
-                            <p className="text-gray-600">Product: {order.product.name}</p>
-                            <p className="text-gray-600">Quantity: {order.quantity}</p>
-                            <p className="text-gray-600">Unit Price: {order.price}</p>
-                            <p className="text-gray-600">
-                                Total: {sharedService.formatVietnamDong(order.price * order.quantity)}
-                            </p>
-                        </div>
-                    </div>
-                ))
             ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {orders.map((order) => (
+                        <div
+                            key={order.id}
+                            className="bg-white rounded-lg shadow-lg p-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div className="col-span-1">
+                                <Image
+                                    className="rounded-t-lg"
+                                    src={order.product.images[0]}
+                                    alt={order.product.name}
+                                    width={200}
+                                    height={100}
+                                />
+                            </div>
+                            <div className="col-span-2 space-y-2">
+                                <p className="font-semibold text-gray-900 text-lg">{order.product.name}</p>
+                                <p className="text-gray-600 text-sm">
+                                    Quantity: {order.quantity} - Unit Price: {order.price}
+                                </p>
+                                <p className="text-gray-600 text-sm">
+                                    Total: {sharedService.formatVietnamDong(order.price * order.quantity)}
+                                </p>
+                            </div>
+                            <div className="col-span-3 flex justify-end mt-4">
+                                {order.isRating ? (
+                                    <Button onClick={() => router.push(`/products/detail/${ order.product.id }`)}>Buy Again</Button>
+                                ) : (
+                                    <Button onClick={handleReview} className="px-4 py-2 text-sm">
+                                        Add Review
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+            {!isLoading && orders.length === 0 && (
                 <div className="flex justify-center py-4">
                     <p className="text-gray-500">You don't have any orders yet.</p>
                 </div>
             )}
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-4">
                 <LinkButton href="/" label="Go to Home" />
             </div>
         </>
@@ -266,8 +280,7 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
                         products.map((item) => (
                             <div
                                 key={item.id}
-                                className="flex flex-row items-center space-x-4 p-4 bg-white shadow-md rounded-lg mb-4"
-                            >
+                                className="flex flex-row items-center space-x-4 p-4 bg-white shadow-md rounded-lg mb-4">
                                 <div className="flex-shrink-0">
                                     <Image
                                         className="rounded-lg object-cover"
@@ -279,13 +292,12 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
                                 </div>
                                 <div className="flex-grow">
                                     <h3 className="text-lg font-semibold">{item.name}</h3>
-                                    <p className="text-sm text-gray-500">{item.description || 'No description available'}</p>
+                                    <p className="text-sm text-gray-500">{item.description || "No description available"}</p>
                                 </div>
                                 <div className="flex space-x-2">
                                     <Button
                                         onClick={() => handleUpdate(item)}
-                                        className="bg-blue-500 text-white hover:bg-blue-600"
-                                    >
+                                        className="bg-blue-500 text-white hover:bg-blue-600">
                                         Update
                                     </Button>
                                     <FormModal
@@ -300,8 +312,7 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
                                     />
                                     <Button
                                         className="bg-red-500 text-white hover:bg-red-600"
-                                        onClick={() => openDeleteDialog(item)}
-                                    >
+                                        onClick={() => openDeleteDialog(item)}>
                                         Delete
                                     </Button>
                                     <ConfirmDialog
@@ -320,7 +331,6 @@ const ManageProductsTab = ({ user, products, isLoading }) => {
         </>
     );
 };
-
 
 const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, product = null }) => {
     const isAddMode = mode === "Add";
