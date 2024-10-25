@@ -12,7 +12,7 @@ export default function CommentCard({ avatar = null, username, comment, rating, 
                 <div className="flex-1 flex justify-between items-center ml-3">
                     <div className="flex items-center">
                         <h3 className="text-gray-900 font-semibold pr-2">{username}</h3>
-                        <StarRating rating={rating} />
+                        <StarRating rating={rating} isChanged={false} />
                     </div>
                     <p className="text-gray-500 text-sm">{timestamp}</p>
                 </div>

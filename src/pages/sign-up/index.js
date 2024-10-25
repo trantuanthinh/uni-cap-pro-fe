@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { toast } from "sonner";
 
 export default function SignUp() {
     const router = useRouter();
@@ -93,10 +94,10 @@ export default function SignUp() {
             description: null,
         };
         try {
-            let response = await apiService.postUser(dataJSON);
+            let response = await apiService.signup(dataJSON);
 
             if (response && response.ok) {
-                alert("Successfully created account. Please sign in to continue.");
+                toast.success("Successfully created account. Please sign in to continue.");
                 router.push("/sign-in");
             }
         } catch (error) {

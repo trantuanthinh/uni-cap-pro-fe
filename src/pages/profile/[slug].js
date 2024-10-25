@@ -3,6 +3,7 @@
 import LinkButton from "@/components/shared/buttons/link-button";
 import ConfirmDialog from "@/components/shared/default-confirm-dialog";
 import LoadingIndicator from "@/components/shared/loading-indicator";
+import StarRating from "@/components/shared/star-rating";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
@@ -156,7 +157,34 @@ const OverviewTab = ({ user }) => {
 };
 
 const OrdersTab = ({ orders, router, isLoading }) => {
-    function handleReview() { }
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [rating, setRating] = useState(0);
+
+    function handleDataChange(newRating) {
+        setRating(newRating);
+    }
+
+    async function handleSubmit() {
+        let content = document.getElementById("content").value;
+        let productId = "5f8f3b6b2b9d4400000a4b1a";
+        let dataJSON = {
+            rating,
+            content,
+        };
+        try {
+            let response = await apiService.postCommentsByProductId(productId, dataJSON);
+
+            if (response && response.ok) {
+                toast.success("Thanks for your feedback.");
+                router.push("/sign-in");
+            }
+        } catch (error) {
+            console.error("Failed to post user data:", error);
+            toast.error("Error: ", error.message);
+        }
+        console.log("🚀 ~ handleSubmit ~ dataJSON:", dataJSON);
+    }
+
     return (
         <>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Orders</h2>
@@ -188,11 +216,54 @@ const OrdersTab = ({ orders, router, isLoading }) => {
                             </div>
                             <div className="col-span-3 flex justify-end mt-4">
                                 {order.isRating ? (
-                                    <Button onClick={() => router.push(`/products/detail/${ order.product.id }`)}>Buy Again</Button>
-                                ) : (
-                                    <Button onClick={handleReview} className="px-4 py-2 text-sm">
-                                        Add Review
+                                    <Button onClick={() => router.push(`/products/detail/${ order.product.id }`)}>
+                                        Buy Again
                                     </Button>
+                                ) : (
+                                    <>
+                                        <Button onPress={onOpen} className="px-4 py-2 text-sm">
+                                            Add Review
+                                        </Button>
+                                        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                                            <ModalContent>
+                                                {(onClose) => (
+                                                    <>
+                                                        <ModalHeader className="flex flex-col gap-1">
+                                                            Contribute Your Review
+                                                        </ModalHeader>
+                                                        <ModalBody>
+                                                            <div className="flex flex-row items-center space-x-2">
+                                                                <span className="text-gray-600">Rating:</span>
+                                                                <StarRating
+                                                                    onDataChange={handleDataChange}
+                                                                    isChanged={true}
+                                                                />
+                                                            </div>
+                                                            <Textarea
+                                                                label="Your Review"
+                                                                type="text"
+                                                                id="content"
+                                                                size="lg"
+                                                            />
+                                                        </ModalBody>
+                                                        <ModalFooter>
+                                                            <Button color="danger" variant="light" onPress={onClose}>
+                                                                Close
+                                                            </Button>
+                                                            <Button
+                                                                color="primary"
+                                                                onPress={() => {
+                                                                    handleSubmit();
+                                                                    onClose();
+                                                                }}>
+                                                                Submit
+                                                            </Button>
+                                                        </ModalFooter>
+                                                    </>
+                                                )}
+                                            </ModalContent>
+                                        </Modal>
+                                    </>
                                 )}
                             </div>
                         </div>

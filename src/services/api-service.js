@@ -174,8 +174,12 @@ class APIService {
     }
 
     //#region comments
-    async getCommentsByProductId(productId, option) {
-        return this.#getItems(`comments/products/${ productId }`, option);
+    async getCommentsByProductId(productId) {
+        return this.#getItems(`comments/products/${ productId }`);
+    }
+
+    async postCommentsByProductId(productId, data) {
+        return this.#postItem(`comments/products/${ productId }`, data);
     }
 }
 
