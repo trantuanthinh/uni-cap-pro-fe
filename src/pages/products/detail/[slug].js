@@ -13,7 +13,7 @@ export default function ProductDetail() {
 
     useEffect(() => {
         if (router.isReady && slug) {
-            Promise.all([apiService.getProduct(slug), apiService.getCommentsByProductId(slug)])
+            Promise.all([apiService.getProduct(slug), apiService.getFeedbacksByProductId(slug)])
                 .then(([prodRes, commentRes]) => {
                     setProduct(prodRes.result);
                     setComments(commentRes.result);

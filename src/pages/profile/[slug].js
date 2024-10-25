@@ -172,7 +172,7 @@ const OrdersTab = ({ orders, router, isLoading }) => {
             content,
         };
         try {
-            let response = await apiService.postCommentsByProductId(productId, dataJSON);
+            let response = await apiService.postFeedbackByProductId(productId, dataJSON);
 
             if (response && response.ok) {
                 toast.success("Thanks for your feedback.");
