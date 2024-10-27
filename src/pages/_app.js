@@ -42,13 +42,10 @@ export default function App({ Component, pageProps }) {
                 <div className={`grid grid-rows-[auto_1fr_auto] min-h-screen ${ itim.className }`}>
                     <Header />
                     {showButton && (
-                        <div className="fixed inset-0 z-10 overflow-auto">
-                            <div className="absolute inset-0"></div>
-                            <div className="absolute bottom-4 right-4">
-                                <button onClick={scrollToTop} className="bg-sky-500/60 size-8 flex items-center justify-center hover:bg-sky-500 text-white rounded">
-                                    <FaChevronUp size={24} />
-                                </button>
-                            </div>
+                        <div className="fixed bottom-4 right-4 z-10">
+                            <button onClick={scrollToTop} className="bg-sky-500/60 size-8 flex items-center justify-center hover:bg-sky-500 text-white rounded-full p-2">
+                                <FaChevronUp size={24} />
+                            </button>
                         </div>
                     )}
                     <main>

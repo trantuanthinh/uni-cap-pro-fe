@@ -43,7 +43,7 @@ export default function Header() {
     function handleProductRouting(categoryId) {
         router.push({
             pathname: "/products",
-            query: categoryId ? { categoryId: categoryId } : {},
+            query: categoryId ? { CategoryId: categoryId } : "",
         });
     }
 
