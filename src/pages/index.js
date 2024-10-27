@@ -2,6 +2,7 @@ import ProductList from "@/components/main/product-list";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
+import { Button } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -16,7 +17,7 @@ export default function Home({ }) {
     }, []);
 
     function getData() {
-        let filterProduct = { page: page, pageSize: pageSize };
+        let filterProduct = { SortBy: "total_Rating_Value", SortOrder: "desc", Page: page, PageSize: pageSize };
         let filterOrder = {
             Filter: "isShare=true && isPaid=false",
             page: page,
@@ -36,7 +37,21 @@ export default function Home({ }) {
     return (
         <>
             <Title label={`${ GlobalSettings.Settings.name } - Home`} />
-            <main className="grid grid-flow-row gap-y-2 px-20">
+            <main className="grid grid-flow-row gap-y-2">
+                <section className="bg-[#F5F5DC] py-10">
+                    <div className="container mx-auto px-4 md:px-0">
+                        <div className="flex flex-col md:flex-row items-center justify-center">
+                            <div className="w-full md:w-1/2 flex flex-col items-center justify-center md:pl-10">
+                                <h2 className="text-3xl font-bold">Welcome to {GlobalSettings.Settings.name}</h2>
+                                <p className="text-lg">Shop with us and enjoy the best shopping experience</p>
+                                <Button auto className="mt-6" size="lg">
+                                    Explore Now
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section className="flex flex-col items-center justify-center">
                     <ProductList title={"Productions"} list={productList} pageSize={pageSize} type={"product"} />
                 </section>
@@ -44,7 +59,6 @@ export default function Home({ }) {
                 <section className="flex flex-col items-center justify-center">
                     <ProductList title={"Buy Together"} list={orderList} pageSize={pageSize} type={"shared-product"} />
                 </section>
-                <section></section>
                 <section></section>
             </main>
         </>
