@@ -70,7 +70,7 @@ export default function Header() {
                 <NavbarItem>
                     <Dropdown>
                         <DropdownTrigger>
-                            <Button variant="flat">Product</Button>
+                            <Button variant="ghost" className="border-none hover:underline">Product</Button>
                         </DropdownTrigger>
                         <DropdownMenu aria-label="Categories" color="primary" variant="flat">
                             <DropdownSection showDivider>
@@ -83,8 +83,8 @@ export default function Header() {
                                         All Products
                                     </Button>
                                 </DropdownItem>
-                                <DropdownItem key="shared-buy" variant="ghost">
-                                    <Button as={Link} href="/shared-buy" variant="ghost" fullWidth className="border-none">
+                                <DropdownItem key="shared-order" variant="ghost">
+                                    <Button as={Link} href="/shared-order" variant="ghost" fullWidth className="border-none">
                                         Shared Buy
                                     </Button>
                                 </DropdownItem>

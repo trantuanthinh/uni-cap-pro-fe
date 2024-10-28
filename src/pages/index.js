@@ -57,7 +57,11 @@ export default function Home({ }) {
                 </section>
 
                 <section className="flex flex-col items-center justify-center">
-                    <ProductList title={"Buy Together"} list={orderList} pageSize={pageSize} type={"shared-product"} />
+                    {orderList.length == 0 ? (
+                        ""
+                    ) : (
+                        <ProductList title={"Buy Together"} list={orderList} pageSize={pageSize} type={"shared-product"} />
+                    )}
                 </section>
                 <section></section>
             </main>

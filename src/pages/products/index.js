@@ -59,7 +59,7 @@ export default function Products() {
         <div className="flex flex-col items-center justify-center max-w-screen-xl mx-auto py-6">
             <h1 className="text-3xl font-bold mb-4">All Products</h1>
             <ListItem list={list} pageSize={pageSize} type="product" />
-            {totalPages > 0 && (
+            {totalPages > 1 && (
                 <Pagination
                     loop
                     showControls
