@@ -1,5 +1,5 @@
 import apiService from "@/services/api-service";
-import { BreadcrumbItem, Breadcrumbs, Button, Input } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, Button, Input, Link } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { useCallback, useRef, useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
@@ -127,13 +127,18 @@ export default function RecoveryPassword() {
     return (
         <div className="container mx-auto py-8">
             <h1 className="text-4xl font-bold mb-8">Recovery Password</h1>
-            <Breadcrumbs>
-                {Array.from({ length: step }, (_, index) => (
-                    <BreadcrumbItem key={index} isActive={step === index + 1}>
-                        Step {index + 1}
-                    </BreadcrumbItem>
-                ))}
-            </Breadcrumbs>
+
+            <div className="grid grid-cols-3 grid-rows-1 gap-5">
+                <div className="col-start-2">
+                    <Breadcrumbs className="justify-center">
+                        {Array.from({ length: step }, (_, index) => (
+                            <BreadcrumbItem key={index} isActive={step === index + 1}>
+                                Step {index + 1}
+                            </BreadcrumbItem>
+                        ))}
+                    </Breadcrumbs>
+                </div>
+            </div>
 
             {step === 1 && (
                 <div className="max-w-md mx-auto space-y-4">
@@ -151,6 +156,11 @@ export default function RecoveryPassword() {
                     <Button onClick={sendOTP} className="bg-blue-500 text-white mt-4 w-full">
                         Receive OTP
                     </Button>
+                    <div className="mt-4 text-center">
+                        <Link href="/sign-up" className="text-indigo-600 hover:text-indigo-800">
+                            Don't have an account? Register here.
+                        </Link>
+                    </div>
                 </div>
             )}
 
