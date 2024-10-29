@@ -127,10 +127,12 @@ export default function RecoveryPassword() {
     return (
         <div className="container mx-auto py-8">
             <h1 className="text-4xl font-bold mb-8">Recovery Password</h1>
-            <Breadcrumbs isDisabled>
-                <BreadcrumbItem>Step 1</BreadcrumbItem>
-                <BreadcrumbItem>Step 2</BreadcrumbItem>
-                <BreadcrumbItem>Step 3</BreadcrumbItem>
+            <Breadcrumbs>
+                {Array.from({ length: step }, (_, index) => (
+                    <BreadcrumbItem key={index} isActive={step === index + 1}>
+                        Step {index + 1}
+                    </BreadcrumbItem>
+                ))}
             </Breadcrumbs>
 
             {step === 1 && (
