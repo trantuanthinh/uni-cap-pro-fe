@@ -7,7 +7,14 @@
     --background-start-rgb: 214, 219, 220;
 }
 
-* {}
+* {
+    /* remove arrows of input[type=number] */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        margin: 0;
+        -webkit-appearance: none;
+    }
+}
 
 body {
     color: rgb(var(--foreground-rgb));

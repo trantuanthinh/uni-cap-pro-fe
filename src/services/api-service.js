@@ -84,6 +84,18 @@ class APIService {
         return this.#postItem("auth/signup", data);
     }
 
+    async sendOTP(data) {
+        return this.#postItem("auth/send-otp", data);
+    }
+
+    async verifyOTP(data) {
+        return this.#postItem("auth/verify-otp", data);
+    }
+
+    async resetPassword(data) {
+        return this.#postItem("auth/reset-password", data);
+    }
+
     //#region users
     async getUsers(option) {
         return this.#getItems("users", option);

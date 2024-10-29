@@ -19,6 +19,10 @@ export default function SignIn() {
         username: "",
         password: "",
     });
+    const [isValids, setIsValids] = useState({
+        username: false,
+        password: false,
+    });
 
     const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -53,16 +57,18 @@ export default function SignIn() {
         }
     }
 
-    function handleBlur(field) {
-        return () => {
-            if (!eval(field)) {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [field]: `${ field.charAt(0).toUpperCase() + field.slice(1) } is required.`,
-                }));
-            }
-        };
-    }
+    const handleBlur = (field) => () => {
+        if (!eval(field)) {
+            setErrors((prev) => ({
+                ...prev,
+                [field]: `${ field.charAt(0).toUpperCase() + field.slice(1) } is required.`,
+            }));
+            setIsValids((prev) => ({ ...prev, [field]: true }));
+        } else {
+            setErrors((prev) => ({ ...prev, [field]: "" }));
+            setIsValids((prev) => ({ ...prev, [field]: false }));
+        }
+    };
 
     return (
         <>
@@ -83,8 +89,9 @@ export default function SignIn() {
                                 onChange={(e) => setIdentifier(e.target.value)}
                                 onBlur={handleBlur("username")}
                                 required
+                                isInvalid={isValids.username}
+                                errorMessage={errors.username}
                             />
-                            {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                         </div>
 
                         <div className="mb-6">
@@ -97,16 +104,17 @@ export default function SignIn() {
                                 onBlur={handleBlur("password")}
                                 required
                                 endContent={
-                                    <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
-                                        {isVisible ? (
-                                            <IoMdEye size={24} />
-                                        ) : (
-                                            <IoMdEyeOff size={24} />
-                                        )}
+                                    <button
+                                        className="focus:outline-none"
+                                        type="button"
+                                        onClick={toggleVisibility}
+                                        aria-label="toggle password visibility">
+                                        {isVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
                                     </button>
                                 }
+                                isInvalid={isValids.password}
+                                errorMessage={errors.password}
                             />
-                            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                         </div>
 
                         <button
@@ -116,6 +124,11 @@ export default function SignIn() {
                         </button>
                     </form>
 
+                    <div className="mt-4 text-center">
+                        <Link href="/sign-in/recovery" className="text-indigo-600 hover:text-indigo-800">
+                            Forgot your password?
+                        </Link>
+                    </div>
                     <div className="mt-4 text-center">
                         <Link href="/sign-up" className="text-indigo-600 hover:text-indigo-800">
                             Don't have an account? Register here.

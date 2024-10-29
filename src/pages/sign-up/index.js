@@ -40,14 +40,22 @@ export default function SignUp() {
         userType: "",
     });
 
+    const [isValids, setIsValids] = useState({
+        fullname: false,
+        username: false,
+        email: false,
+        phone: false,
+        password: false,
+        confirmPassword: false,
+        userType: false,
+    });
+
     const checkPhoneNumber = useCallback(
         debounce((input) => {
             let checkIsNumber = sharedService.isNumber(input);
-            // let checkValidPhoneNumber = sharedService.isVietnamesePhoneNumber(input);
 
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                // phone: checkIsNumber && checkValidPhoneNumber ? "" : "Please enter a valid phone number.",
                 phone: checkIsNumber ? "" : "Please enter a valid phone number.",
             }));
         }, GlobalSettings.Settings.debounceTimer.valueChanges),
@@ -109,16 +117,18 @@ export default function SignUp() {
         }
     }
 
-    function handleBlur(field) {
-        return () => {
-            if (!eval(field)) {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [field]: `${ field.charAt(0).toUpperCase() + field.slice(1) } is required.`,
-                }));
-            }
-        };
-    }
+    const handleBlur = (field) => () => {
+        if (!eval(field)) {
+            setErrors((prev) => ({
+                ...prev,
+                [field]: `${ field.charAt(0).toUpperCase() + field.slice(1) } is required.`,
+            }));
+            setIsValids((prev) => ({ ...prev, [field]: true }));
+        } else {
+            setErrors((prev) => ({ ...prev, [field]: "" }));
+            setIsValids((prev) => ({ ...prev, [field]: false }));
+        }
+    };
 
     function handleChange(field, setter) {
         return (e) => {
@@ -151,8 +161,9 @@ export default function SignUp() {
                                 onChange={handleChange("fullname", setFullname)}
                                 onBlur={handleBlur("fullname")}
                                 required
+                                isInvalid={isValids.fullname}
+                                errorMessage={errors.fullname}
                             />
-                            {errors.fullname && <p className="text-red-500 text-sm">{errors.fullname}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -164,8 +175,9 @@ export default function SignUp() {
                                 onChange={handleChange("username", setUsername)}
                                 onBlur={handleBlur("username")}
                                 required
+                                isInvalid={isValids.username}
+                                errorMessage={errors.username}
                             />
-                            {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -177,8 +189,9 @@ export default function SignUp() {
                                 onChange={handleChange("email", setEmail)}
                                 onBlur={handleBlur("email")}
                                 required
+                                isInvalid={isValids.email}
+                                errorMessage={errors.email}
                             />
-                            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -190,8 +203,9 @@ export default function SignUp() {
                                 onChange={handleChange("phone", setPhoneNumber)}
                                 onBlur={handleBlur("phone")}
                                 required
+                                isInvalid={isValids.phone}
+                                errorMessage={errors.phone}
                             />
-                            {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -212,8 +226,9 @@ export default function SignUp() {
                                         {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
                                     </button>
                                 }
+                                isInvalid={isValids.password}
+                                errorMessage={errors.password}
                             />
-                            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                         </div>
 
                         <div className="mb-6">
@@ -234,8 +249,9 @@ export default function SignUp() {
                                         {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
                                     </button>
                                 }
+                                isInvalid={isValids.confirmPassword}
+                                errorMessage={errors.confirmPassword}
                             />
-                            {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
                         </div>
 
                         <div className="mb-4">
@@ -245,12 +261,13 @@ export default function SignUp() {
                                 selectedKeys={new Set([userType])}
                                 onSelectionChange={(keys) => setUserType(Array.from(keys).join(""))}
                                 isRequired
+                                isInvalid={isValids.userType}
+                                errorMessage={errors.userType}
                                 disabledKeys={["default"]}>
                                 <SelectItem key="default">Select a type</SelectItem>
                                 {userTypeList &&
                                     userTypeList.map((userType) => <SelectItem key={userType}>{userType}</SelectItem>)}
                             </Select>
-                            {errors.userType && <p className="text-red-500 text-sm">{errors.userType}</p>}
                         </div>
 
                         <button
@@ -270,3 +287,4 @@ export default function SignUp() {
         </>
     );
 }
+
