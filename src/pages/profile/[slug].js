@@ -38,8 +38,6 @@ export default function ProfileLayout() {
     const router = useRouter();
     const { slug } = router.query;
 
-    const [products, setProducts] = useState([]);
-    const [orders, setOrders] = useState([]);
     const [isMounted, setIsMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -54,13 +52,13 @@ export default function ProfileLayout() {
         tabs.push({
             key: "OrderContent",
             title: "OrderContent",
-            content: <OrdersTab router={router} orders={orders} isLoading={isLoading} />,
+            content: <OrdersTab router={router} user={user} isLoading={isLoading} />,
         });
     } else if (user && user.type === "PRODUCER") {
         tabs.push({
             key: "ManageProduct",
             title: "Manage Products",
-            content: <ManageProductsTab user={user} products={products} isLoading={isLoading} />,
+            content: <ManageProductsTab user={user} isLoading={isLoading} />,
         });
     }
 
@@ -70,30 +68,6 @@ export default function ProfileLayout() {
             if (slug === user.username) {
                 router.push({
                     query: { slug: user.username },
-                });
-                let productFilter = {
-                    Filter: `OwnerId = "${ user.id }"`,
-                };
-                Promise.all([
-                    apiService
-                        .getProducts(productFilter)
-                        .then((productRes) => {
-                            setProducts(productRes.result.data);
-                        })
-                        .catch((error) => {
-                            toast.error(error.message || "Failed to fetch products");
-                        }),
-                    apiService
-                        .getUserOrders(user.id)
-                        .then((orderRes) => {
-                            setOrders(orderRes.result);
-                        })
-                        .catch((error) => {
-                            console.log("Error: ", error);
-                            toast.error(error.message || "Failed to fetch orders");
-                        }),
-                ]).finally(() => {
-                    setIsLoading(false);
                 });
             }
         }
@@ -156,32 +130,52 @@ const OverviewTab = ({ user }) => {
     );
 };
 
-const OrdersTab = ({ orders, router, isLoading }) => {
+const OrdersTab = ({ router, user, isLoading }) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [rating, setRating] = useState(0);
+    const [orders, setOrders] = useState([]);
 
     function handleDataChange(newRating) {
         setRating(newRating);
     }
 
+
+
+    const getUserOrders = async () => {
+        apiService
+            .getUserOrders(user.id)
+            .then((orderRes) => {
+                setOrders(orderRes.result);
+            })
+            .catch((error) => {
+                console.log("Error: ", error);
+                toast.error(error.message || "Failed to fetch orders");
+            });
+    };
+
+    useEffect(() => {
+        getUserOrders();
+    }, []);
+
     async function handleSubmit(sub_order) {
+        let content = document.getElementById("content").value;
+        let dataJSON = {
+            sub_orderId: sub_order.id,
+            productId: sub_order.product.id,
+            content,
+            rating,
+        };
+
         try {
-            let content = document.getElementById("content").value;
-            let dataJSON = {
-                sub_orderId: sub_order.id,
-                productId: sub_order.product.id,
-                content,
-                rating,
-            };
             let response = await apiService.postFeedbackByProductId(dataJSON);
 
             if (response && response.ok) {
                 toast.success("Thanks for your feedback.");
-                router.push("/sign-in");
+                getUserOrders();
             }
         } catch (error) {
             console.error("Failed to post user data:", error);
-            toast.error("Error: ", error.message);
+            toast.error("Error:11111111 ", error.message);
         }
     }
 
@@ -283,16 +277,27 @@ const OrdersTab = ({ orders, router, isLoading }) => {
     );
 };
 
-const ManageProductsTab = ({ user, products, isLoading }) => {
+const ManageProductsTab = ({ user, isLoading }) => {
     const { isOpen: isAddOpen, onOpen: onAddOpen, onOpenChange: onAddChange } = useDisclosure();
     const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onOpenChange: onUpdateChange } = useDisclosure();
+
     const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [categories, setCategories] = useState([]);
     const [discounts, setDiscounts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        Promise.all([apiService.getDiscounts(), apiService.getProd_Categories()]).then(([discounts, categories]) => {
+        let productFilter = {
+            Filter: `OwnerId = "${ user.id }"`,
+        };
+
+        Promise.all([
+            apiService.getProducts(productFilter),
+            apiService.getDiscounts(),
+            apiService.getProd_Categories(),
+        ]).then(([products, discounts, categories]) => {
+            setProducts(products.result.data);
             setDiscounts(discounts.result.data);
             setCategories(categories.result.data);
         });
