@@ -172,7 +172,7 @@ export default function RecoveryPassword() {
                             <Input
                                 key={index}
                                 id={`otp-${ index }`}
-                                type="text" // Change to text for better control
+                                type="number"
                                 value={digit}
                                 maxLength={1}
                                 placeholder="-"
@@ -180,7 +180,7 @@ export default function RecoveryPassword() {
                                 onKeyDown={(e) => handleKeyDown(index, e)}
                                 onBlur={handleBlur("otp")}
                                 required
-                                ref={(el) => (otpRefs.current[index] = el)} // Assign ref
+                                ref={(el) => (otpRefs.current[index] = el)}
                                 className="text-center size-10"
                             />
                         ))}

@@ -1,4 +1,5 @@
 import CommentCard from "@/components/shared/cards/comment-card";
+import LoadingIndicator from "@/components/shared/loading-indicator";
 import ProductInfo from "@/components/shared/product-info";
 import apiService from "@/services/api-service";
 import { useRouter } from "next/router";
@@ -9,14 +10,14 @@ export default function ProductDetail() {
     const router = useRouter();
     const { slug } = router.query;
     const [product, setProduct] = useState();
-    const [comments, setComments] = useState([]);
+    const [feedbacks, setFeedbacks] = useState([]);
 
     useEffect(() => {
         if (router.isReady && slug) {
             Promise.all([apiService.getProduct(slug), apiService.getFeedbacksByProductId(slug)])
-                .then(([prodRes, commentRes]) => {
+                .then(([prodRes, feedbackRes]) => {
                     setProduct(prodRes.result);
-                    setComments(commentRes.result);
+                    setFeedbacks(feedbackRes.result);
                 })
                 .catch((error) => {
                     console.log("Error fetching product: ", error);
@@ -50,8 +51,8 @@ export default function ProductDetail() {
                                 }
                             />
                         </div> */}
-                        {Array.isArray(comments) &&
-                            comments.map((comment) => (
+                        {Array.isArray(feedbacks) &&
+                            feedbacks.map((comment) => (
                                 <div key={comment.id} className="mb-4">
                                     <CommentCard
                                         avatar={comment.user.avatar ?? null}
@@ -65,7 +66,7 @@ export default function ProductDetail() {
                     </div>
                 </div>
             ) : (
-                <p>Loading product details...</p>
+                <LoadingIndicator />
             )}
         </>
     );

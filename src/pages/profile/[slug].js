@@ -54,7 +54,7 @@ export default function ProfileLayout() {
         tabs.push({
             key: "OrderContent",
             title: "OrderContent",
-            content: <OrdersTab router={router} user={user} orders={orders} isLoading={isLoading} />,
+            content: <OrdersTab router={router} orders={orders} isLoading={isLoading} />,
         });
     } else if (user && user.type === "PRODUCER") {
         tabs.push({
@@ -156,7 +156,7 @@ const OverviewTab = ({ user }) => {
     );
 };
 
-const OrdersTab = ({ user, orders, router, isLoading }) => {
+const OrdersTab = ({ orders, router, isLoading }) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [rating, setRating] = useState(0);
 
@@ -164,16 +164,16 @@ const OrdersTab = ({ user, orders, router, isLoading }) => {
         setRating(newRating);
     }
 
-    async function handleSubmit(productId) {
-        let content = document.getElementById("content").value;
-        let userId = user.id;
-        let dataJSON = {
-            userId,
-            content,
-            rating,
-        };
+    async function handleSubmit(sub_order) {
         try {
-            let response = await apiService.postFeedbackByProductId(productId, dataJSON);
+            let content = document.getElementById("content").value;
+            let dataJSON = {
+                sub_orderId: sub_order.id,
+                productId: sub_order.product.id,
+                content,
+                rating,
+            };
+            let response = await apiService.postFeedbackByProductId(dataJSON);
 
             if (response && response.ok) {
                 toast.success("Thanks for your feedback.");
@@ -254,7 +254,7 @@ const OrdersTab = ({ user, orders, router, isLoading }) => {
                                                             <Button
                                                                 color="primary"
                                                                 onPress={() => {
-                                                                    handleSubmit(order.product.id);
+                                                                    handleSubmit(order);
                                                                     onClose();
                                                                 }}>
                                                                 Submit

@@ -185,13 +185,13 @@ class APIService {
         return this.#getItem("discounts", id);
     }
 
-    //#region comments
+    //#region feedbacks
     async getFeedbacksByProductId(productId) {
-        return this.#getItems(`comments/products/${ productId }`);
+        return this.#getItems(`feedbacks/product/${ productId }`);
     }
 
-    async postFeedbackByProductId(productId, data) {
-        return this.#postItem(`comments/products/${ productId }`, data);
+    async postFeedbackByProductId(data) {
+        return this.#postItem(`feedbacks/product`, data);
     }
 }
 
