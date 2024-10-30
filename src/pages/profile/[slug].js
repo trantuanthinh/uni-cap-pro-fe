@@ -30,6 +30,8 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { IoIosRemoveCircleOutline } from "react-icons/io";
+import { MdOutlineFileUpload } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
@@ -69,6 +71,7 @@ export default function ProfileLayout() {
                 router.push({
                     query: { slug: user.username },
                 });
+                setIsLoading(true);
             }
         }
     }, [router.isReady, slug, user]);
@@ -112,12 +115,74 @@ export default function ProfileLayout() {
     );
 }
 
-const Avatar = ({ avatar = null, username }) =>
-    avatar ? (
-        <Image className="rounded-full shadow-lg" src={avatar} alt={username} width={96} height={96} />
-    ) : (
-        <span className="text-gray-600 font-bold text-5xl">{username?.charAt(0).toUpperCase()}</span>
+const Avatar = ({ avatar = null, username }) => {
+    const [isMouseOver, setIsMouseOver] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [preview, setPreview] = useState(avatar);
+
+    const handleMouseOver = () => setIsMouseOver(true);
+    const handleMouseLeave = () => setIsMouseOver(false);
+
+    const onUpload = () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                setSelectedFile(file);
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreview(reader.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        input.click();
+    };
+
+    const onRemove = () => {
+        setSelectedFile(null);
+        setPreview(null);
+    };
+
+    return (
+        <div
+            className="relative flex items-center justify-center w-28 h-28 rounded-full overflow-hidden border-2 border-gray-300 bg-gray-100 transition-transform duration-200 hover:scale-105"
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseLeave}>
+            {preview ? (
+                <Image
+                    className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
+                    src={preview}
+                    alt={username}
+                    width={96}
+                    height={96}
+                    onClick={onUpload}
+                />
+            ) : (
+                <span className="text-gray-600 font-bold text-5xl">{username?.charAt(0).toUpperCase()}</span>
+            )}
+
+            {isMouseOver && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full">
+                    <div className="flex space-x-4">
+                        {preview && (
+                            <button onClick={onRemove} aria-label="Remove Avatar" className="text-white text-2xl">
+                                <IoIosRemoveCircleOutline />
+                            </button>
+                        )}
+                        <button onClick={onUpload} aria-label="Upload Avatar" className="text-white text-2xl">
+                            <MdOutlineFileUpload />
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
     );
+};
 
 const OverviewTab = ({ user }) => {
     return (
@@ -138,8 +203,6 @@ const OrdersTab = ({ router, user, isLoading }) => {
     function handleDataChange(newRating) {
         setRating(newRating);
     }
-
-
 
     const getUserOrders = async () => {
         apiService
