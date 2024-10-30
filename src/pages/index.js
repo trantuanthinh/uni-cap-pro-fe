@@ -2,7 +2,7 @@ import ProductList from "@/components/main/product-list";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
-import { Button } from "@nextui-org/react";
+import { Button, Image } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -38,18 +38,8 @@ export default function Home({ }) {
         <>
             <Title label={`${ GlobalSettings.Settings.name } - Home`} />
             <main className="grid grid-flow-row gap-y-2">
-                <section className="bg-[#F5F5DC] py-10">
-                    <div className="container mx-auto px-4 md:px-0">
-                        <div className="flex flex-col md:flex-row items-center justify-center">
-                            <div className="w-full md:w-1/2 flex flex-col items-center justify-center md:pl-10">
-                                <h2 className="text-3xl font-bold">Welcome to {GlobalSettings.Settings.name}</h2>
-                                <p className="text-lg">Shop with us and enjoy the best shopping experience</p>
-                                <Button auto className="mt-6" size="lg">
-                                    Explore Now
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
+                <section className="bg-[#F5F5DC] py-5 flex justify-center items-center">
+                    <Banner />
                 </section>
 
                 <section className="flex flex-col items-center justify-center">
@@ -68,3 +58,36 @@ export default function Home({ }) {
         </>
     );
 }
+
+const Banner = () => {
+    return (
+        <>
+            <div className="flex flex-col md:flex-row w-full max-w-screen-xl mx-auto rounded-lg overflow-hidden">
+                {/* Left side image */}
+                <div className="relative w-full md:w-1/2 h-[300px] md:h-auto">
+                    <Image
+                        src="/background.jpg"
+                        alt="Background"
+                        layout="fill"
+                        objectFit="cover"
+                        priority
+                        className="rounded-l-lg"
+                    />
+                </div>
+
+                {/* Right side content */}
+                <div className="flex flex-col items-center justify-center w-full md:w-1/2 p-6 md:p-10  text-center md:text-left">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+                        Welcome to {GlobalSettings.Settings.name}
+                    </h2>
+                    <p className="text-lg md:text-xl text-gray-700 mt-4">
+                        Shop with us and enjoy the best shopping experience.
+                    </p>
+                    <Button auto className="mt-6" size="lg" color="primary">
+                        Explore Now
+                    </Button>
+                </div>
+            </div>
+        </>
+    );
+};

@@ -20,10 +20,10 @@ export default function Cart() {
     const cart = useSelector((state) => state.cart);
     const checkout = useSelector((state) => state.checkout);
     const groupCart = useSelector((state) => state.groupCart);
-    const [ haveProduct, setHaveProduct ] = useState(false);
-    const [ haveJoinedProduct, setHaveJoinedProduct ] = useState(false);
+    const [haveProduct, setHaveProduct] = useState(false);
+    const [haveJoinedProduct, setHaveJoinedProduct] = useState(false);
 
-    const [ activeTab, setActiveTab ] = useState("cart");
+    const [activeTab, setActiveTab] = useState("cart");
 
     function removeFromCheckout(id) {
         dispatch(removeItemFromCheckout(id));
@@ -92,7 +92,7 @@ export default function Cart() {
         if (cart.items.length === 0) {
             dispatch(resetCart());
         }
-    }, [ cart.items, dispatch ]);
+    }, [cart.items, dispatch]);
 
     useEffect(() => {
         setHaveJoinedProduct(groupCart.items.length > 0);
@@ -100,11 +100,11 @@ export default function Cart() {
         if (groupCart.items.length === 0) {
             dispatch(resetGroupCart());
         }
-    }, [ groupCart.items, dispatch ]);
+    }, [groupCart.items, dispatch]);
 
     return (
         <>
-            <Title label={ `${ GlobalSettings.Settings.name } - Cart` } />
+            <Title label={`${ GlobalSettings.Settings.name } - Cart`} />
             <div className="h-full container mx-auto py-8 px-8">
                 <div>
                     <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
@@ -112,35 +112,43 @@ export default function Cart() {
                 <div>
                     <h3 className="text-2xl mb-6">Review the items in your cart and complete your purchase.</h3>
                 </div>
-                <Tabs aria-label="Item Tabs" selectedKey={ activeTab } className="hidden">
+                <Tabs aria-label="Item Tabs" selectedKey={activeTab} className="hidden">
                     <Tab title="Cart Items" key="cart">
                         <Card>
                             <CardBody className="space-y-2">
-                                { haveProduct ? (
+                                {haveProduct ? (
                                     <CartList
-                                        items={ cart.items }
-                                        removeFromCheckout={ removeFromCheckout }
-                                        removeFromCart={ removeFromCart }
+                                        items={cart.items}
+                                        removeFromCheckout={removeFromCheckout}
+                                        removeFromCart={removeFromCart}
                                     />
                                 ) : (
-                                    <p>Don't Have Any Items In Your Cart</p>
-                                ) }
+                                    <div className="flex justify-center items-center py-6">
+                                        <p className="text-lg text-gray-500">Your cart is currently empty.</p>
+                                    </div>
+                                )}
                             </CardBody>
-                            <Divider />
+                            <div className="flex justify-center flex-row w-full">
+                                <Divider className="w-80" />
+                            </div>
                             <CardBody className="space-y-2">
-                                { haveJoinedProduct ? (
+                                {haveJoinedProduct ? (
                                     <GroupCartList
-                                        items={ groupCart.items }
-                                        removeFromCheckout={ removeFromCheckout }
-                                        removeFromGroupCart={ removeFromGroupCart }
+                                        items={groupCart.items}
+                                        removeFromCheckout={removeFromCheckout}
+                                        removeFromGroupCart={removeFromGroupCart}
                                     />
                                 ) : (
-                                    <p>Don't Have Any Items In Your Group Cart</p>
-                                ) }
+                                    <div className="flex justify-center items-center py-6">
+                                        <p className="text-lg text-gray-500">Don't have any items in your group cart.</p>
+                                    </div>
+                                )}
                             </CardBody>
-                            <Divider />
+                            <div className="flex justify-end flex-row w-full">
+                                <Divider className="w-80" />
+                            </div>
                             <CardFooter className="flex justify-end">
-                                <Button onClick={ () => setActiveTab("checkout") }>Checkout</Button>
+                                <Button onClick={() => setActiveTab("checkout")}>Checkout</Button>
                             </CardFooter>
                         </Card>
                     </Tab>
@@ -148,15 +156,15 @@ export default function Cart() {
                     <Tab title="Checkout Items" key="checkout">
                         <Card>
                             <CardBody className="space-y-2">
-                                <CheckoutList items={ checkout.items } handleOrder={ handleOrder } />
+                                <CheckoutList items={checkout.items} handleOrder={handleOrder} />
                             </CardBody>
                             <CardFooter className="flex justify-end space-x-5">
                                 <Button
                                     radius="lg"
-                                    onClick={ () => {
+                                    onClick={() => {
                                         setActiveTab("cart");
                                         dispatch(resetCheckoutCart());
-                                    } }
+                                    }}
                                     color="danger">
                                     Back
                                 </Button>
