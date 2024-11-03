@@ -69,6 +69,27 @@ class HTTPService {
         }
     }
 
+    async putImage(url, formData) {
+        try {
+            const request = {
+                method: "PUT",
+                body: formData,
+            };
+
+            const response = await fetch(url, request);
+
+            if (!response.ok) {
+                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+            }
+
+            console.log("Post Successfully", response);
+            return await response.json();
+        } catch (error) {
+            console.error("Failed to post item:", error);
+            throw error;
+        }
+    }
+
     async putItem(url, data) {
         try {
             const request = {

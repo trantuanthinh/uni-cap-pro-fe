@@ -117,6 +117,7 @@ export default function ProfileLayout() {
 }
 
 const Avatar = ({ user }) => {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     const [isMouseOver, setIsMouseOver] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(user?.avatar);
@@ -147,6 +148,10 @@ const Avatar = ({ user }) => {
 
     const confirmUpload = () => {
         if (!selectedFile) return;
+        if (selectedFile.size > MAX_FILE_SIZE) {
+            toast.error("File size exceeds the limit of 5 MB.");
+            return;
+        }
         apiService
             .uploadAvatar(selectedFile, user.id)
             .then(() => {

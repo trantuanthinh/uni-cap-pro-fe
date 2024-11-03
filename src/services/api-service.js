@@ -52,6 +52,15 @@ class APIService {
         }
     }
 
+    async #putImage(url, id, formData) {
+        let fullUrl = this.#buildUrl(url, id);
+        try {
+            return await httpService.putImage(fullUrl, formData);
+        } catch (error) {
+            return this.#handleError("postItem: ", error);
+        }
+    }
+
     async #putItem(url, data, option = null) {
         let fullUrl = this.#buildUrl(url, option);
         try {
@@ -122,8 +131,10 @@ class APIService {
         return this.#getItems(`users/orders/${ id }`, option);
     }
 
-    async uploadAvatar(id, option) {
-        return this.#putItem(`users/avatar/${ id }`, option);
+    async uploadAvatar(file, id) {
+        const formData = new FormData();
+        formData.append("file", file);
+        return this.#putImage(`users/avatar`, id, formData);
     }
 
     async deleteAvatar(id) {
