@@ -133,6 +133,10 @@ const Avatar = ({ user }) => {
 
         input.onchange = (e) => {
             const file = e.target.files[0];
+            if (file.size > MAX_FILE_SIZE) {
+                toast.error("File size exceeds the limit of 5 MB.");
+                return;
+            }
             if (file) {
                 setSelectedFile(file);
                 const reader = new FileReader();
@@ -148,10 +152,7 @@ const Avatar = ({ user }) => {
 
     const confirmUpload = () => {
         if (!selectedFile) return;
-        if (selectedFile.size > MAX_FILE_SIZE) {
-            toast.error("File size exceeds the limit of 5 MB.");
-            return;
-        }
+
         apiService
             .uploadAvatar(selectedFile, user.id)
             .then(() => {
@@ -159,8 +160,9 @@ const Avatar = ({ user }) => {
                 return apiService.getUser(user.id);
             })
             .then((updatedUser) => {
-                dispatch(setUser(updatedUser));
+                setPreview(null);
                 setSelectedFile(null);
+                dispatch(setUser(updatedUser.result));
             })
             .catch((error) => {
                 console.error("Error: ", error);
@@ -181,9 +183,9 @@ const Avatar = ({ user }) => {
                 return apiService.getUser(user.id);
             })
             .then((updatedUser) => {
-                dispatch(setUser(updatedUser));
                 setSelectedFile(null);
                 setPreview(null);
+                dispatch(setUser(updatedUser.result));
             })
             .catch((error) => {
                 console.error("Error: ", error);
