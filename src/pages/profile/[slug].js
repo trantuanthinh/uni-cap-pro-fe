@@ -6,6 +6,7 @@ import LoadingIndicator from "@/components/shared/loading-indicator";
 import StarRating from "@/components/shared/star-rating";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
+import { setUser } from "@/redux/slicers/userSlice";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import {
@@ -32,7 +33,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { IoIosRemoveCircleOutline } from "react-icons/io";
 import { MdOutlineFileUpload } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 export default function ProfileLayout() {
@@ -86,8 +87,8 @@ export default function ProfileLayout() {
             {isMounted && user ? (
                 <div className="max-w-screen-lg mx-auto py-10 px-6">
                     <div className="flex items-center space-x-8 mb-10">
-                        <div className="w-28 h-28 flex justify-center items-center rounded-full bg-gradient-to-r from-green-300 to-blue-500 shadow-md overflow-hidden">
-                            <Avatar avatar={user?.avatar} username={user?.username} />
+                        <div className="">
+                            <Avatar user={user} />
                         </div>
 
                         <div>
@@ -115,10 +116,11 @@ export default function ProfileLayout() {
     );
 }
 
-const Avatar = ({ avatar = null, username }) => {
+const Avatar = ({ user }) => {
     const [isMouseOver, setIsMouseOver] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [preview, setPreview] = useState(avatar);
+    const [preview, setPreview] = useState(user?.avatar);
+    const dispatch = useDispatch();
 
     const handleMouseOver = () => setIsMouseOver(true);
     const handleMouseLeave = () => setIsMouseOver(false);
@@ -143,44 +145,104 @@ const Avatar = ({ avatar = null, username }) => {
         input.click();
     };
 
-    const onRemove = () => {
-        setSelectedFile(null);
+    const confirmUpload = () => {
+        if (!selectedFile) return;
+        apiService
+            .uploadAvatar(selectedFile, user.id)
+            .then(() => {
+                toast.success("Avatar uploaded successfully");
+                return apiService.getUser(user.id);
+            })
+            .then((updatedUser) => {
+                dispatch(setUser(updatedUser));
+                setSelectedFile(null);
+            })
+            .catch((error) => {
+                console.error("Error: ", error);
+                toast.error(error.message || "Failed to upload avatar");
+            });
+    };
+
+    const cancelUpload = () => {
         setPreview(null);
+        setSelectedFile(null);
+    };
+
+    const onRemove = () => {
+        apiService
+            .deleteAvatar(user.id)
+            .then(() => {
+                toast.success("Avatar removed successfully");
+                return apiService.getUser(user.id);
+            })
+            .then((updatedUser) => {
+                dispatch(setUser(updatedUser));
+                setSelectedFile(null);
+                setPreview(null);
+            })
+            .catch((error) => {
+                console.error("Error: ", error);
+                toast.error(error.message || "Failed to delete avatar");
+            });
     };
 
     return (
-        <div
-            className="relative flex items-center justify-center w-28 h-28 rounded-full overflow-hidden border-2 border-gray-300 bg-gray-100 transition-transform duration-200 hover:scale-105"
-            onMouseOver={handleMouseOver}
-            onMouseLeave={handleMouseLeave}>
-            {preview ? (
-                <Image
-                    className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
-                    src={preview}
-                    alt={username}
-                    width={96}
-                    height={96}
-                    onClick={onUpload}
-                />
-            ) : (
-                <span className="text-gray-600 font-bold text-5xl">{username?.charAt(0).toUpperCase()}</span>
-            )}
+        <>
+            <div
+                className="relative size-32 flex justify-center items-center rounded-full bg-gradient-to-r from-green-300 to-blue-500 shadow-md overflow-hidden"
+                onMouseOver={handleMouseOver}
+                onMouseLeave={handleMouseLeave}>
+                {preview ? (
+                    <Image
+                        className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
+                        src={preview}
+                        alt={user?.username}
+                        width={128}
+                        height={128}
+                        onClick={onUpload}
+                    />
+                ) : user?.avatar ? (
+                    <Image
+                        className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
+                        src={user.avatar}
+                        alt={user?.username}
+                        width={128}
+                        height={128}
+                        onClick={onUpload}
+                    />
+                ) : (
+                    <span className="text-gray-600 font-bold text-6xl">{user?.username?.charAt(0).toUpperCase()}</span>
+                )}
 
-            {isMouseOver && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full">
-                    <div className="flex space-x-4">
-                        {preview && (
+                {isMouseOver && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full">
+                        <div className="flex space-x-4">
                             <button onClick={onRemove} aria-label="Remove Avatar" className="text-white text-2xl">
                                 <IoIosRemoveCircleOutline />
                             </button>
-                        )}
-                        <button onClick={onUpload} aria-label="Upload Avatar" className="text-white text-2xl">
-                            <MdOutlineFileUpload />
-                        </button>
+
+                            <button onClick={onUpload} aria-label="Upload Avatar" className="text-white text-2xl">
+                                <MdOutlineFileUpload />
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
+            </div>
+
+            {preview && (
+                <>
+                    <div className="flex flex-row pt-4 space-x-4">
+                        <Button onClick={cancelUpload} size="sm" aria-label="Cancel Upload" className="text-white">
+                            Cancel
+                        </Button>
+
+                        <Button onClick={confirmUpload} size="sm" aria-label="Confirm Upload" className="text-white">
+                            Confirm
+                        </Button>
+                    </div>
+                </>
             )}
-        </div>
+        </>
     );
 };
 

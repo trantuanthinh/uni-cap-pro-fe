@@ -61,7 +61,31 @@ class HTTPService {
                 throw new Error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Created Successfully", response);
+            console.log("Post Successfully", response);
+            return await response.json();
+        } catch (error) {
+            console.error("Failed to post item:", error);
+            throw error;
+        }
+    }
+
+    async putItem(url, data) {
+        try {
+            const request = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            };
+
+            const response = await fetch(url, request);
+
+            if (!response.ok) {
+                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+            }
+
+            console.log("Put Successfully", response);
             return await response.json();
         } catch (error) {
             console.error("Failed to post item:", error);
@@ -85,7 +109,7 @@ class HTTPService {
                 throw new Error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Patched Successfully", response);
+            console.log("Patch Successfully", response);
             return await response.json();
         } catch (error) {
             console.error("Failed to patch item:", error);
@@ -108,7 +132,7 @@ class HTTPService {
                 throw new Error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Deleted Successfully", response);
+            console.log("Delete Successfully", response);
             return await response.json();
         } catch (error) {
             console.error("Failed to delete item:", error);

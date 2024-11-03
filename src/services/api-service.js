@@ -52,6 +52,15 @@ class APIService {
         }
     }
 
+    async #putItem(url, data, option = null) {
+        let fullUrl = this.#buildUrl(url, option);
+        try {
+            return await httpService.putItem(fullUrl, data);
+        } catch (error) {
+            return this.#handleError("putItem: ", error);
+        }
+    }
+
     async #patchItem(url, id, data, option = null) {
         let fullUrl = this.#buildUrl(url, id, option);
         try {
@@ -88,10 +97,6 @@ class APIService {
         return this.#postItem("auth/send-otp", data);
     }
 
-    async verifyOTP(data) {
-        return this.#postItem("auth/verify-otp", data);
-    }
-
     async resetPassword(data) {
         return this.#postItem("auth/reset-password", data);
     }
@@ -115,6 +120,14 @@ class APIService {
 
     async getUserOrders(id, option) {
         return this.#getItems(`users/orders/${ id }`, option);
+    }
+
+    async uploadAvatar(id, option) {
+        return this.#putItem(`users/avatar/${ id }`, option);
+    }
+
+    async deleteAvatar(id) {
+        return this.#deleteItem(`users/avatar`, id);
     }
 
     //#region products

@@ -53,7 +53,7 @@ export default function RecoveryPassword() {
             let dataJSON = { email };
             let response = await apiService.sendOTP(dataJSON);
             if (response && response.ok) {
-                setStep(response.result);
+                setStep(2);
                 toast.success("OTP sent successfully. Please enter the OTP.");
             }
         } catch (error) {
@@ -67,22 +67,7 @@ export default function RecoveryPassword() {
             toast.error("All OTP digits are required.");
             return;
         }
-
-        try {
-            let _otp = otp.join("");
-            let dataJSON = { email, otp: _otp };
-            console.log("🚀 ~ verifyOTP ~ dataJSON:", dataJSON);
-            let response = await apiService.verifyOTP(dataJSON);
-            if (response && response.ok) {
-                setStep(response.result);
-                toast.success("OTP verified. Please set a new password.");
-            } else {
-                toast.error("Invalid OTP. Please try again.");
-            }
-        } catch (error) {
-            console.error("Failed to verify OTP:", error);
-            setErrors({ server: "An error occurred. Please try again." });
-        }
+        setStep(3);
     };
 
     const handleChangePassword = async (e) => {
@@ -90,7 +75,8 @@ export default function RecoveryPassword() {
         if (!validateForm()) return;
 
         try {
-            let dataJSON = { email, password };
+            let _otp = otp.join("");
+            let dataJSON = { email, password, otp: _otp };
             let response = await apiService.resetPassword(dataJSON);
             if (response && response.ok) {
                 toast.success("Password recovered successfully. Please sign in to continue.");
