@@ -1,7 +1,7 @@
 class DataManagement {
     USER_TYPE = {
-        COMPANY: "COMPANY",
-        PRODUCER: "PRODUCER",
+        BUYER: "BUYER",
+        SALER: "SALER",
     };
 
     ACTIVE_STATUS = {

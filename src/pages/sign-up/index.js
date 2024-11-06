@@ -1,9 +1,8 @@
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
-import dataManagement from "@/services/data-manage";
 import sharedService from "@/services/sharedService";
-import { Input, Select, SelectItem } from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
 import { debounce } from "lodash";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -20,12 +19,9 @@ export default function SignUp() {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [userType, setUserType] = useState("");
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-
-    const userTypeList = Object.values(dataManagement.USER_TYPE);
 
     const togglePasswordVisibility = () => setIsPasswordVisible(!isPasswordVisible);
     const toggleConfirmPasswordVisibility = () => setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
@@ -37,7 +33,6 @@ export default function SignUp() {
         phone: "",
         password: "",
         confirmPassword: "",
-        userType: "",
     });
 
     const [isValids, setIsValids] = useState({
@@ -47,7 +42,6 @@ export default function SignUp() {
         phone: false,
         password: false,
         confirmPassword: false,
-        userType: false,
     });
 
     const checkPhoneNumber = useCallback(
@@ -75,7 +69,6 @@ export default function SignUp() {
         if (!phoneNumber) newErrors.phone = "Phone Number is required.";
         if (!password) newErrors.password = "Password is required.";
         if (!confirmPassword) newErrors.confirmPassword = "Confirm Password is required.";
-        if (!userType) newErrors.userType = "User Type is required.";
 
         if (password && confirmPassword && password !== confirmPassword) {
             newErrors.confirmPassword = "Passwords do not match.";
@@ -96,10 +89,6 @@ export default function SignUp() {
             email: email,
             password: password,
             phoneNumber: phoneNumber,
-            active_Status: dataManagement.ACTIVE_STATUS.ACTIVE,
-            user_Type: dataManagement.USER_TYPE[userType],
-            avatar: null,
-            description: null,
         };
         try {
             let response = await apiService.signup(dataJSON);
@@ -254,22 +243,6 @@ export default function SignUp() {
                             />
                         </div>
 
-                        <div className="mb-4">
-                            <Select
-                                label="User Type"
-                                id="userType"
-                                selectedKeys={new Set([userType])}
-                                onSelectionChange={(keys) => setUserType(Array.from(keys).join(""))}
-                                isRequired
-                                isInvalid={isValids.userType}
-                                errorMessage={errors.userType}
-                                disabledKeys={["default"]}>
-                                <SelectItem key="default">Select a type</SelectItem>
-                                {userTypeList &&
-                                    userTypeList.map((userType) => <SelectItem key={userType}>{userType}</SelectItem>)}
-                            </Select>
-                        </div>
-
                         <button
                             type="submit"
                             className="w-full bg-primary-green hover:bg-green-700 text-white py-2 px-4 rounded">
@@ -287,4 +260,3 @@ export default function SignUp() {
         </>
     );
 }
-
