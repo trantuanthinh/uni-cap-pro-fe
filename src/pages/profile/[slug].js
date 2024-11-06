@@ -42,7 +42,7 @@ export default function ProfileLayout() {
     const { slug } = router.query;
 
     const [isMounted, setIsMounted] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const tabs = [
         {
@@ -50,13 +50,18 @@ export default function ProfileLayout() {
             title: "Overview",
             content: <OverviewTab user={user} />,
         },
-    ];
-    if (user && user.type === "COMPANY") {
-        tabs.push({
+        {
             key: "OrderContent",
             title: "OrderContent",
             content: <OrdersTab router={router} user={user} isLoading={isLoading} />,
-        });
+        }
+    ];
+    if (user && user.type === "COMPANY") {
+        // tabs.push({
+        //     key: "OrderContent",
+        //     title: "OrderContent",
+        //     content: <OrdersTab router={router} user={user} isLoading={isLoading} />,
+        // });
     } else if (user && user.type === "PRODUCER") {
         tabs.push({
             key: "ManageProduct",
@@ -72,8 +77,8 @@ export default function ProfileLayout() {
                 router.push({
                     query: { slug: user.username },
                 });
-                setIsLoading(true);
             }
+            setIsLoading(false);
         }
     }, [router.isReady, slug, user]);
 
