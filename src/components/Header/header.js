@@ -1,3 +1,5 @@
+import { clearCart } from "@/redux/slicers/cartSlice";
+import { clearGroupCart } from "@/redux/slicers/groupCartSlice";
 import { clearUser } from "@/redux/slicers/userSlice";
 import apiService from "@/services/api-service";
 import {
@@ -70,7 +72,9 @@ export default function Header() {
                 <NavbarItem>
                     <Dropdown>
                         <DropdownTrigger>
-                            <Button variant="ghost" className="border-none hover:underline">Product</Button>
+                            <Button variant="ghost" className="border-none hover:underline">
+                                Product
+                            </Button>
                         </DropdownTrigger>
                         <DropdownMenu aria-label="Categories" color="primary" variant="flat">
                             <DropdownSection showDivider>
@@ -148,6 +152,8 @@ const UserActions = ({ user }) => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         dispatch(clearUser());
+        dispatch(clearCart());
+        dispatch(clearGroupCart());
         router.push("/");
     };
 

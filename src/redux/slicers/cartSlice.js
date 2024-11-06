@@ -58,13 +58,13 @@ export const cartSlice = createSlice({
             }
         },
 
-        resetCart: (state) => {
+        clearCart: (state) => {
             return initialState;
         },
     },
 });
 
-export const { addItemToCart, incrementQuantity, decrementQuantity, removeItemFromCart, resetCart } =
+export const { addItemToCart, incrementQuantity, decrementQuantity, removeItemFromCart, clearCart } =
     cartSlice.actions;
 
 export default cartSlice.reducer;

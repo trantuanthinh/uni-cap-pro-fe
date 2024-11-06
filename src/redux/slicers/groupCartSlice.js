@@ -58,13 +58,13 @@ export const groupCartSlice = createSlice({
             }
         },
 
-        resetGroupCart: (state) => {
+        clearGroupCart: (state) => {
             return initialState;
         },
     },
 });
 
-export const { addItemToGroupCart, incrementQuantity, decrementQuantity, removeItemFromGroupCart, resetGroupCart } =
+export const { addItemToGroupCart, incrementQuantity, decrementQuantity, removeItemFromGroupCart, clearGroupCart } =
     groupCartSlice.actions;
 
 export default groupCartSlice.reducer;
