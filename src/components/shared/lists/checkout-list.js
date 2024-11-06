@@ -20,12 +20,21 @@ export default function CheckoutList({ items = null, handleOrder }) {
         <>
             {items && items?.map((item, index) => {
                 let product;
+                let discountPrice = 0;
                 switch (item?.cart_type) {
                     case "cart":
                         product = item;
                         break;
                     case "group-cart":
                         product = item?.product;
+                        if (item.level > 1) {
+                            for (let item of product.discount.discount_Details) {
+                                if (item.level == order.level) {
+                                    discountPrice = sharedService.formatVietnamDong(product.price - product.price * item.amount);
+                                    break;
+                                }
+                            }
+                        }
                         break;
                     default:
                         return;
@@ -59,6 +68,7 @@ export default function CheckoutList({ items = null, handleOrder }) {
                             )}
                             <div className="col-span-2">
                                 <p className="text-lg font-semibold">Total Price: {formattedTotalPrice}</p>
+                                <p className="text-lg font-semibold">Total Price: {discountPrice}</p>
                             </div>
                         </div>
 

@@ -5,9 +5,9 @@ import CheckoutList from "@/components/shared/lists/checkout-list";
 import GroupCartList from "@/components/shared/lists/group-cart-list";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
-import { removeItemFromCart, resetCart } from "@/redux/slicers/cartSlice";
+import { clearCart, removeItemFromCart } from "@/redux/slicers/cartSlice";
 import { removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
-import { removeItemFromGroupCart, resetGroupCart } from "@/redux/slicers/groupCartSlice";
+import { clearGroupCart, removeItemFromGroupCart } from "@/redux/slicers/groupCartSlice";
 import apiService from "@/services/api-service";
 import { Button, Card, CardBody, CardFooter, Divider, Tab, Tabs } from "@nextui-org/react";
 import { useEffect, useState } from "react";
@@ -90,7 +90,7 @@ export default function Cart() {
         setHaveProduct(cart.items.length > 0);
         // dispatch(resetCheckoutCart());
         if (cart.items.length === 0) {
-            dispatch(resetCart());
+            dispatch(clearCart());
         }
     }, [cart.items, dispatch]);
 
@@ -98,7 +98,7 @@ export default function Cart() {
         setHaveJoinedProduct(groupCart.items.length > 0);
         // dispatch(resetCheckoutCart());
         if (groupCart.items.length === 0) {
-            dispatch(resetGroupCart());
+            dispatch(clearGroupCart());
         }
     }, [groupCart.items, dispatch]);
 

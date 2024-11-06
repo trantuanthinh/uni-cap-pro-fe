@@ -44,6 +44,16 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
     return (
         <CheckboxGroup label="Choose Your Joined Items" value={selected} onValueChange={setSelected}>
             {items.map((item) => {
+                let discountPrice;
+                if (item.level > 1) {
+                    for (let item of product.discount.discount_Details) {
+                        if (item.level == order.level) {
+                            discountPrice = sharedService.formatVietnamDong(product.price - product.price * item.amount);
+                            break;
+                        }
+                    }
+                }
+
                 const product = item.product;
 
                 if (!product) return null;
@@ -86,6 +96,7 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
                             <span className="text-red-500">{formattedPrice}</span>
                             <div className="col-span-2">
                                 <p className="text-lg font-semibold">Total Price: {formattedTotalPrice}</p>
+                                <p className="text-lg font-semibold">Total Price: {discountPrice}</p>
                             </div>
                         </div>
 

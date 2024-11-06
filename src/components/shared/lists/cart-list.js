@@ -40,8 +40,8 @@ export default function CartList({ items = null, removeFromCheckout, removeFromC
     }
 
     function addToCheckout(item) {
-        const isShare = selectedTypes[item.id] ?? false; // Default 'false' if not set
-        dispatch(addItemToCheckout({ ...item, isShare: isShare, cart_type: "cart" })); // Add isShare to item when dispatching
+        const isShare = selectedTypes[item.id] ?? false;
+        dispatch(addItemToCheckout({ ...item, isShare: isShare, cart_type: "cart" }));
     }
 
     function handleChangeType(value, item) {
