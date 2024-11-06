@@ -56,13 +56,7 @@ export default function ProfileLayout() {
             content: <OrdersTab router={router} user={user} isLoading={isLoading} />,
         }
     ];
-    if (user && user.type === "COMPANY") {
-        // tabs.push({
-        //     key: "OrderContent",
-        //     title: "OrderContent",
-        //     content: <OrdersTab router={router} user={user} isLoading={isLoading} />,
-        // });
-    } else if (user && user.type === "PRODUCER") {
+    if (user && user.type === "SELLER") {
         tabs.push({
             key: "ManageProduct",
             title: "Manage Products",
@@ -445,7 +439,7 @@ const ManageProductsTab = ({ user, isLoading }) => {
             .deleteProduct(id)
             .then(() => {
                 toast.success("Product deleted successfully");
-                onClear(); // You need to implement this function to reload products or update state
+                onClear();
                 closeDeleteDialog();
             })
             .catch((error) => {
@@ -560,8 +554,6 @@ const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, produc
 
     useEffect(() => {
         if (!isAddMode && product) {
-            console.log("🚀 ~ useEffect ~ isAddMode:", isAddMode);
-            const { name, price, description, quantity, category, discount, images } = product;
             setName(name);
             setPrice(price);
             setDescription(description);
@@ -679,7 +671,7 @@ const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, produc
                             <Dropdown>
                                 <DropdownTrigger>
                                     <Button variant="bordered" className="capitalize">
-                                        {category ? category.name : "Select Category"}
+                                        {category ? category.name : product ? product.category : "Select Category"}
                                     </Button>
                                 </DropdownTrigger>
                                 <DropdownMenu
@@ -693,7 +685,7 @@ const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, produc
                                     }}>
                                     {categories.map((item) => (
                                         <DropdownItem key={item.id} value={item.id}>
-                                            {item.name}
+                                            {item.name ?? ""}
                                         </DropdownItem>
                                     ))}
                                 </DropdownMenu>
