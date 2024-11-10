@@ -19,7 +19,7 @@ export default function Home({ }) {
     function getData() {
         let filterProduct = { SortBy: "total_Rating_Value", SortOrder: "desc", Page: page, PageSize: pageSize };
         let filterOrder = {
-            Filter: "isShare=true && isPaid=false",
+            Filter: "isShare=true",
             page: page,
             pageSize: pageSize,
         };

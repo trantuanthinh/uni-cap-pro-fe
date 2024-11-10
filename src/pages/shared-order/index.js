@@ -17,7 +17,7 @@ export default function SharedProducts() {
     useEffect(() => {
         if (router.isReady) {
             let option = {
-                Filter: "isShare=true && isPaid=false",
+                Filter: "isShare=true",
                 Page: currentPage ?? 1,
             };
 

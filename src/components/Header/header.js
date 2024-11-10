@@ -9,6 +9,7 @@ import {
     DropdownMenu,
     DropdownSection,
     DropdownTrigger,
+    Image,
     Link,
     Navbar,
     NavbarBrand,
@@ -50,60 +51,44 @@ export default function Header() {
     }
 
     const navList = [
-        { href: "/", label: "Home" },
         { href: "/about", label: "About" },
         { href: "/contact", label: "Contact" },
     ];
 
     return (
         <Navbar shouldHideOnScroll className="shadow-md bg-emerald-600 text-white rounded-none">
-            <NavbarBrand>
-                <Link href="/">Logo</Link>
+            <NavbarBrand className="max-w-20">
+                <Link href="/">
+                    <Image className="size-14 rounded" src="/logo.png" alt="logo" layout="fixed" />
+                </Link>
             </NavbarBrand>
 
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 {navList.map((item) => (
-                    <NavbarItem key={item.href}>
-                        <Link color="foreground" href={item.href} underline="hover">
-                            {item.label}
-                        </Link>
+                    <NavbarItem
+                        key={item.href}
+                        className="cursor-pointer text-black hover:underline"
+                        onClick={() => router.push(item.href)}>
+                        {item.label}
                     </NavbarItem>
                 ))}
                 <NavbarItem>
                     <Dropdown>
-                        <DropdownTrigger>
-                            <Button variant="ghost" className="border-none hover:underline">
-                                Product
-                            </Button>
-                        </DropdownTrigger>
+                        <DropdownTrigger className="cursor-pointer text-black hover:underline">Category</DropdownTrigger>
                         <DropdownMenu aria-label="Categories" color="primary" variant="flat">
                             <DropdownSection showDivider>
-                                <DropdownItem key="all-product" variant="ghost">
-                                    <Button
-                                        onClick={() => handleProductRouting(null)}
-                                        variant="ghost"
-                                        fullWidth
-                                        className="border-none">
-                                        All Products
-                                    </Button>
+                                <DropdownItem key="all-product" onClick={() => handleProductRouting(null)}>
+                                    All Products
                                 </DropdownItem>
-                                <DropdownItem key="shared-order" variant="ghost">
-                                    <Button as={Link} href="/shared-order" variant="ghost" fullWidth className="border-none">
-                                        Shared Buy
-                                    </Button>
+                                <DropdownItem key="shared-order" onClick={() => router.push("/shared-order")}>
+                                    Shared Buy
                                 </DropdownItem>
                             </DropdownSection>
 
                             <DropdownSection title="Categories">
                                 {categories.map((category) => (
-                                    <DropdownItem key={category.id} variant="ghost">
-                                        <Button
-                                            onClick={() => handleProductRouting(category.id)}
-                                            variant="ghost"
-                                            fullWidth
-                                            className="border-none">
-                                            {category.name}
-                                        </Button>
+                                    <DropdownItem key={category.id} onClick={() => handleProductRouting(category.id)}>
+                                        {category.name}
                                     </DropdownItem>
                                 ))}
                             </DropdownSection>
