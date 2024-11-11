@@ -2,16 +2,20 @@ import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
-import { Input } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Input } from "@nextui-org/react";
 import { debounce } from "lodash";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { toast } from "sonner";
 
 export default function SignUp() {
     const router = useRouter();
+
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
 
     const [fullname, setFullname] = useState("");
     const [username, setUsername] = useState("");
@@ -19,6 +23,10 @@ export default function SignUp() {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [address, setAddress] = useState("");
+    const [province, setProvince] = useState();
+    const [district, setDistrict] = useState();
+    const [ward, setWard] = useState();
 
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
@@ -30,18 +38,24 @@ export default function SignUp() {
         fullname: "",
         username: "",
         email: "",
-        phone: "",
+        phoneNumber: "",
         password: "",
         confirmPassword: "",
+        province: "",
+        district: "",
+        ward: "",
     });
 
     const [isValids, setIsValids] = useState({
         fullname: false,
         username: false,
         email: false,
-        phone: false,
+        phoneNumber: false,
         password: false,
         confirmPassword: false,
+        province: false,
+        district: false,
+        ward: false,
     });
 
     const checkPhoneNumber = useCallback(
@@ -56,19 +70,47 @@ export default function SignUp() {
         []
     );
 
+    const loadDistricts = useCallback(
+        debounce((provinceId) => {
+            apiService
+                .getDistricts(provinceId)
+                .then((response) => setDistricts(response.result))
+                .catch((error) => {
+                    toast.error(error.message);
+                    console.log(error.message);
+                });
+        }, GlobalSettings.Settings.debounceTimer.valueChanges),
+        []
+    );
+
+    const loadWards = useCallback(
+        debounce((districtId) => {
+            apiService
+                .getWards(districtId)
+                .then((response) => setWards(response.result))
+                .catch((error) => {
+                    toast.error(error.message);
+                    console.log(error.message);
+                });
+        })
+    );
+
+    useEffect(() => {
+        apiService
+            .getProvinces()
+            .then((response) => setProvinces(response.result))
+            .catch((error) => {
+                toast.error(error.message);
+                console.log(error.message);
+            });
+    }, []);
+
     function validateForm() {
         const newErrors = { ...errors };
 
         for (const key in newErrors) {
             newErrors[key] = "";
         }
-
-        if (!fullname) newErrors.fullname = "Full Name is required.";
-        if (!username) newErrors.username = "Username is required.";
-        if (!email) newErrors.email = "Email is required.";
-        if (!phoneNumber) newErrors.phone = "Phone Number is required.";
-        if (!password) newErrors.password = "Password is required.";
-        if (!confirmPassword) newErrors.confirmPassword = "Confirm Password is required.";
 
         if (password && confirmPassword && password !== confirmPassword) {
             newErrors.confirmPassword = "Passwords do not match.";
@@ -89,6 +131,10 @@ export default function SignUp() {
             email: email,
             password: password,
             phoneNumber: phoneNumber,
+            address: address,
+            provinceId: province.id,
+            districtId: district.id,
+            wardId: ward.id,
         };
         try {
             let response = await apiService.signup(dataJSON);
@@ -134,14 +180,14 @@ export default function SignUp() {
     return (
         <>
             <Title label={`${ GlobalSettings.Settings.name } - Sign Up`} />
-            <div className="flex items-center py-6 justify-center min-h-screen bg-background-base">
-                <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
+            <div className="flex items-center py-6 justify-center w-full min-h-screen bg-background-base">
+                <div className="w-full max-w-lg bg-white p-8 shadow-lg rounded-lg">
                     <h1 className="text-center text-3xl text-text-title font-bold mb-6">Sign Up</h1>
 
                     {errors.server && <p className="text-red-500 mb-4">{errors.server}</p>}
 
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
                             <Input
                                 label="Full Name"
                                 type="text"
@@ -153,9 +199,7 @@ export default function SignUp() {
                                 isInvalid={isValids.fullname}
                                 errorMessage={errors.fullname}
                             />
-                        </div>
 
-                        <div className="mb-4">
                             <Input
                                 label="Username"
                                 type="text"
@@ -169,7 +213,49 @@ export default function SignUp() {
                             />
                         </div>
 
-                        <div className="mb-4">
+                        <Input
+                            label="Password"
+                            type={isPasswordVisible ? "text" : "password"}
+                            id="password"
+                            value={password}
+                            onChange={handleChange("password", setPassword)}
+                            onBlur={handleBlur("password")}
+                            required
+                            endContent={
+                                <button
+                                    className="focus:outline-none"
+                                    type="button"
+                                    onClick={togglePasswordVisibility}
+                                    aria-label="toggle password visibility">
+                                    {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                </button>
+                            }
+                            isInvalid={isValids.password}
+                            errorMessage={errors.password}
+                        />
+
+                        <Input
+                            label="Confirm Password"
+                            type={isConfirmPasswordVisible ? "text" : "password"}
+                            id="confirmPassword"
+                            value={confirmPassword}
+                            onChange={handleChange("confirmPassword", setConfirmPassword)}
+                            onBlur={handleBlur("confirmPassword")}
+                            required
+                            endContent={
+                                <button
+                                    className="focus:outline-none"
+                                    type="button"
+                                    onClick={toggleConfirmPasswordVisibility}
+                                    aria-label="toggle confirm password visibility">
+                                    {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                </button>
+                            }
+                            isInvalid={isValids.confirmPassword}
+                            errorMessage={errors.confirmPassword}
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
                             <Input
                                 label="Email"
                                 type="email"
@@ -181,71 +267,75 @@ export default function SignUp() {
                                 isInvalid={isValids.email}
                                 errorMessage={errors.email}
                             />
-                        </div>
 
-                        <div className="mb-4">
                             <Input
                                 label="Phone Number"
                                 type="text"
-                                id="phone"
+                                id="phoneNumber"
                                 value={phoneNumber}
-                                onChange={handleChange("phone", setPhoneNumber)}
-                                onBlur={handleBlur("phone")}
+                                onChange={handleChange("phoneNumber", setPhoneNumber)}
+                                onBlur={handleBlur("phoneNumber")}
                                 required
-                                isInvalid={isValids.phone}
-                                errorMessage={errors.phone}
+                                isInvalid={isValids.phoneNumber}
+                                errorMessage={errors.phoneNumber}
                             />
                         </div>
 
-                        <div className="mb-4">
-                            <Input
-                                label="Password"
-                                type={isPasswordVisible ? "text" : "password"}
-                                id="password"
-                                value={password}
-                                onChange={handleChange("password", setPassword)}
-                                onBlur={handleBlur("password")}
-                                required
-                                endContent={
-                                    <button
-                                        className="focus:outline-none"
-                                        type="button"
-                                        onClick={togglePasswordVisibility}
-                                        aria-label="toggle password visibility">
-                                        {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
-                                    </button>
-                                }
-                                isInvalid={isValids.password}
-                                errorMessage={errors.password}
-                            />
-                        </div>
+                        <Input
+                            label="Address"
+                            type={"text"}
+                            id="address"
+                            value={address}
+                            onChange={handleChange("address", setAddress)}
+                            onBlur={handleBlur("address")}
+                            required
+                            isInvalid={isValids.address}
+                            errorMessage={errors.address}
+                        />
 
-                        <div className="mb-6">
-                            <Input
-                                label="Confirm Password"
-                                type={isConfirmPasswordVisible ? "text" : "password"}
-                                id="confirmPassword"
-                                value={confirmPassword}
-                                onChange={handleChange("confirmPassword", setConfirmPassword)}
-                                onBlur={handleBlur("confirmPassword")}
-                                required
-                                endContent={
-                                    <button
-                                        className="focus:outline-none"
-                                        type="button"
-                                        onClick={toggleConfirmPasswordVisibility}
-                                        aria-label="toggle confirm password visibility">
-                                        {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
-                                    </button>
-                                }
-                                isInvalid={isValids.confirmPassword}
-                                errorMessage={errors.confirmPassword}
-                            />
-                        </div>
+                        <Autocomplete
+                            defaultItems={provinces}
+                            label="Province"
+                            selectedKey={province}
+                            onSelectionChange={(selectedId) => {
+                                setProvince(selectedId);
+                                setDistricts([]);
+                                setWards([]);
+                                loadDistricts(selectedId);
+                            }}
+                            onBlur={handleBlur("province")}
+                            isInvalid={isValids.province}
+                            errorMessage={errors.province}>
+                            {(item) => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
+                        </Autocomplete>
 
-                        <button
-                            type="submit"
-                            className="w-full bg-primary-green hover:bg-green-700 text-white py-2 px-4 rounded">
+                        <Autocomplete
+                            defaultItems={districts}
+                            label="District"
+                            selectedKey={district}
+                            onSelectionChange={(selectedId) => {
+                                setDistrict(selectedId);
+                                setWards([]);
+                                loadWards(selectedId);
+                            }}
+                            onBlur={handleBlur("district")}
+                            isInvalid={isValids.district}
+                            errorMessage={errors.district}>
+                            {(item) => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
+                        </Autocomplete>
+
+                        <Autocomplete
+                            defaultItems={wards}
+                            label="Ward"
+                            selectedKey={ward}
+                            onSelectionChange={setWard}
+                            onBlur={handleBlur("ward")}
+                            isInvalid={isValids.ward}
+                            errorMessage={errors.ward}>
+                            {(item) => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
+                        </Autocomplete>
+
+                        <button type="submit" className="w-full bg-primary-green hover:bg-green-700 text-white p-4 rounded">
                             Sign Up
                         </button>
                     </form>

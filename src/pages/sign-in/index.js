@@ -79,43 +79,39 @@ export default function SignIn() {
 
                     {errors.server && <p className="text-red-500 mb-4">{errors.server}</p>}
 
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-4">
-                            <Input
-                                type="text"
-                                id="username"
-                                value={username}
-                                placeholder="Username or Phone Number"
-                                onChange={(e) => setIdentifier(e.target.value)}
-                                onBlur={handleBlur("username")}
-                                required
-                                isInvalid={isValids.username}
-                                errorMessage={errors.username}
-                            />
-                        </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <Input
+                            type="text"
+                            id="username"
+                            value={username}
+                            placeholder="Username or Phone Number"
+                            onChange={(e) => setIdentifier(e.target.value)}
+                            onBlur={handleBlur("username")}
+                            required
+                            isInvalid={isValids.username}
+                            errorMessage={errors.username}
+                        />
 
-                        <div className="mb-6">
-                            <Input
-                                type={isVisible ? "text" : "password"}
-                                id="password"
-                                value={password}
-                                placeholder="Password"
-                                onChange={(e) => setPassword(e.target.value)}
-                                onBlur={handleBlur("password")}
-                                required
-                                endContent={
-                                    <button
-                                        className="focus:outline-none"
-                                        type="button"
-                                        onClick={toggleVisibility}
-                                        aria-label="toggle password visibility">
-                                        {isVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
-                                    </button>
-                                }
-                                isInvalid={isValids.password}
-                                errorMessage={errors.password}
-                            />
-                        </div>
+                        <Input
+                            type={isVisible ? "text" : "password"}
+                            id="password"
+                            value={password}
+                            placeholder="Password"
+                            onChange={(e) => setPassword(e.target.value)}
+                            onBlur={handleBlur("password")}
+                            required
+                            endContent={
+                                <button
+                                    className="focus:outline-none"
+                                    type="button"
+                                    onClick={toggleVisibility}
+                                    aria-label="toggle password visibility">
+                                    {isVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                </button>
+                            }
+                            isInvalid={isValids.password}
+                            errorMessage={errors.password}
+                        />
 
                         <button
                             type="submit"

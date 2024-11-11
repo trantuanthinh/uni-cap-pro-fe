@@ -92,6 +92,21 @@ class APIService {
         console.error(`${ context } ${ error.message }`);
         throw error;
     }
+    //#endregion
+
+    //#region setting-data
+    async getProvinces(option) {
+        return this.#getItems("address/provinces", option);
+    }
+
+    async getDistricts(id, option) {
+        return this.#getItems(`address/districts/${ id }`, option);
+    }
+
+    async getWards(id, option) {
+        return this.#getItems(`address/wards/${ id }`, option);
+    }
+    //#endregion
 
     //#region auth
     async signin(data) {
@@ -109,6 +124,7 @@ class APIService {
     async resetPassword(data) {
         return this.#postItem("auth/reset-password", data);
     }
+    //#endregion
 
     //#region users
     async getUsers(option) {
@@ -140,6 +156,7 @@ class APIService {
     async deleteAvatar(id) {
         return this.#deleteItem(`users/avatar`, id);
     }
+    //#endregion
 
     //#region products
     async getProducts(option) {
@@ -161,6 +178,7 @@ class APIService {
     async deleteProduct(id) {
         return this.#deleteItem("products", id);
     }
+    //#endregion
 
     //#region product_categories
     async getProd_Categories(option) {
@@ -182,6 +200,7 @@ class APIService {
     async deleteProd_Categories(id) {
         return this.#deleteItem("product_categories", id);
     }
+    //#endregion
 
     //#region orders
     async getOrders(option) {
@@ -199,6 +218,7 @@ class APIService {
     async postBuyTogetherOrder(orderId, data) {
         return this.#postItem(`orders/buy-together/${ orderId }`, data);
     }
+    //#endregion
 
     //#region discounts
     async getDiscounts(option) {
@@ -208,6 +228,7 @@ class APIService {
     async getDiscounts(id) {
         return this.#getItem("discounts", id);
     }
+    //#endregion
 
     //#region feedbacks
     async getFeedbacksByProductId(productId) {
@@ -217,6 +238,7 @@ class APIService {
     async postFeedbackByProductId(data) {
         return this.#postItem(`feedbacks/product`, data);
     }
+    //#endregion
 }
 
 const apiService = new APIService();
