@@ -100,7 +100,7 @@ export default function ProfileLayout() {
 
                     <div className="flex flex-row border-t-2 mt-5">
                         <div className="basis-1/6">
-                            <Accordion defaultExpandedKeys={["YourProfile"]}>
+                            <Accordion defaultExpandedKeys={["YourProfile"]} selectionMode="multiple">
                                 <AccordionItem key="YourProfile" aria-label="Your Profile" title="Your Profile">
                                     <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
                                         <ListboxItem key="info">Basic Information</ListboxItem>
