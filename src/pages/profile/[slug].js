@@ -87,18 +87,18 @@ export default function ProfileLayout() {
         <>
             <Title label={`${ GlobalSettings.Settings.name } - ${ user?.username }`} />
             {isMounted && user ? (
-                <div className="min-h-full mx-auto py-10 px-6">
-                    <div className="flex items-center space-x-8 mb-10">
-                        <BackGround user={user} />
+                <div className="min-h-full mx-auto pb-10 px-6">
+                    <BackGround user={user} />
+                    {/* <div className="flex items-center space-x-8">
                         <Avatar user={user} />
 
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">{user?.username}</h1>
                             <p className="text-gray-500">Joined In: {sharedService.formatToDate(user?.created_At)}</p>
                         </div>
-                    </div>
+                    </div> */}
 
-                    <div className="flex flex-row border-t-2">
+                    <div className="flex flex-row border-t-2 mt-5">
                         <div className="basis-1/6">
                             <Accordion defaultExpandedKeys={["YourProfile"]}>
                                 <AccordionItem key="YourProfile" aria-label="Your Profile" title="Your Profile">
@@ -235,7 +235,7 @@ const Avatar = ({ user }) => {
     return (
         <>
             <div
-                className="relative size-32 flex justify-center items-center rounded-full bg-gradient-to-r from-green-300 to-blue-500 shadow-md overflow-hidden"
+                className="relative size-32 flex justify-center items-center rounded-full bg-gradient-to-r from-green-300 to-blue-300 shadow-md overflow-hidden"
                 onMouseOver={handleMouseOver}
                 onMouseLeave={handleMouseLeave}>
                 {preview ? (
@@ -314,20 +314,27 @@ const BackGround = ({ user }) => {
     };
 
     return (
-        <div className="relative">
-            {background && (
-                <Image
-                    src={background}
-                    alt="background"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    layout="fill"
-                />
-            )}
-            <input type="file" accept="image/*" className="hidden" id="background-input" onChange={handleChange} />
-            <label htmlFor="background-input" className="absolute inset-0 flex items-center justify-center cursor-pointer">
-                <div className="text-white text-2xl">{background ? "Change Background" : "Add Background"}</div>
-            </label>
-        </div>
+        <>
+            <div className="relative min-h-48 max-w-screen-2xl rounded-b-lg bg-gradient-to-r from-blue-300 to-green-300">
+                <div className="absolute top-3/4 left-1/4 transform -translate-x-[150%] -translate-y-1/3">
+                    <Avatar user={user} />
+                </div>
+            </div>
+        </>
+        // <div className=" bg-slate-400 size-80">
+        //     {background && (
+        //         <Image
+        //             src={background}
+        //             alt="background"
+        //             className="absolute inset-0 w-full h-full object-cover"
+        //             layout="fill"
+        //         />
+        //     )}
+        //     <input type="file" accept="image/*" className="hidden" id="background-input" onChange={handleChange} />
+        //     <label htmlFor="background-input" className="absolute inset-0 flex items-center justify-center cursor-pointer">
+        //         <div className="text-white text-2xl">{background ? "Change Background" : "Add Background"}</div>
+        //     </label>
+        // </div>
     );
 };
 
