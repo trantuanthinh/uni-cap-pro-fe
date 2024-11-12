@@ -69,7 +69,6 @@ const Banner = () => {
                         src="/background.jpg"
                         alt="Background"
                         layout="fill"
-                        objectFit="cover"
                         priority
                         className="rounded-l-lg"
                     />

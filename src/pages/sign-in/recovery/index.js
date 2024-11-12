@@ -179,52 +179,48 @@ export default function RecoveryPassword() {
 
             {step === 3 && (
                 <div className="max-w-md mx-auto space-y-4">
-                    <h2 className="text-xl font-semibold mb-4">Step 3: Change Password</h2>
-                    <div className="mb-4">
-                        <Input
-                            label="Password"
-                            type={isPasswordVisible ? "text" : "password"}
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            onBlur={handleBlur("password")}
-                            required
-                            endContent={
-                                <button
-                                    className="focus:outline-none"
-                                    type="button"
-                                    onClick={togglePasswordVisibility}
-                                    aria-label="toggle password visibility">
-                                    {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
-                                </button>
-                            }
-                            isInvalid={isValids.password}
-                            errorMessage={errors.password}
-                        />
-                    </div>
+                    <h2 className="text-xl font-semibold mb-4 space-y-4">Step 3: Change Password</h2>
+                    <Input
+                        label="Password"
+                        type={isPasswordVisible ? "text" : "password"}
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onBlur={handleBlur("password")}
+                        required
+                        endContent={
+                            <button
+                                className="focus:outline-none"
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                aria-label="toggle password visibility">
+                                {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                            </button>
+                        }
+                        isInvalid={isValids.password}
+                        errorMessage={errors.password}
+                    />
 
-                    <div className="mb-6">
-                        <Input
-                            label="Confirm Password"
-                            type={isConfirmPasswordVisible ? "text" : "password"}
-                            id="confirmPassword"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            onBlur={handleBlur("confirmPassword")}
-                            required
-                            endContent={
-                                <button
-                                    className="focus:outline-none"
-                                    type="button"
-                                    onClick={toggleConfirmPasswordVisibility}
-                                    aria-label="toggle confirm password visibility">
-                                    {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
-                                </button>
-                            }
-                            isInvalid={isValids.confirmPassword}
-                            errorMessage={errors.confirmPassword}
-                        />
-                    </div>
+                    <Input
+                        label="Confirm Password"
+                        type={isConfirmPasswordVisible ? "text" : "password"}
+                        id="confirmPassword"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onBlur={handleBlur("confirmPassword")}
+                        required
+                        endContent={
+                            <button
+                                className="focus:outline-none"
+                                type="button"
+                                onClick={toggleConfirmPasswordVisibility}
+                                aria-label="toggle confirm password visibility">
+                                {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                            </button>
+                        }
+                        isInvalid={isValids.confirmPassword}
+                        errorMessage={errors.confirmPassword}
+                    />
                     <Button onClick={handleChangePassword} className="bg-blue-500 text-white mt-4 w-full">
                         Change Password
                     </Button>

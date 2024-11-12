@@ -10,6 +10,8 @@ import { setUser } from "@/redux/slicers/userSlice";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import {
+    Accordion,
+    AccordionItem,
     Button,
     Card,
     CardBody,
@@ -18,20 +20,20 @@ import {
     DropdownMenu,
     DropdownTrigger,
     Input,
+    Listbox,
+    ListboxItem,
     Modal,
     ModalBody,
     ModalContent,
     ModalFooter,
     ModalHeader,
-    Tab,
-    Tabs,
     Textarea,
     useDisclosure,
 } from "@nextui-org/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { IoIosRemoveCircleOutline } from "react-icons/io";
+import { useCallback, useEffect, useState } from "react";
+import { IoIosRemoveCircleOutline, IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -44,25 +46,26 @@ export default function ProfileLayout() {
     const [isMounted, setIsMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [currentTab, setCurrentTab] = useState("info");
+
     const tabs = [
         {
-            key: "Overview",
-            title: "Overview",
+            key: "info",
             content: <OverviewTab user={user} />,
         },
         {
-            key: "OrderContent",
-            title: "OrderContent",
+            key: "orders",
             content: <OrdersTab router={router} user={user} isLoading={isLoading} />,
-        }
-    ];
-    if (user && user.type === "SELLER") {
-        tabs.push({
-            key: "ManageProduct",
-            title: "Manage Products",
+        },
+        {
+            key: "changePassword",
+            content: <ChangePasswordTab user={user} isLoading={isLoading} />,
+        },
+        {
+            key: "products",
             content: <ManageProductsTab user={user} isLoading={isLoading} />,
-        });
-    }
+        },
+    ];
 
     useEffect(() => {
         if (router.isReady && user) {
@@ -84,11 +87,10 @@ export default function ProfileLayout() {
         <>
             <Title label={`${ GlobalSettings.Settings.name } - ${ user?.username }`} />
             {isMounted && user ? (
-                <div className="max-w-screen-lg mx-auto py-10 px-6">
+                <div className="min-h-full mx-auto py-10 px-6">
                     <div className="flex items-center space-x-8 mb-10">
-                        <div className="">
-                            <Avatar user={user} />
-                        </div>
+                        <BackGround user={user} />
+                        <Avatar user={user} />
 
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">{user?.username}</h1>
@@ -96,16 +98,54 @@ export default function ProfileLayout() {
                         </div>
                     </div>
 
-                    <div className="mb-8 border-b border-gray-200 pb-4">
-                        <Tabs aria-label="Profile Options" radius="md" color="primary" variant="underline">
-                            {tabs.map((tab) => (
-                                <Tab key={tab.key} title={tab.title}>
-                                    <Card className="bg-white shadow-lg rounded-lg">
-                                        <CardBody>{tab.content}</CardBody>
-                                    </Card>
-                                </Tab>
-                            ))}
-                        </Tabs>
+                    <div className="flex flex-row border-t-2">
+                        <div className="basis-1/6">
+                            <Accordion defaultExpandedKeys={["YourProfile"]}>
+                                <AccordionItem key="YourProfile" aria-label="Your Profile" title="Your Profile">
+                                    <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
+                                        <ListboxItem key="info">Basic Information</ListboxItem>
+                                        <ListboxItem key="settings">Account Settings</ListboxItem>
+                                        <ListboxItem key="changePassword">Change Password</ListboxItem>
+                                    </Listbox>
+                                </AccordionItem>
+
+                                <AccordionItem key="YourOrders" aria-label="Your Orders" title="Your Orders">
+                                    <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
+                                        <ListboxItem key="orders">All Orders</ListboxItem>
+                                        <ListboxItem key="pending">Pending Orders</ListboxItem>
+                                        <ListboxItem key="delivering">Delivering Orders</ListboxItem>
+                                        <ListboxItem key="delivered">Delivered Orders</ListboxItem>
+                                    </Listbox>
+                                </AccordionItem>
+
+                                {user && user.type === "SELLER" && (
+                                    <AccordionItem key="YourProducts" aria-label="All Products" title="All Products">
+                                        <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
+                                            <ListboxItem key="products">All Products</ListboxItem>
+                                            <ListboxItem key="best">Best-Seller</ListboxItem>
+                                        </Listbox>
+                                    </AccordionItem>
+                                )}
+
+                                <AccordionItem key="YourFeedbacks" aria-label="Your Feedbacks" title="Your Feedbacks">
+                                    <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
+                                        <ListboxItem key="feedbacks">All Feedbacks</ListboxItem>
+                                        <ListboxItem key="provide">Provide Feedbacks</ListboxItem>
+                                    </Listbox>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+
+                        <div className="basis-5/6 overflow-auto p-4">
+                            {tabs.map(
+                                (tab, index) =>
+                                    tab.key === currentTab && (
+                                        <Card key={index} className="bg-white shadow-lg rounded-lg mb-4">
+                                            <CardBody>{tab.content}</CardBody>
+                                        </Card>
+                                    )
+                            )}
+                        </div>
                     </div>
                 </div>
             ) : (
@@ -252,13 +292,199 @@ const Avatar = ({ user }) => {
     );
 };
 
+const BackGround = ({ user }) => {
+    const [background, setBackground] = useState(null);
+
+    useEffect(() => {
+        if (user?.background) {
+            setBackground(user.background);
+        }
+    }, [user]);
+
+    const handleChange = (e) => {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setBackground(reader.result);
+            };
+            reader.readAsDataURL(file);
+            g;
+        }
+    };
+
+    return (
+        <div className="relative">
+            {background && (
+                <Image
+                    src={background}
+                    alt="background"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    layout="fill"
+                />
+            )}
+            <input type="file" accept="image/*" className="hidden" id="background-input" onChange={handleChange} />
+            <label htmlFor="background-input" className="absolute inset-0 flex items-center justify-center cursor-pointer">
+                <div className="text-white text-2xl">{background ? "Change Background" : "Add Background"}</div>
+            </label>
+        </div>
+    );
+};
+
+const ChangePasswordTab = ({ user, isLoading }) => {
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
+
+    const toggleCurrentPasswordVisibility = useCallback(() => setIsCurrentPasswordVisible((prev) => !prev), []);
+    const togglePasswordVisibility = useCallback(() => setIsPasswordVisible((prev) => !prev), []);
+    const toggleConfirmPasswordVisibility = useCallback(() => setIsConfirmPasswordVisible((prev) => !prev), []);
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        toast.success("Password changed successfully.");
+        // if (!validateForm()) return;
+
+        // try {
+        //     let _otp = otp.join("");
+        //     let dataJSON = { email, password, otp: _otp };
+        //     let response = await apiService.resetPassword(dataJSON);
+        //     if (response && response.ok) {
+        //         setPassword("");
+        //         setConfirmPassword("");
+        //     }
+        // } catch (error) {
+        //     console.error("Failed to post user data:", error);
+        //     setErrors((prev) => ({ ...prev, server: "An error occurred. Please try again." }));
+        // }
+    };
+
+    const validateForm = () => {
+        if (password !== confirmPassword) {
+            setErrors((prev) => ({ ...prev, confirmPassword: "Passwords do not match." }));
+            setIsValids((prev) => ({ ...prev, confirmPassword: true }));
+            return false;
+        }
+        return true;
+    };
+
+    return (
+        <>
+            {isLoading ? (
+                <LoadingIndicator />
+            ) : (
+                <div className="flex flex-col items-center">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Change Password</h2>
+                    <div className="flex flex-col max-w-lg space-y-4 w-full">
+                        <Input
+                            label="Current Password"
+                            type={isCurrentPasswordVisible ? "text" : "password"}
+                            id="currentPassword"
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            required
+                            endContent={
+                                <button
+                                    className="focus:outline-none"
+                                    type="button"
+                                    onClick={toggleCurrentPasswordVisibility}
+                                    aria-label="toggle password visibility">
+                                    {isCurrentPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                </button>
+                            }
+                        />
+
+                        <Input
+                            label="Password"
+                            type={isPasswordVisible ? "text" : "password"}
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            endContent={
+                                <button
+                                    className="focus:outline-none"
+                                    type="button"
+                                    onClick={togglePasswordVisibility}
+                                    aria-label="toggle password visibility">
+                                    {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                </button>
+                            }
+                        />
+
+                        <Input
+                            label="Confirm Password"
+                            type={isConfirmPasswordVisible ? "text" : "password"}
+                            id="confirmPassword"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            endContent={
+                                <button
+                                    className="focus:outline-none"
+                                    type="button"
+                                    onClick={toggleConfirmPasswordVisibility}
+                                    aria-label="toggle confirm password visibility">
+                                    {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                </button>
+                            }
+                        />
+                    </div>
+
+                    <div className="flex justify-end max-w-lg w-full pb-4">
+                        <Button onClick={handleChangePassword} className="bg-blue-500 text-white mt-4">
+                            Change Password
+                        </Button>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
+
 const OverviewTab = ({ user }) => {
     return (
         <>
-            <p className="text-gray-700">Gmail: {user?.email}</p>
-            <p className="text-gray-700">Phone Number: {user?.phoneNumber}</p>
-            <p className="text-gray-700">Description: {user?.description}</p>
-            <p className="text-gray-700">Type: {user?.user_Type}</p>
+            <div className="flex justify-end">
+                <button className="text-blue-500 hover:underline" onClick={() => updateUserInfo("email")}>
+                    Edit
+                </button>
+            </div>
+
+            <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-700">Gmail:</span>
+                    <span className="text-gray-700">{user?.email}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-700">Phone Number:</span>
+                    <span className="text-gray-700">{user?.phoneNumber}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-700">Description:</span>
+                    <span className="text-gray-700">{user?.description}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-700">Type:</span>
+                    <span className="text-gray-700">{user?.user_Type}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-700">Province:</span>
+                    <span className="text-gray-700">{user?.Province}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-700">District:</span>
+                    <span className="text-gray-700">{user?.District}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-700">Ward:</span>
+                    <span className="text-gray-700">{user?.Ward}</span>
+                </div>
+            </div>
         </>
     );
 };
@@ -473,7 +699,7 @@ const ManageProductsTab = ({ user, isLoading }) => {
                         <div className="col-span-2 text-xl font-bold text-center">Manage Your Products</div>
                         <div className="col-start-3 flex justify-end">
                             <Button onClick={onAddOpen}>Add New Product</Button>
-                            <FormModal
+                            <AddProductFormModal
                                 isOpen={isAddOpen}
                                 onChange={onAddChange}
                                 user={user}
@@ -508,7 +734,7 @@ const ManageProductsTab = ({ user, isLoading }) => {
                                         className="bg-blue-500 text-white hover:bg-blue-600">
                                         Update
                                     </Button>
-                                    <FormModal
+                                    <AddProductFormModal
                                         key={item.id}
                                         isOpen={isUpdateOpen && selectedProduct?.id === item.id}
                                         onChange={onUpdateChange}
@@ -540,7 +766,7 @@ const ManageProductsTab = ({ user, isLoading }) => {
     );
 };
 
-const FormModal = ({ isOpen, onChange, mode, user, categories, discounts, product = null }) => {
+const AddProductFormModal = ({ isOpen, onChange, mode, user, categories, discounts, product = null }) => {
     const isAddMode = mode === "Add";
 
     const [name, setName] = useState("");
