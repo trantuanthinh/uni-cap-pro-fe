@@ -59,7 +59,12 @@ export default function Header() {
         <Navbar shouldHideOnScroll className="shadow-md bg-emerald-600 text-white rounded-none">
             <NavbarBrand className="max-w-20">
                 <Link href="/">
-                    <Image className="size-14 rounded" src="/logo.png" alt="logo" layout="fixed" />
+                    <Image
+                        className="size-14 rounded"
+                        src="/logo/logo-white-removebg-preview.png"
+                        alt="logo"
+                        layout="fixed"
+                    />
                 </Link>
             </NavbarBrand>
 

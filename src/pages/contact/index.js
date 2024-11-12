@@ -2,14 +2,32 @@
 
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
+import apiService from "@/services/api-service";
+import { toast } from "sonner";
 
 export default function Contact() {
+    const sendEmail = async () => {
+        let message = {
+
+        };
+
+        await apiService
+            .sendMail(message)
+            .then((res) => {
+                toast.success("Email sent successfully");
+                console.log(res);
+            })
+            .catch((error) => {
+                toast.error("Error sending email");
+                console.log(error);
+            });
+    };
     return (
         <>
-            <Title label={ `${GlobalSettings.Settings.name} - Contact` } />
+            <Title label={`${ GlobalSettings.Settings.name } - Contact`} />
             <div className="container mx-auto py-8">
                 <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
-                <form className="max-w-lg mx-auto">
+                <form className="max-w-lg mx-auto" onSubmit={sendEmail}>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">Name</label>
                         <input
@@ -31,13 +49,11 @@ export default function Contact() {
                         <textarea
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-green focus:border-primary-green"
                             rows="5"
-                            placeholder="Your Message"
-                        ></textarea>
+                            placeholder="Your Message"></textarea>
                     </div>
                     <button
                         type="submit"
-                        className="bg-primary-green text-white px-4 py-2 rounded-md hover:bg-primary-green-dark"
-                    >
+                        className="bg-primary-green text-white px-4 py-2 rounded-md hover:bg-primary-green-dark">
                         Send Message
                     </button>
                 </form>

@@ -108,6 +108,10 @@ class APIService {
     }
     //#endregion
 
+    async sendMail(data) {
+        return this.#postItem("send-mail", data);
+    }
+
     //#region auth
     async signin(data) {
         return this.#postItem("auth/signin", data);

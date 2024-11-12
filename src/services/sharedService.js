@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export class SharedService {
+class SharedService {
     #formatDateTimeString = "DD/MM/YYYY HH:mm";
     #formatDateString = "DD/MM/YYYY";
     #formatTimeString = "HH:mm";
