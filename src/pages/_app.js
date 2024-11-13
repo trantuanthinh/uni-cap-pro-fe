@@ -3,7 +3,7 @@ import Header from "@/components/Header/header";
 import Providers from "@/redux/provider";
 import "@/styles/globals.css";
 import { NextUIProvider } from "@nextui-org/react";
-import { Itim, Lusitana } from "next/font/google";
+import { Itim, Lusitana, Noto_Sans, Roboto } from "next/font/google";
 import { useEffect, useState } from "react";
 import { FaChevronUp } from "react-icons/fa";
 import { Toaster } from "sonner";
@@ -16,6 +16,16 @@ export const lusitana = Lusitana({
 export const itim = Itim({
     weight: ["400"],
     subsets: ["latin"],
+});
+
+const roboto = Roboto({
+    weight: '400',
+    subsets: ['latin'],
+});
+
+const notoSans = Noto_Sans({
+    weight: '400',
+    subsets: ['latin'],
 });
 
 export default function App({ Component, pageProps }) {
@@ -39,7 +49,7 @@ export default function App({ Component, pageProps }) {
     return (
         <Providers>
             <NextUIProvider>
-                <div className={`grid grid-rows-[auto_1fr_auto] min-h-screen ${ itim.className }`}>
+                <div className={`grid grid-rows-[auto_1fr_auto] min-h-screen ${ notoSans.className }`}>
                     <Header />
                     {showButton && (
                         <div className="fixed bottom-4 right-4 z-10">

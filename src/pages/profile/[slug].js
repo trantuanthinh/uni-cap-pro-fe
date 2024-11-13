@@ -33,8 +33,8 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { IoIosRemoveCircleOutline, IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { MdOutlineFileUpload } from "react-icons/md";
+import { FiUpload } from "react-icons/fi";
+import { IoMdEye, IoMdEyeOff, IoMdTrash } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
@@ -88,15 +88,7 @@ export default function ProfileLayout() {
             <Title label={`${ GlobalSettings.Settings.name } - ${ user?.username }`} />
             {isMounted && user ? (
                 <div className="min-h-full mx-auto pb-10 px-6">
-                    <BackGround user={user} />
-                    {/* <div className="flex items-center space-x-8">
-                        <Avatar user={user} />
-
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900">{user?.username}</h1>
-                            <p className="text-gray-500">Joined In: {sharedService.formatToDate(user?.created_At)}</p>
-                        </div>
-                    </div> */}
+                    {/* <Avatar user={user} /> */}
 
                     <div className="flex flex-row border-t-2 mt-5">
                         <div className="basis-1/6">
@@ -159,11 +151,11 @@ const Avatar = ({ user }) => {
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     const [isMouseOver, setIsMouseOver] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [preview, setPreview] = useState(null);
+    const [preview, setPreview] = useState(user?.avatar);
+    // const [preview, setPreview] = useState(null);
     const dispatch = useDispatch();
-
-    const handleMouseOver = () => setIsMouseOver(true);
-    const handleMouseLeave = () => setIsMouseOver(false);
+    const { isOpen: isOpenUpload, onOpen: onOpenUpload, onOpenChange: onOpenUploadChange } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenDeleteChange } = useDisclosure();
 
     const onUpload = () => {
         const input = document.createElement("input");
@@ -233,21 +225,9 @@ const Avatar = ({ user }) => {
     };
 
     return (
-        <>
-            <div
-                className="relative size-32 flex justify-center items-center rounded-full bg-gradient-to-r from-green-300 to-blue-300 shadow-md overflow-hidden"
-                onMouseOver={handleMouseOver}
-                onMouseLeave={handleMouseLeave}>
-                {preview ? (
-                    <Image
-                        className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
-                        src={preview}
-                        alt={user?.username}
-                        width={128}
-                        height={128}
-                        onClick={onUpload}
-                    />
-                ) : user?.avatar ? (
+        <div className="grid grid-cols-2 grid-rows-1 gap-4 items-center px-10 pb-4 space-x-4 border-b-2">
+            <div className="flex flex-row items-center space-x-2">
+                <div className="relative size-32 flex justify-center items-center rounded-full bg-gradient-to-r from-green-300 to-blue-300 shadow-md overflow-hidden">
                     <Image
                         className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
                         src={user.avatar}
@@ -256,85 +236,96 @@ const Avatar = ({ user }) => {
                         height={128}
                         onClick={onUpload}
                     />
-                ) : (
-                    <span className="text-gray-600 font-bold text-6xl">{user?.username?.charAt(0).toUpperCase()}</span>
-                )}
-
-                {isMouseOver && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full">
-                        <div className="flex space-x-4">
-                            <button onClick={onRemove} aria-label="Remove Avatar" className="text-white text-2xl">
-                                <IoIosRemoveCircleOutline />
-                            </button>
-
-                            <button onClick={onUpload} aria-label="Upload Avatar" className="text-white text-2xl">
-                                <MdOutlineFileUpload />
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {preview && (
-                <>
-                    <div className="flex flex-row pt-4 space-x-4">
-                        <Button onClick={cancelUpload} size="sm" aria-label="Cancel Upload" className="text-white">
-                            Cancel
-                        </Button>
-
-                        <Button onClick={confirmUpload} size="sm" aria-label="Confirm Upload" className="text-white">
-                            Confirm
-                        </Button>
-                    </div>
-                </>
-            )}
-        </>
-    );
-};
-
-const BackGround = ({ user }) => {
-    const [background, setBackground] = useState(null);
-
-    useEffect(() => {
-        if (user?.background) {
-            setBackground(user.background);
-        }
-    }, [user]);
-
-    const handleChange = (e) => {
-        if (e.target.files.length > 0) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setBackground(reader.result);
-            };
-            reader.readAsDataURL(file);
-            g;
-        }
-    };
-
-    return (
-        <>
-            <div className="relative min-h-48 max-w-screen-2xl rounded-b-lg bg-gradient-to-r from-blue-300 to-green-300">
-                <div className="absolute top-3/4 left-1/4 transform -translate-x-[150%] -translate-y-1/3">
-                    <Avatar user={user} />
+                </div>
+                <div className="">
+                    <p className="text-3xl font-bold">{user?.name}</p>
+                    <p className="text-gray-500 text-md">{user?.username} | {user?.email}</p>
                 </div>
             </div>
-        </>
-        // <div className=" bg-slate-400 size-80">
-        //     {background && (
-        //         <Image
-        //             src={background}
-        //             alt="background"
-        //             className="absolute inset-0 w-full h-full object-cover"
-        //             layout="fill"
-        //         />
-        //     )}
-        //     <input type="file" accept="image/*" className="hidden" id="background-input" onChange={handleChange} />
-        //     <label htmlFor="background-input" className="absolute inset-0 flex items-center justify-center cursor-pointer">
-        //         <div className="text-white text-2xl">{background ? "Change Background" : "Add Background"}</div>
-        //     </label>
-        // </div>
+
+            <div className="flex flex-row justify-end space-x-2">
+                <Button
+                    className="text-green-600 bg-white"
+                    color="success"
+                    variant="bordered"
+                    onPress={onOpenUpload}
+                    startContent={<FiUpload />}>
+                    Upload
+                </Button>
+                <Modal isOpen={isOpenUpload} onOpenChange={onOpenUploadChange}>
+                    <ModalContent>
+                        {(onClose) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Change Avatar</ModalHeader>
+                                <ModalBody>
+                                    {preview ? (
+                                        <Image
+                                            className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
+                                            src={preview}
+                                            alt={user?.username}
+                                            width={128}
+                                            height={128}
+                                            onClick={onUpload}
+                                        />
+                                    ) : user?.avatar ? (
+                                        <Image
+                                            className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
+                                            src={user.avatar}
+                                            alt={user?.username}
+                                            width={128}
+                                            height={128}
+                                            onClick={onUpload}
+                                        />
+                                    ) : (
+                                        <span className="text-gray-600 font-bold text-6xl">{user?.username?.charAt(0).toUpperCase()}</span>
+                                    )}
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light" onPress={onClose}>
+                                        Close
+                                    </Button>
+                                    <Button color="primary" onPress={onClose} startContent={<FiUpload />}>
+                                        Upload
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
+
+                <Button
+                    className="text-red-500 bg-white"
+                    color="danger"
+                    variant="bordered"
+                    onPress={onOpenDelete}
+                    startContent={<IoMdTrash />}>
+                    Delete
+                </Button>
+                <ConfirmDialog
+                    title={`Confirm Delete.`}
+                    content={`Are you sure you want to remove your avatar?`}
+                    isOpen={isOpenDelete}
+                    onOpenChange={onOpenDeleteChange}
+                    onSubmit={onRemove}
+                />
+            </div>
+
+            {/* {
+                preview && (
+                    <>
+                        <div className="flex flex-row pt-4 space-x-4">
+                            <Button onClick={cancelUpload} size="sm" aria-label="Cancel Upload" className="text-white">
+                                Cancel
+                            </Button>
+
+                            <Button onClick={confirmUpload} size="sm" aria-label="Confirm Upload" className="text-white">
+                                Confirm
+                            </Button>
+                        </div>
+                    </>
+                );
+    } */}
+        </div>
     );
 };
 
@@ -388,6 +379,7 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">Change Password</h2>
                     <div className="flex flex-col max-w-lg space-y-4 w-full">
                         <Input
+                            size="sm"
                             label="Current Password"
                             type={isCurrentPasswordVisible ? "text" : "password"}
                             id="currentPassword"
@@ -396,16 +388,17 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                             required
                             endContent={
                                 <button
-                                    className="focus:outline-none"
+                                    className="focus:outline-none opacity-60"
                                     type="button"
                                     onClick={toggleCurrentPasswordVisibility}
                                     aria-label="toggle password visibility">
-                                    {isCurrentPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                    {isCurrentPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
                                 </button>
                             }
                         />
 
                         <Input
+                            size="sm"
                             label="Password"
                             type={isPasswordVisible ? "text" : "password"}
                             id="password"
@@ -414,16 +407,17 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                             required
                             endContent={
                                 <button
-                                    className="focus:outline-none"
+                                    className="focus:outline-none opacity-60"
                                     type="button"
                                     onClick={togglePasswordVisibility}
                                     aria-label="toggle password visibility">
-                                    {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                    {isPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
                                 </button>
                             }
                         />
 
                         <Input
+                            size="sm"
                             label="Confirm Password"
                             type={isConfirmPasswordVisible ? "text" : "password"}
                             id="confirmPassword"
@@ -432,11 +426,11 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                             required
                             endContent={
                                 <button
-                                    className="focus:outline-none"
+                                    className="focus:outline-none opacity-60"
                                     type="button"
                                     onClick={toggleConfirmPasswordVisibility}
                                     aria-label="toggle confirm password visibility">
-                                    {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                    {isConfirmPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
                                 </button>
                             }
                         />
@@ -456,6 +450,7 @@ const ChangePasswordTab = ({ user, isLoading }) => {
 const OverviewTab = ({ user }) => {
     return (
         <>
+            <Avatar user={user} />
             <div className="flex justify-end">
                 <button className="text-blue-500 hover:underline" onClick={() => updateUserInfo("email")}>
                     Edit
@@ -539,7 +534,7 @@ const OrdersTab = ({ router, user, isLoading }) => {
             }
         } catch (error) {
             console.error("Failed to post user data:", error);
-            toast.error("Error:11111111 ", error.message);
+            toast.error("Error: ", error.message);
         }
     }
 

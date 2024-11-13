@@ -12,7 +12,7 @@ export default function Contact() {
         };
 
         await apiService
-            .sendMail(message)
+            .sendContact(message)
             .then((res) => {
                 toast.success("Email sent successfully");
                 console.log(res);

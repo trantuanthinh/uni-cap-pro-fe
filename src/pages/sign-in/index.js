@@ -102,11 +102,11 @@ export default function SignIn() {
                             required
                             endContent={
                                 <button
-                                    className="focus:outline-none"
+                                    className="focus:outline-none opacity-60"
                                     type="button"
                                     onClick={toggleVisibility}
                                     aria-label="toggle password visibility">
-                                    {isVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                    {isVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
                                 </button>
                             }
                             isInvalid={isValids.password}
@@ -131,7 +131,7 @@ export default function SignIn() {
                         </Link>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 }

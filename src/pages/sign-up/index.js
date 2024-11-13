@@ -223,11 +223,11 @@ export default function SignUp() {
                             required
                             endContent={
                                 <button
-                                    className="focus:outline-none"
+                                    className="focus:outline-none opacity-60"
                                     type="button"
                                     onClick={togglePasswordVisibility}
                                     aria-label="toggle password visibility">
-                                    {isPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                    {isPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
                                 </button>
                             }
                             isInvalid={isValids.password}
@@ -244,11 +244,11 @@ export default function SignUp() {
                             required
                             endContent={
                                 <button
-                                    className="focus:outline-none"
+                                    className="focus:outline-none opacity-60"
                                     type="button"
                                     onClick={toggleConfirmPasswordVisibility}
                                     aria-label="toggle confirm password visibility">
-                                    {isConfirmPasswordVisible ? <IoMdEye size={24} /> : <IoMdEyeOff size={24} />}
+                                    {isConfirmPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
                                 </button>
                             }
                             isInvalid={isValids.confirmPassword}
@@ -345,8 +345,8 @@ export default function SignUp() {
                             Already have an account? Sign in here.
                         </Link>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     );
 }
