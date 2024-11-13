@@ -151,6 +151,10 @@ class APIService {
         return this.#getItems(`users/orders/${ id }`, option);
     }
 
+    async changePassword(data) {
+        return this.#postItem("users/change-password", data);
+    }
+
     async uploadAvatar(file, id) {
         const formData = new FormData();
         formData.append("file", file);

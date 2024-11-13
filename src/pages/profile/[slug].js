@@ -310,44 +310,40 @@ const Avatar = ({ user }) => {
 };
 
 const ChangePasswordTab = ({ user, isLoading }) => {
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-
     const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] = useState(false);
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
+    const [errors, setErrors] = useState({});
 
     const toggleCurrentPasswordVisibility = useCallback(() => setIsCurrentPasswordVisible((prev) => !prev), []);
-    const togglePasswordVisibility = useCallback(() => setIsPasswordVisible((prev) => !prev), []);
+    const togglePasswordVisibility = useCallback(() => setIsNewPasswordVisible((prev) => !prev), []);
     const toggleConfirmPasswordVisibility = useCallback(() => setIsConfirmPasswordVisible((prev) => !prev), []);
 
     const handleChangePassword = async (e) => {
         e.preventDefault();
-        toast.success("Password changed successfully.");
-        // if (!validateForm()) return;
+        const currentPassword = document.getElementById("currentPassword").value.trim();
+        const newPassword = document.getElementById("newPassword").value.trim();
+        const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-        // try {
-        //     let _otp = otp.join("");
-        //     let dataJSON = { email, password, otp: _otp };
-        //     let response = await apiService.resetPassword(dataJSON);
-        //     if (response && response.ok) {
-        //         setPassword("");
-        //         setConfirmPassword("");
-        //     }
-        // } catch (error) {
-        //     console.error("Failed to post user data:", error);
-        //     setErrors((prev) => ({ ...prev, server: "An error occurred. Please try again." }));
-        // }
-    };
-
-    const validateForm = () => {
-        if (password !== confirmPassword) {
-            setErrors((prev) => ({ ...prev, confirmPassword: "Passwords do not match." }));
-            setIsValids((prev) => ({ ...prev, confirmPassword: true }));
-            return false;
+        if (newPassword !== confirmPassword) {
+            toast.error("Passwords do not match.");
+            setErrors({ confirmPassword: "Passwords do not match." });
+            return;
         }
-        return true;
+
+        try {
+            const dataJSON = { currentPassword, newPassword, confirmPassword };
+            const response = await apiService.resetPassword(dataJSON);
+            if (response && response.ok) {
+                toast.success("Password changed successfully.");
+                document.getElementById("currentPassword").value = "";
+                document.getElementById("newPassword").value = "";
+                document.getElementById("confirmPassword").value = "";
+            }
+        } catch (error) {
+            console.error("Failed to post user data:", error);
+            setErrors({ server: "An error occurred. Please try again." });
+        }
     };
 
     return (
@@ -363,8 +359,6 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                             label="Current Password"
                             type={isCurrentPasswordVisible ? "text" : "password"}
                             id="currentPassword"
-                            value={currentPassword}
-                            onChange={(e) => setCurrentPassword(e.target.value)}
                             required
                             endContent={
                                 <button
@@ -379,11 +373,9 @@ const ChangePasswordTab = ({ user, isLoading }) => {
 
                         <Input
                             size="sm"
-                            label="Password"
-                            type={isPasswordVisible ? "text" : "password"}
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            label="New Password"
+                            type={isNewPasswordVisible ? "text" : "password"}
+                            id="newPassword"
                             required
                             endContent={
                                 <button
@@ -391,7 +383,7 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                                     type="button"
                                     onClick={togglePasswordVisibility}
                                     aria-label="toggle password visibility">
-                                    {isPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
+                                    {isNewPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
                                 </button>
                             }
                         />
@@ -401,8 +393,6 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                             label="Confirm Password"
                             type={isConfirmPasswordVisible ? "text" : "password"}
                             id="confirmPassword"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
                             required
                             endContent={
                                 <button
@@ -414,6 +404,7 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                                 </button>
                             }
                         />
+                        {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
                     </div>
 
                     <div className="flex justify-end max-w-lg w-full pb-4">
@@ -421,6 +412,7 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                             Change Password
                         </Button>
                     </div>
+                    {errors.server && <p className="text-red-500 text-sm mt-2">{errors.server}</p>}
                 </div>
             )}
         </>
