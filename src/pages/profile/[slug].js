@@ -12,6 +12,8 @@ import sharedService from "@/services/sharedService";
 import {
     Accordion,
     AccordionItem,
+    Autocomplete,
+    AutocompleteItem,
     Button,
     Card,
     CardBody,
@@ -30,6 +32,7 @@ import {
     Textarea,
     useDisclosure,
 } from "@nextui-org/react";
+import { debounce } from "lodash";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
@@ -87,57 +90,53 @@ export default function ProfileLayout() {
         <>
             <Title label={`${ GlobalSettings.Settings.name } - ${ user?.username }`} />
             {isMounted && user ? (
-                <div className="min-h-full mx-auto pb-10 px-6">
-                    {/* <Avatar user={user} /> */}
+                <div className="min-h-full flex flex-row mx-auto px-6 border-t-2">
+                    <div className="basis-1/6">
+                        <Accordion className="min-h-full " defaultExpandedKeys={["YourProfile"]} selectionMode="multiple">
+                            <AccordionItem key="YourProfile" aria-label="Your Profile" title="Your Profile">
+                                <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
+                                    <ListboxItem key="info">Basic Information</ListboxItem>
+                                    <ListboxItem key="settings">Account Settings</ListboxItem>
+                                    <ListboxItem key="changePassword">Change Password</ListboxItem>
+                                </Listbox>
+                            </AccordionItem>
 
-                    <div className="flex flex-row border-t-2 mt-5">
-                        <div className="basis-1/6">
-                            <Accordion defaultExpandedKeys={["YourProfile"]} selectionMode="multiple">
-                                <AccordionItem key="YourProfile" aria-label="Your Profile" title="Your Profile">
+                            <AccordionItem key="YourOrders" aria-label="Your Orders" title="Your Orders">
+                                <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
+                                    <ListboxItem key="orders">All Orders</ListboxItem>
+                                    <ListboxItem key="pending">Pending Orders</ListboxItem>
+                                    <ListboxItem key="delivering">Delivering Orders</ListboxItem>
+                                    <ListboxItem key="delivered">Delivered Orders</ListboxItem>
+                                </Listbox>
+                            </AccordionItem>
+
+                            {user && user.type === "SELLER" && (
+                                <AccordionItem key="YourProducts" aria-label="All Products" title="All Products">
                                     <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
-                                        <ListboxItem key="info">Basic Information</ListboxItem>
-                                        <ListboxItem key="settings">Account Settings</ListboxItem>
-                                        <ListboxItem key="changePassword">Change Password</ListboxItem>
+                                        <ListboxItem key="products">All Products</ListboxItem>
+                                        <ListboxItem key="best">Best-Seller</ListboxItem>
                                     </Listbox>
                                 </AccordionItem>
-
-                                <AccordionItem key="YourOrders" aria-label="Your Orders" title="Your Orders">
-                                    <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
-                                        <ListboxItem key="orders">All Orders</ListboxItem>
-                                        <ListboxItem key="pending">Pending Orders</ListboxItem>
-                                        <ListboxItem key="delivering">Delivering Orders</ListboxItem>
-                                        <ListboxItem key="delivered">Delivered Orders</ListboxItem>
-                                    </Listbox>
-                                </AccordionItem>
-
-                                {user && user.type === "SELLER" && (
-                                    <AccordionItem key="YourProducts" aria-label="All Products" title="All Products">
-                                        <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
-                                            <ListboxItem key="products">All Products</ListboxItem>
-                                            <ListboxItem key="best">Best-Seller</ListboxItem>
-                                        </Listbox>
-                                    </AccordionItem>
-                                )}
-
-                                <AccordionItem key="YourFeedbacks" aria-label="Your Feedbacks" title="Your Feedbacks">
-                                    <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
-                                        <ListboxItem key="feedbacks">All Feedbacks</ListboxItem>
-                                        <ListboxItem key="provide">Provide Feedbacks</ListboxItem>
-                                    </Listbox>
-                                </AccordionItem>
-                            </Accordion>
-                        </div>
-
-                        <div className="basis-5/6 overflow-auto p-4">
-                            {tabs.map(
-                                (tab, index) =>
-                                    tab.key === currentTab && (
-                                        <Card key={index} className="bg-white shadow-lg rounded-lg mb-4">
-                                            <CardBody>{tab.content}</CardBody>
-                                        </Card>
-                                    )
                             )}
-                        </div>
+
+                            <AccordionItem key="YourFeedbacks" aria-label="Your Feedbacks" title="Your Feedbacks">
+                                <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
+                                    <ListboxItem key="feedbacks">All Feedbacks</ListboxItem>
+                                    <ListboxItem key="provide">Provide Feedbacks</ListboxItem>
+                                </Listbox>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+
+                    <div className="basis-5/6 overflow-auto min-h-full p-4">
+                        {tabs.map(
+                            (tab, index) =>
+                                tab.key === currentTab && (
+                                    <Card key={index} className="bg-white shadow-lg min-h-full rounded-lg mb-4">
+                                        <CardBody>{tab.content}</CardBody>
+                                    </Card>
+                                )
+                        )}
                     </div>
                 </div>
             ) : (
@@ -149,41 +148,32 @@ export default function ProfileLayout() {
 
 const Avatar = ({ user }) => {
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    const [isMouseOver, setIsMouseOver] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(user?.avatar);
-    // const [preview, setPreview] = useState(null);
     const dispatch = useDispatch();
-    const { isOpen: isOpenUpload, onOpen: onOpenUpload, onOpenChange: onOpenUploadChange } = useDisclosure();
-    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenDeleteChange } = useDisclosure();
+    const [isUploadModalOpen, setUploadModalOpen] = useState(false);
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
     const onUpload = () => {
         const input = document.createElement("input");
         input.type = "file";
         input.accept = "image/*";
-
         input.onchange = (e) => {
             const file = e.target.files[0];
-            if (file.size > MAX_FILE_SIZE) {
-                toast.error("File size exceeds the limit of 5 MB.");
-                return;
-            }
-            if (file) {
+            if (file && file.size <= MAX_FILE_SIZE) {
                 setSelectedFile(file);
                 const reader = new FileReader();
-                reader.onloadend = () => {
-                    setPreview(reader.result);
-                };
+                reader.onloadend = () => setPreview(reader.result);
                 reader.readAsDataURL(file);
+            } else {
+                toast.error("File size exceeds the limit of 5 MB.");
             }
         };
-
         input.click();
     };
 
     const confirmUpload = () => {
         if (!selectedFile) return;
-
         apiService
             .uploadAvatar(selectedFile, user.id)
             .then(() => {
@@ -195,10 +185,7 @@ const Avatar = ({ user }) => {
                 setSelectedFile(null);
                 dispatch(setUser(updatedUser.result));
             })
-            .catch((error) => {
-                console.error("Error: ", error);
-                toast.error(error.message || "Failed to upload avatar");
-            });
+            .catch((error) => toast.error(error.message || "Failed to upload avatar"));
     };
 
     const cancelUpload = () => {
@@ -218,10 +205,7 @@ const Avatar = ({ user }) => {
                 setPreview(null);
                 dispatch(setUser(updatedUser.result));
             })
-            .catch((error) => {
-                console.error("Error: ", error);
-                toast.error(error.message || "Failed to delete avatar");
-            });
+            .catch((error) => toast.error(error.message || "Failed to delete avatar"));
     };
 
     return (
@@ -230,16 +214,18 @@ const Avatar = ({ user }) => {
                 <div className="relative size-32 flex justify-center items-center rounded-full bg-gradient-to-r from-green-300 to-blue-300 shadow-md overflow-hidden">
                     <Image
                         className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
-                        src={user.avatar}
+                        src={preview || user.avatar}
                         alt={user?.username}
                         width={128}
                         height={128}
                         onClick={onUpload}
                     />
                 </div>
-                <div className="">
+                <div>
                     <p className="text-3xl font-bold">{user?.name}</p>
-                    <p className="text-gray-500 text-md">{user?.username} | {user?.email}</p>
+                    <p className="text-gray-500 text-md">
+                        {user?.username} | {user?.email}
+                    </p>
                 </div>
             </div>
 
@@ -248,44 +234,53 @@ const Avatar = ({ user }) => {
                     className="text-green-600 bg-white"
                     color="success"
                     variant="bordered"
-                    onPress={onOpenUpload}
+                    onPress={() => setUploadModalOpen(true)}
                     startContent={<FiUpload />}>
                     Upload
                 </Button>
-                <Modal isOpen={isOpenUpload} onOpenChange={onOpenUploadChange}>
+
+                <Modal isOpen={isUploadModalOpen} onOpenChange={setUploadModalOpen} size="2xl">
                     <ModalContent>
                         {(onClose) => (
                             <>
                                 <ModalHeader className="flex flex-col gap-1">Change Avatar</ModalHeader>
-                                <ModalBody>
+                                <ModalBody className="flex items-center justify-center">
                                     {preview ? (
                                         <Image
-                                            className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
+                                            className="rounded-full shadow-lg transition-opacity duration-200 cursor-pointer"
                                             src={preview}
                                             alt={user?.username}
-                                            width={128}
-                                            height={128}
-                                            onClick={onUpload}
-                                        />
-                                    ) : user?.avatar ? (
-                                        <Image
-                                            className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
-                                            src={user.avatar}
-                                            alt={user?.username}
-                                            width={128}
-                                            height={128}
+                                            width={250}
+                                            height={250}
                                             onClick={onUpload}
                                         />
                                     ) : (
-                                        <span className="text-gray-600 font-bold text-6xl">{user?.username?.charAt(0).toUpperCase()}</span>
+                                        <div className="bg-gradient-to-r from-green-300 to-blue-300 rounded-full flex justify-center items-center size-[250px] border-2">
+                                            <p className="text-gray-600 font-bold text-9xl">
+                                                {user?.username?.charAt(0).toUpperCase()}
+                                            </p>
+                                        </div>
                                     )}
+                                    <div className="flex flex-col items-center justify-center opacity-80 transition-opacity duration-300 hover:opacity-100">
+                                        <div className="font-semibold text-2xl">Drag & Drop</div>
+                                        <div className="text-gray-500">-- or --</div>
+                                        <button
+                                            className="flex justify-center items-center w-36 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white p-2 rounded-lg hover:scale-105 transition-transform duration-300 shadow-lg"
+                                            onClick={onUpload}>
+                                            <FiUpload size={20} />
+                                        </button>
+                                    </div>
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button color="danger" variant="light" onPress={onClose}>
-                                        Close
+                                    <Button color="danger" fullWidth onPress={() => onClose(cancelUpload())}>
+                                        Cancel
                                     </Button>
-                                    <Button color="primary" onPress={onClose} startContent={<FiUpload />}>
-                                        Upload
+                                    <Button
+                                        color="primary"
+                                        fullWidth
+                                        onPress={() => onClose(confirmUpload())}
+                                        startContent={<FiUpload />}>
+                                        Confirm Upload
                                     </Button>
                                 </ModalFooter>
                             </>
@@ -297,34 +292,19 @@ const Avatar = ({ user }) => {
                     className="text-red-500 bg-white"
                     color="danger"
                     variant="bordered"
-                    onPress={onOpenDelete}
+                    onPress={() => setDeleteModalOpen(true)}
                     startContent={<IoMdTrash />}>
                     Delete
                 </Button>
+
                 <ConfirmDialog
-                    title={`Confirm Delete.`}
-                    content={`Are you sure you want to remove your avatar?`}
-                    isOpen={isOpenDelete}
-                    onOpenChange={onOpenDeleteChange}
+                    title="Confirm Delete"
+                    content="Are you sure you want to remove your avatar?"
+                    isOpen={isDeleteModalOpen}
+                    onOpenChange={setDeleteModalOpen}
                     onSubmit={onRemove}
                 />
             </div>
-
-            {/* {
-                preview && (
-                    <>
-                        <div className="flex flex-row pt-4 space-x-4">
-                            <Button onClick={cancelUpload} size="sm" aria-label="Cancel Upload" className="text-white">
-                                Cancel
-                            </Button>
-
-                            <Button onClick={confirmUpload} size="sm" aria-label="Confirm Upload" className="text-white">
-                                Confirm
-                            </Button>
-                        </div>
-                    </>
-                );
-    } */}
         </div>
     );
 };
@@ -448,43 +428,166 @@ const ChangePasswordTab = ({ user, isLoading }) => {
 };
 
 const OverviewTab = ({ user }) => {
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+
+    const [province, setProvince] = useState(user?.provinceId);
+    const [district, setDistrict] = useState(user?.districtId);
+    const [ward, setWard] = useState(user?.wardId);
+
+    const loadDistricts = useCallback(
+        debounce((provinceId) => {
+            apiService
+                .getDistricts(provinceId)
+                .then((response) => setDistricts(response.result))
+                .catch((error) => {
+                    toast.error(error.message);
+                    console.log(error.message);
+                });
+        }, GlobalSettings.Settings.debounceTimer.valueChanges),
+        []
+    );
+
+    const loadWards = useCallback(
+        debounce((districtId) => {
+            apiService
+                .getWards(districtId)
+                .then((response) => setWards(response.result))
+                .catch((error) => {
+                    toast.error(error.message);
+                    console.log(error.message);
+                });
+        })
+    );
+
+    useEffect(() => {
+        Promise.all([apiService.getProvinces(), apiService.getDistricts(province), apiService.getWards(district)])
+            .then(([provincesResponse, districtsResponse, wardsResponse]) => {
+                setProvinces(provincesResponse.result);
+                setDistricts(districtsResponse.result);
+                setWards(wardsResponse.result);
+            })
+            .catch((error) => {
+                toast.error(error.message);
+                console.log(error.message);
+            });
+    }, []);
     return (
         <>
             <Avatar user={user} />
-            <div className="flex justify-end">
-                <button className="text-blue-500 hover:underline" onClick={() => updateUserInfo("email")}>
-                    Edit
-                </button>
-            </div>
 
-            <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">Gmail:</span>
-                    <span className="text-gray-700">{user?.email}</span>
+            <div className="grid grid-cols-2 grid-rows-1 px-5 pt-8 gap-4">
+                <div className="flex">
+                    <table aria-label="InfoTable" className="w-full border-collapse">
+                        <tbody>
+                            <tr>
+                                <td className="font-bold text-sm p-2">Name</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        defaultValue={user?.name}
+                                        className="w-80 p-1 px-4 border-2 rounded-full"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="font-bold text-sm p-2">Username</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        defaultValue={user?.username}
+                                        className="w-80 p-1 px-4 border-2 rounded-full"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="font-bold text-sm p-2">Phone Number</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        defaultValue={user?.phoneNumber}
+                                        className="w-80 p-1 px-4 border-2 rounded-full"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="font-bold text-sm p-2">Email</td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        defaultValue={user?.email}
+                                        className="w-80 p-1 px-4 border-2 rounded-full"
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">Phone Number:</span>
-                    <span className="text-gray-700">{user?.phoneNumber}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">Description:</span>
-                    <span className="text-gray-700">{user?.description}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">Type:</span>
-                    <span className="text-gray-700">{user?.user_Type}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">Province:</span>
-                    <span className="text-gray-700">{user?.Province}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">District:</span>
-                    <span className="text-gray-700">{user?.District}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="font-medium text-gray-700">Ward:</span>
-                    <span className="text-gray-700">{user?.Ward}</span>
+
+                <div className="flex">
+                    <table aria-label="AddressTable" className="w-32 border-collapse">
+                        <tbody>
+                            <tr>
+                                <td className="font-bold text-sm p-2 w-32">Address</td>
+                                <td className="p-2">
+                                    <input
+                                        type="text"
+                                        defaultValue={user?.address}
+                                        className="w-72 p-1 px-4 border-2 rounded-full"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="font-bold text-sm p-2 w-32">Province</td>
+                                <td className="p-2">
+                                    <Autocomplete
+                                        defaultItems={provinces}
+                                        label="Province"
+                                        selectedKey={province}
+                                        variant="underlined"
+                                        onSelectionChange={(selectedId) => {
+                                            setProvince(selectedId);
+                                            setDistricts([]);
+                                            setWards([]);
+                                            loadDistricts(selectedId);
+                                        }}>
+                                        {(item) => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
+                                    </Autocomplete>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="font-bold text-sm p-2 w-32">District</td>
+                                <td className="p-2">
+                                    <Autocomplete
+                                        defaultItems={districts}
+                                        label="District"
+                                        selectedKey={district}
+                                        variant="underlined"
+                                        onSelectionChange={(selectedId) => {
+                                            setDistrict(selectedId);
+                                            setWards([]);
+                                            loadWards(selectedId);
+                                        }}>
+                                        {(item) => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
+                                    </Autocomplete>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="font-bold text-sm p-2 w-32">Ward</td>
+                                <td className="p-2">
+                                    <Autocomplete
+                                        defaultItems={wards}
+                                        label="Ward"
+                                        selectedKey={ward}
+                                        variant="underlined"
+                                        onSelectionChange={setWard}>
+                                        {(item) => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
+                                    </Autocomplete>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </>

@@ -65,7 +65,7 @@ const Banner = () => {
             <div className="flex flex-col md:flex-row w-full max-w-screen-xl mx-auto rounded-lg overflow-hidden">
                 {/* Left side image */}
                 <div className="relative w-full md:w-1/2 h-[300px] md:h-auto">
-                    <Image src="/logo/background.jpg" alt="Background" layout="fill" priority className="rounded-l-lg" />
+                    <Image src="/logo/background.jpg" alt="Background" layout="fill" className="rounded-l-lg" />
                 </div>
 
                 {/* Right side content */}

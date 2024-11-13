@@ -144,6 +144,7 @@ const UserActions = ({ user }) => {
         dispatch(clearUser());
         dispatch(clearCart());
         dispatch(clearGroupCart());
+        toast.success("Logged out successfully");
         router.push("/");
     };
 
