@@ -151,8 +151,8 @@ class APIService {
         return this.#getItems(`users/orders/${ id }`, option);
     }
 
-    async changePassword(data) {
-        return this.#postItem("users/change-password", data);
+    async changePassword(id, data) {
+        return this.#postItem(`users/change-password/${ id }`, data);
     }
 
     async uploadAvatar(file, id) {

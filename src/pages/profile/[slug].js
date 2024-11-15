@@ -92,11 +92,10 @@ export default function ProfileLayout() {
             {isMounted && user ? (
                 <div className="min-h-full flex flex-row mx-auto px-6 border-t-2">
                     <div className="basis-1/6">
-                        <Accordion className="min-h-full " defaultExpandedKeys={["YourProfile"]} selectionMode="multiple">
+                        <Accordion className="min-h-full" defaultExpandedKeys={["YourProfile"]} selectionMode="multiple">
                             <AccordionItem key="YourProfile" aria-label="Your Profile" title="Your Profile">
                                 <Listbox aria-label="Actions" onAction={(key) => setCurrentTab(key)}>
-                                    <ListboxItem key="info">Basic Information</ListboxItem>
-                                    <ListboxItem key="settings">Account Settings</ListboxItem>
+                                    <ListboxItem key="info">Account Settings</ListboxItem>
                                     <ListboxItem key="changePassword">Change Password</ListboxItem>
                                 </Listbox>
                             </AccordionItem>
@@ -132,7 +131,7 @@ export default function ProfileLayout() {
                         {tabs.map(
                             (tab, index) =>
                                 tab.key === currentTab && (
-                                    <Card key={index} className="bg-white shadow-lg min-h-full rounded-lg mb-4">
+                                    <Card key={index} className="shadow-lg h-full rounded-lg mb-4">
                                         <CardBody>{tab.content}</CardBody>
                                     </Card>
                                 )
@@ -212,14 +211,17 @@ const Avatar = ({ user }) => {
         <div className="grid grid-cols-2 grid-rows-1 gap-4 items-center px-10 pb-4 space-x-4 border-b-2">
             <div className="flex flex-row items-center space-x-2">
                 <div className="relative size-32 flex justify-center items-center rounded-full bg-gradient-to-r from-green-300 to-blue-300 shadow-md overflow-hidden">
-                    <Image
-                        className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80 cursor-pointer"
-                        src={preview || user.avatar}
-                        alt={user?.username}
-                        width={128}
-                        height={128}
-                        onClick={onUpload}
-                    />
+                    {user?.avatar ? (
+                        <Image
+                            className="rounded-full shadow-lg transition-opacity duration-200 hover:opacity-80"
+                            src={preview || user?.avatar}
+                            alt={user?.username}
+                            width={128}
+                            height={128}
+                        />
+                    ) : (
+                        <span className="text-7xl font-serif font-medium"> {user?.username.charAt(0).toUpperCase()}</span>
+                    )}
                 </div>
                 <div>
                     <p className="text-3xl font-bold">{user?.name}</p>
@@ -332,8 +334,8 @@ const ChangePasswordTab = ({ user, isLoading }) => {
         }
 
         try {
-            const dataJSON = { currentPassword, newPassword, confirmPassword };
-            const response = await apiService.resetPassword(dataJSON);
+            const dataJSON = { currentPassword, newPassword };
+            const response = await apiService.changePassword(user?.id, dataJSON);
             if (response && response.ok) {
                 toast.success("Password changed successfully.");
                 document.getElementById("currentPassword").value = "";
@@ -351,7 +353,7 @@ const ChangePasswordTab = ({ user, isLoading }) => {
             {isLoading ? (
                 <LoadingIndicator />
             ) : (
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center justify-center h-full">
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">Change Password</h2>
                     <div className="flex flex-col max-w-lg space-y-4 w-full">
                         <Input
@@ -423,22 +425,41 @@ const OverviewTab = ({ user }) => {
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
-
     const [province, setProvince] = useState(user?.provinceId);
     const [district, setDistrict] = useState(user?.districtId);
     const [ward, setWard] = useState(user?.wardId);
+    const [isChange, setIsChange] = useState(false);
+    const [dataJson, setDataJson] = useState({});
+
+    const handleChange = (field, value) => {
+        setDataJson((prev) => ({ ...prev, [field]: value }));
+        setIsChange(true);
+    };
+
+    const submitChange = async () => {
+        console.log("🚀 ~ submitChange ~ dataJson:", dataJson);
+        try {
+            let response = await apiService.patchUser(dataJson);
+            if (response.ok) {
+                toast.success("User updated successfully");
+            }
+            toast.success("Form submitted successfully");
+            setIsChange(false);
+            setDataJson({});
+        } catch (error) {
+            console.error("Error: ", error.message);
+            toast.error("Error: ", error.message);
+        }
+    };
 
     const loadDistricts = useCallback(
         debounce((provinceId) => {
             apiService
                 .getDistricts(provinceId)
                 .then((response) => setDistricts(response.result))
-                .catch((error) => {
-                    toast.error(error.message);
-                    console.log(error.message);
-                });
+                .catch((error) => toast.error(error.message));
         }, GlobalSettings.Settings.debounceTimer.valueChanges),
-        []
+        [GlobalSettings.Settings.debounceTimer.valueChanges]
     );
 
     const loadWards = useCallback(
@@ -446,11 +467,9 @@ const OverviewTab = ({ user }) => {
             apiService
                 .getWards(districtId)
                 .then((response) => setWards(response.result))
-                .catch((error) => {
-                    toast.error(error.message);
-                    console.log(error.message);
-                });
-        })
+                .catch((error) => toast.error(error.message));
+        }, GlobalSettings.Settings.debounceTimer.valueChanges),
+        [GlobalSettings.Settings.debounceTimer.valueChanges]
     );
 
     useEffect(() => {
@@ -460,16 +479,13 @@ const OverviewTab = ({ user }) => {
                 setDistricts(districtsResponse.result);
                 setWards(wardsResponse.result);
             })
-            .catch((error) => {
-                toast.error(error.message);
-                console.log(error.message);
-            });
+            .catch((error) => toast.error(error.message));
     }, []);
+
     return (
         <>
             <Avatar user={user} />
-
-            <div className="grid grid-cols-2 grid-rows-1 px-5 pt-8 gap-4">
+            <div className="grid grid-cols-2 px-5 pt-8 gap-4">
                 <div className="flex">
                     <table aria-label="InfoTable" className="w-full border-collapse">
                         <tbody>
@@ -480,6 +496,7 @@ const OverviewTab = ({ user }) => {
                                         type="text"
                                         defaultValue={user?.name}
                                         className="w-80 p-1 px-4 border-2 rounded-full"
+                                        onChange={(e) => handleChange("name", e.target.value)}
                                     />
                                 </td>
                             </tr>
@@ -490,6 +507,7 @@ const OverviewTab = ({ user }) => {
                                         type="text"
                                         defaultValue={user?.username}
                                         className="w-80 p-1 px-4 border-2 rounded-full"
+                                        onChange={(e) => handleChange("username", e.target.value)}
                                     />
                                 </td>
                             </tr>
@@ -500,6 +518,7 @@ const OverviewTab = ({ user }) => {
                                         type="text"
                                         defaultValue={user?.phoneNumber}
                                         className="w-80 p-1 px-4 border-2 rounded-full"
+                                        onChange={(e) => handleChange("phoneNumber", e.target.value)}
                                     />
                                 </td>
                             </tr>
@@ -510,13 +529,13 @@ const OverviewTab = ({ user }) => {
                                         type="text"
                                         defaultValue={user?.email}
                                         className="w-80 p-1 px-4 border-2 rounded-full"
+                                        onChange={(e) => handleChange("email", e.target.value)}
                                     />
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
                 <div className="flex">
                     <table aria-label="AddressTable" className="w-32 border-collapse">
                         <tbody>
@@ -527,6 +546,7 @@ const OverviewTab = ({ user }) => {
                                         type="text"
                                         defaultValue={user?.address}
                                         className="w-72 p-1 px-4 border-2 rounded-full"
+                                        onChange={(e) => handleChange("address", e.target.value)}
                                     />
                                 </td>
                             </tr>
@@ -540,6 +560,7 @@ const OverviewTab = ({ user }) => {
                                         variant="underlined"
                                         onSelectionChange={(selectedId) => {
                                             setProvince(selectedId);
+                                            handleChange("province", selectedId);
                                             setDistricts([]);
                                             setWards([]);
                                             loadDistricts(selectedId);
@@ -558,6 +579,7 @@ const OverviewTab = ({ user }) => {
                                         variant="underlined"
                                         onSelectionChange={(selectedId) => {
                                             setDistrict(selectedId);
+                                            handleChange("district", selectedId);
                                             setWards([]);
                                             loadWards(selectedId);
                                         }}>
@@ -573,7 +595,10 @@ const OverviewTab = ({ user }) => {
                                         label="Ward"
                                         selectedKey={ward}
                                         variant="underlined"
-                                        onSelectionChange={setWard}>
+                                        onSelectionChange={(selectedId) => {
+                                            setWard(selectedId);
+                                            handleChange("ward", selectedId);
+                                        }}>
                                         {(item) => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
                                     </Autocomplete>
                                 </td>
@@ -582,9 +607,16 @@ const OverviewTab = ({ user }) => {
                     </table>
                 </div>
             </div>
+            <div className="flex justify-end">
+                <Button disabled={!isChange} color={!isChange ? "danger" : "success"} onClick={submitChange}>
+                    Submit
+                </Button>
+            </div>
         </>
     );
 };
+
+
 
 const OrdersTab = ({ router, user, isLoading }) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
