@@ -188,24 +188,46 @@ class APIService {
     }
     //#endregion
 
+    //#region product_main_categories
+    async getProd_Main_Categories(option) {
+        return this.#getItems("product_main_categories", option);
+    }
+
+    async getProd_Main_Category(id) {
+        return this.#getItem("product_main_categories", id);
+    }
+
+    async postProd_Main_Category(data) {
+        return this.#postItem("product_main_categories", data);
+    }
+
+    async patchProd_Main_Category(id, data) {
+        return this.#patchItem("product_main_categories", id, data);
+    }
+
+    async deleteProd_Main_Category(id) {
+        return this.#deleteItem("product_main_categories", id);
+    }
+    //#endregion
+
     //#region product_categories
     async getProd_Categories(option) {
         return this.#getItems("product_categories", option);
     }
 
-    async getProd_Categories(id) {
+    async getProd_Category(id) {
         return this.#getItem("product_categories", id);
     }
 
-    async postProd_Categories(data) {
+    async postProd_Category(data) {
         return this.#postItem("product_categories", data);
     }
 
-    async patchProd_Categories(id, data) {
+    async patchProd_Category(id, data) {
         return this.#patchItem("product_categories", id, data);
     }
 
-    async deleteProd_Categories(id) {
+    async deleteProd_Category(id) {
         return this.#deleteItem("product_categories", id);
     }
     //#endregion

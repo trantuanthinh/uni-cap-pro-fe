@@ -7,7 +7,6 @@ import {
     Dropdown,
     DropdownItem,
     DropdownMenu,
-    DropdownSection,
     DropdownTrigger,
     Image,
     Link,
@@ -17,40 +16,74 @@ import {
     NavbarItem,
 } from "@nextui-org/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
+import { IoIosArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 export default function Header() {
     const router = useRouter();
+    const timeout = 2000;
+
     const user = useSelector((state) => state.user);
-    const cart = useSelector((state) => state.cart);
-    const [haveUser, setHaveUser] = useState(false);
-    const [categories, setCategories] = useState([]);
+    const [mainCategories, setMainCategories] = useState([]);
+    const dispatch = useDispatch();
+
+    const [openMainCategory, setOpenMainCategory] = useState(false);
+    const [openCategory, setOpenCategory] = useState(null);
+    const [listCategories, setListCategories] = useState([]);
+
+    const handleMouseEnter = async (menuId) => {
+        const categoryItem = listCategories.find((item) => item.MainCategoryId === menuId);
+
+        if (!categoryItem) {
+            try {
+                const res = await apiService.getProd_Main_Category(menuId);
+                setListCategories((prevCategories) => [
+                    ...prevCategories,
+                    {
+                        MainCategoryId: menuId,
+                        Categories: res.result.categories,
+                    },
+                ]);
+            } catch (error) {
+                toast.error(`Error: ${ error.message }`);
+                console.log("Error: ", error.message);
+            }
+        }
+
+        setOpenCategory(menuId);
+    };
+
+    const handleMouseLeave = () => setOpenCategory(null);
+
+    const getCategories = useMemo(() => {
+        return listCategories.find((item) => item.MainCategoryId === openCategory)?.Categories || [];
+    }, [listCategories, openCategory]);
 
     useEffect(() => {
-        setHaveUser(Boolean(user));
-        const fetchCategories = async () => {
+        const fetchMainCategories = async () => {
             try {
-                const res = await apiService.getProd_Categories();
-                setCategories(res.result.data);
+                const res = await apiService.getProd_Main_Categories();
+                setMainCategories(res.result.data);
             } catch (error) {
                 console.log("Error: ", error.message);
-                toast.error("Error: ", error.message);
+                toast.error(error.message);
             }
         };
-        fetchCategories();
-    }, [user]);
+        fetchMainCategories();
+    }, []);
 
-    function handleProductRouting(categoryId) {
+    const handleProductRouting = (categoryId) => {
         router.push({
             pathname: "/products",
             query: categoryId ? { CategoryId: categoryId } : "",
         });
-    }
+    };
 
     const navList = [
+        { href: "/", label: "Home" },
         { href: "/about", label: "About" },
         { href: "/contact", label: "Contact" },
     ];
@@ -77,28 +110,57 @@ export default function Header() {
                         {item.label}
                     </NavbarItem>
                 ))}
-                <NavbarItem>
-                    <Dropdown>
-                        <DropdownTrigger className="cursor-pointer text-black hover:underline">Category</DropdownTrigger>
-                        <DropdownMenu aria-label="Categories" color="primary" variant="flat">
-                            <DropdownSection showDivider>
-                                <DropdownItem key="all-product" onClick={() => handleProductRouting(null)}>
-                                    All Products
-                                </DropdownItem>
-                                <DropdownItem key="shared-order" onClick={() => router.push("/shared-order")}>
-                                    Shared Buy
-                                </DropdownItem>
-                            </DropdownSection>
 
-                            <DropdownSection title="Categories">
-                                {categories.map((category) => (
-                                    <DropdownItem key={category.id} onClick={() => handleProductRouting(category.id)}>
-                                        {category.name}
-                                    </DropdownItem>
-                                ))}
-                            </DropdownSection>
-                        </DropdownMenu>
-                    </Dropdown>
+                <NavbarItem className="relative cursor-pointer text-black hover:underline space-y-5">
+                    <span onMouseEnter={() => setOpenMainCategory(true)}>Categories</span>
+
+                    {openMainCategory && (
+                        <ul
+                            className="absolute mt-2 bg-white border border-gray-300 shadow-lg rounded w-max"
+                            onMouseLeave={() => setTimeout(() => setOpenMainCategory(false), timeout)}>
+                            <li onClick={() => handleProductRouting("")}>
+                                <div className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                    All Products
+                                </div>
+                            </li>
+
+                            <li onClick={() => handleProductRouting("shared-order")}>
+                                <div className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                    Shared-Order
+                                </div>
+                            </li>
+
+                            <hr className="border-gray-500 w-[80%]" />
+
+                            {mainCategories.map((mainCategory) => (
+                                <li
+                                    key={mainCategory.id}
+                                    className="relative"
+                                    onMouseEnter={() => handleMouseEnter(mainCategory.id)}
+                                    onMouseLeave={handleMouseLeave}>
+                                    <div className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                        {mainCategory.name}{" "}
+                                        <span>
+                                            <IoIosArrowForward />
+                                        </span>
+                                    </div>
+
+                                    {openCategory === mainCategory.id && (
+                                        <ul className="absolute left-full top-0 bg-white border border-gray-300 shadow-lg rounded w-max">
+                                            {getCategories.map((category) => (
+                                                <li
+                                                    key={category.id}
+                                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                    onClick={() => handleProductRouting(category.id)}>
+                                                    {category.name}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </NavbarItem>
             </NavbarContent>
 
@@ -108,7 +170,7 @@ export default function Header() {
                         <FaShoppingCart size={24} className="text-white hover:text-gray-300" />
                     </Button>
                 </NavbarItem>
-                {haveUser ? <UserActions user={user} /> : <SignActions />}
+                {user ? <UserActions user={user} dispatch={dispatch} /> : <SignActions />}
             </NavbarContent>
         </Navbar>
     );
@@ -129,8 +191,7 @@ const SignActions = () => (
     </>
 );
 
-const UserActions = ({ user }) => {
-    const dispatch = useDispatch();
+const UserActions = ({ user, dispatch }) => {
     const router = useRouter();
 
     const actionList = [

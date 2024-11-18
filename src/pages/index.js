@@ -46,13 +46,13 @@ export default function Home({ }) {
                     <ProductList title={"Productions"} list={productList} pageSize={pageSize} type={"product"} />
                 </section>
 
-                <section className="flex flex-col items-center justify-center">
+                {/* <section className="flex flex-col items-center justify-center">
                     {orderList.length == 0 ? (
                         ""
                     ) : (
                         <ProductList title={"Buy Together"} list={orderList} pageSize={pageSize} type={"shared-product"} />
                     )}
-                </section>
+                </section> */}
                 <section></section>
             </main>
         </>
