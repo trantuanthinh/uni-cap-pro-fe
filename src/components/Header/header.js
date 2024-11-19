@@ -26,7 +26,7 @@ import { toast } from "sonner";
 export default function Header() {
     const router = useRouter();
     const timeout = 2000;
-
+    const [mounted, setMounted] = useState(false);
     const user = useSelector((state) => state.user);
     const { mainCategories, updateMainCategories, updateCategories, categoryItems, updateCategoryItems } = useAppContext();
     const dispatch = useDispatch();
@@ -66,6 +66,7 @@ export default function Header() {
         };
 
         fetchMainCategories();
+        setMounted(true);
     }, []);
 
     const getCategories = useMemo(() => {
@@ -167,7 +168,7 @@ export default function Header() {
                         <FaShoppingCart size={24} className="text-white hover:text-gray-300" />
                     </Button>
                 </NavbarItem>
-                {user ? <UserActions user={user} dispatch={dispatch} /> : <SignActions />}
+                {mounted && user ? <UserActions user={user} dispatch={dispatch} /> : <SignActions />}
             </NavbarContent>
         </Navbar>
     );
@@ -211,7 +212,7 @@ const UserActions = ({ user, dispatch }) => {
             <NavbarItem>
                 <Dropdown>
                     <DropdownTrigger>
-                        <Button variant="bordered" auto>
+                        <Button variant="bordered">
                             <FaUser />
                             <span className="ml-2">{user?.username}</span>
                         </Button>

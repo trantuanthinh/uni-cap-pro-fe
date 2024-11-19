@@ -616,8 +616,6 @@ const OverviewTab = ({ user }) => {
     );
 };
 
-
-
 const OrdersTab = ({ router, user, isLoading }) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [rating, setRating] = useState(0);

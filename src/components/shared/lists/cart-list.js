@@ -63,7 +63,7 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
             {items.length === 0 ? (
                 <p className="text-center text-gray-500">Your cart is currently empty.</p>
             ) : (
-                items.map((product) => {
+                items?.map((product) => {
                     const formattedPrice = sharedService.formatVietnamDong(product.price);
                     const formattedTotalPrice = sharedService.formatVietnamDong(product.totalItemQuantity * product.price);
                     const isDialogOpen = dialogId === product.id;
@@ -110,11 +110,11 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
                                         onClick={() => handleIncrement(product)}>
                                         <IoMdAddCircleOutline size={24} />
                                     </Button>
-                                    <button
+                                    <Button
                                         className="text-red-600 hover:text-red-800"
                                         onClick={() => handleDialogOpen(product.id)}>
                                         <FaTrash />
-                                    </button>
+                                    </Button>
                                     <ConfirmDialog
                                         title={`Remove ${ product.name }?`}
                                         content="Are you sure you want to remove this item from your cart?"

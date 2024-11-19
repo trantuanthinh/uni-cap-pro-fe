@@ -50,7 +50,7 @@ export default function GroupCartList({ items = [], removeFromCheckout, removeFr
     return (
         <div className="space-y-4">
             <p className="text-lg font-semibold mb-4">Choose Your Joined Items</p>
-            {items.map((item) => {
+            {items?.map((item) => {
                 const product = item.product;
                 if (!product) return null;
 

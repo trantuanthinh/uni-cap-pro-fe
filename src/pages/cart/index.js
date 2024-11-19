@@ -22,6 +22,11 @@ export default function Cart() {
     const groupCart = useSelector((state) => state.groupCart);
 
     const [activeTab, setActiveTab] = useState("cart");
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const removeItem = (type, id) => {
         switch (type) {
@@ -147,7 +152,7 @@ export default function Cart() {
                         Checkout
                     </button>
                 </div>
-                <div className="border p-4 rounded-b">{renderTabContent()}</div>
+                {isMounted && <div className="border p-4 rounded-b">{renderTabContent()}</div>}
             </div>
         </>
     );

@@ -16,7 +16,7 @@ export default function CheckoutList({ items = [], handleOrder }) {
 
     return (
         <>
-            {items.map((item) => {
+            {items && items?.map((item) => {
                 const { cart_type, isShare, totalItemQuantity } = item;
 
                 // Determine product and calculate discount price if applicable
