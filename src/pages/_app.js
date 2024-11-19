@@ -1,5 +1,6 @@
 import Footer from "@/components/Footer/footer";
 import Header from "@/components/Header/header";
+import { AppProvider } from "@/contexts/AppContext";
 import Providers from "@/redux/provider";
 import "@/styles/globals.css";
 import { NextUIProvider } from "@nextui-org/react";
@@ -19,13 +20,13 @@ export const itim = Itim({
 });
 
 const roboto = Roboto({
-    weight: '400',
-    subsets: ['latin'],
+    weight: "400",
+    subsets: ["latin"],
 });
 
 const notoSans = Noto_Sans({
-    weight: '400',
-    subsets: ['latin'],
+    weight: "400",
+    subsets: ["latin"],
 });
 
 export default function App({ Component, pageProps }) {
@@ -48,23 +49,27 @@ export default function App({ Component, pageProps }) {
 
     return (
         <Providers>
-            <NextUIProvider>
-                <div className={`grid grid-rows-[auto_1fr_auto] min-h-screen ${ notoSans.className }`}>
-                    <Header />
-                    {showButton && (
-                        <div className="fixed bottom-4 right-4 z-10">
-                            <button onClick={scrollToTop} className="bg-sky-500/60 size-8 flex items-center justify-center hover:bg-sky-500 text-white rounded-full p-2">
-                                <FaChevronUp size={24} />
-                            </button>
-                        </div>
-                    )}
-                    <main>
-                        <Toaster position="bottom-left" duration={2000} closeButton richColors />
-                        <Component {...pageProps} />
-                    </main>
-                    <Footer />
-                </div>
-            </NextUIProvider>
+            <AppProvider>
+                <NextUIProvider>
+                    <div className={`grid grid-rows-[auto_1fr_auto] min-h-screen ${ notoSans.className }`}>
+                        <Header />
+                        {showButton && (
+                            <div className="fixed bottom-4 right-4 z-10">
+                                <button
+                                    onClick={scrollToTop}
+                                    className="bg-sky-500/60 size-8 flex items-center justify-center hover:bg-sky-500 text-white rounded-full p-2">
+                                    <FaChevronUp size={24} />
+                                </button>
+                            </div>
+                        )}
+                        <main>
+                            <Toaster position="bottom-left" duration={2000} closeButton richColors />
+                            <Component {...pageProps} />
+                        </main>
+                        <Footer />
+                    </div>
+                </NextUIProvider>
+            </AppProvider>
         </Providers>
     );
 }

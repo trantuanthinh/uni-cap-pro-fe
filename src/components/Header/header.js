@@ -1,3 +1,4 @@
+import { useAppContext } from "@/contexts/AppContext";
 import { clearCart } from "@/redux/slicers/cartSlice";
 import { clearGroupCart } from "@/redux/slicers/groupCartSlice";
 import { clearUser } from "@/redux/slicers/userSlice";
@@ -27,53 +28,49 @@ export default function Header() {
     const timeout = 2000;
 
     const user = useSelector((state) => state.user);
-    const [mainCategories, setMainCategories] = useState([]);
+    const { mainCategories, updateMainCategories, updateCategories, categoryItems, updateCategoryItems } = useAppContext();
     const dispatch = useDispatch();
 
     const [openMainCategory, setOpenMainCategory] = useState(false);
     const [openCategory, setOpenCategory] = useState(null);
-    const [listCategories, setListCategories] = useState([]);
 
-    const handleMouseEnter = async (menuId) => {
-        const categoryItem = listCategories.find((item) => item.MainCategoryId === menuId);
-
-        if (!categoryItem) {
-            try {
-                const res = await apiService.getProd_Main_Category(menuId);
-                setListCategories((prevCategories) => [
-                    ...prevCategories,
-                    {
-                        MainCategoryId: menuId,
-                        Categories: res.result.categories,
-                    },
-                ]);
-            } catch (error) {
-                toast.error(`Error: ${ error.message }`);
-                console.log("Error: ", error.message);
-            }
-        }
-
-        setOpenCategory(menuId);
-    };
-
+    const handleMouseEnter = (menuId) => setOpenCategory(menuId);
     const handleMouseLeave = () => setOpenCategory(null);
-
-    const getCategories = useMemo(() => {
-        return listCategories.find((item) => item.MainCategoryId === openCategory)?.Categories || [];
-    }, [listCategories, openCategory]);
 
     useEffect(() => {
         const fetchMainCategories = async () => {
             try {
                 const res = await apiService.getProd_Main_Categories();
-                setMainCategories(res.result.data);
+                let mainCategories = res.result.data;
+
+                for (const item of mainCategories) {
+                    const res2 = await apiService.getProd_Main_Category(item.id);
+                    let categories = res2.result.categories;
+
+                    updateCategoryItems((prev) => [
+                        ...prev,
+                        {
+                            MainCategoryId: item.id,
+                            Categories: categories,
+                        },
+                    ]);
+
+                    updateCategories((prev) => [...prev, ...categories]);
+                }
+
+                updateMainCategories(mainCategories);
             } catch (error) {
+                toast.error("Error: ", error.message);
                 console.log("Error: ", error.message);
-                toast.error(error.message);
             }
         };
+
         fetchMainCategories();
-    }, []);
+    }, [updateMainCategories, updateCategories, updateCategoryItems]);
+
+    const getCategories = useMemo(() => {
+        return categoryItems.find((item) => item.MainCategoryId === openCategory)?.Categories || [];
+    }, [categoryItems, openCategory]);
 
     const handleProductRouting = (categoryId) => {
         router.push({
@@ -101,7 +98,7 @@ export default function Header() {
                 </Link>
             </NavbarBrand>
 
-            <NavbarContent className="hidden sm:flex gap-4" justify="center">
+            <NavbarContent className="hidden sm:flex gap-4">
                 {navList.map((item) => (
                     <NavbarItem
                         key={item.href}
