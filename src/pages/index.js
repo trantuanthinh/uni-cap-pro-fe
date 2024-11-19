@@ -42,7 +42,7 @@ export default function Home({ }) {
                     <Banner />
                 </section>
 
-                <section className="flex flex-col items-center justify-center">
+                <section className="flex flex-col items-center justify-center px-5">
                     <ProductList title={"Productions"} list={productList} pageSize={pageSize} type={"product"} />
                 </section>
 

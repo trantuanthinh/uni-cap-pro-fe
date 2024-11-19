@@ -9,36 +9,27 @@ export default function ItemCard({ product }) {
     const formattedPrice = sharedService.formatVietnamDong(product.price);
 
     return (
-        <div className="flex flex-col p-4 m-5 bg-white shadow-xl transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-100">
+        <div className="flex flex-col p-4 bg-white shadow-lg rounded-lg transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl">
             <Link href={`/products/detail/${ product.id }`}>
-                <div className="flex justify-center mb-2">
-                    <div className="flex border-4 size-52 rounded-lg border-rich-brown">
-                        <Image
-                            className="rounded object-cover"
-                            src={product.images[0]}
-                            alt={product.name}
-                            width={240}
-                            height={240}
-                        />
-                    </div>
+                <div className="relative w-full aspect-square mb-4">
+                    <Image className="rounded-lg object-cover" src={product.images[0]} alt={product.name} layout="fill" />
                 </div>
 
-                <div className="grid grid-flow-row py-4">
-                    <div className="flex opacity-50">
-                        <span className="mr-1">{starRating.toFixed(1)}</span>
-                        <FaStar color="gold" size={24} />
-                        <span className="ml-1">({product.total_Rating_Quantity})</span>
+                <div className="text-center mb-4">
+                    <div className="flex items-center justify-center mb-2 text-gray-600">
+                        <span className="mr-1 text-lg font-medium">{starRating.toFixed(1)}</span>
+                        <FaStar color="gold" size={18} />
+                        <span className="ml-1 text-sm">({product.total_Rating_Quantity})</span>
                     </div>
-                    <div className="text-text-title font-bold text-2xl sm:text-3xl">{product.name}</div>
-                    <div className="text-text-base text-sm sm:text-base line-clamp-2 mt-3 mb-2">{product.description}</div>
+                    <div className="text-lg sm:text-xl font-bold text-gray-800">{product.name}</div>
+                    <div className="text-sm sm:text-base text-gray-600 mt-2 line-clamp-2">{product.description}</div>
                 </div>
             </Link>
 
-            <div className="flex flex-row justify-between items-center mt-2">
-                <span className="text-lg sm:text-xl font-semibold">Price: {formattedPrice}</span>
+            <div className="flex items-center justify-between mt-auto">
+                <span className="text-lg sm:text-xl font-semibold text-primary">{formattedPrice}</span>
+                <AddToCartButton item={product} />
             </div>
-
-            <AddToCartButton item={product} />
         </div>
     );
 }

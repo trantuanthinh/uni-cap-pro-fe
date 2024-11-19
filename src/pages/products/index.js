@@ -118,12 +118,11 @@ export default function Products() {
         router.push({ pathname: router.pathname, query });
     };
 
-
     return (
         <>
             <Title label={`${ GlobalSettings.Settings.name } - Products`} />
-            <h1 className="text-3xl font-bold mb-4 text-center">All Products</h1>
-            <div className="flex flex-row w-full py-6 px-4 space-x-2">
+            <h1 className="text-3xl font-bold text-center">All Products</h1>
+            <div className="flex flex-row pb-4 w-full px-4 space-x-2">
                 {/* Sidebar */}
                 <div className="flex flex-col basis-2/12">
                     <Input
@@ -212,7 +211,7 @@ export default function Products() {
                 </div>
 
                 {/* Products List */}
-                <div className="basis-10/12 w-full flex flex-col items-center">
+                <div className="basis-10/12 w-full flex flex-col items-center space-y-4">
                     <ListItem list={list} pageSize={pageSize} type="product" id="search" />
                     {totalPages > 1 && (
                         <Pagination
