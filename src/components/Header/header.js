@@ -66,7 +66,7 @@ export default function Header() {
         };
 
         fetchMainCategories();
-    }, [updateMainCategories, updateCategories, updateCategoryItems]);
+    }, []);
 
     const getCategories = useMemo(() => {
         return categoryItems.find((item) => item.MainCategoryId === openCategory)?.Categories || [];
