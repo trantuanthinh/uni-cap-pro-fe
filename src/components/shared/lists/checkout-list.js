@@ -1,11 +1,9 @@
 import sharedService from "@/services/sharedService";
-import { Button } from "@nextui-org/react";
-import Image from "next/image";
+import { Button, Image } from "@nextui-org/react";
+import { useState } from "react";
 import ConfirmDialog from "../default-confirm-dialog";
 
-const { useState } = require("react");
-
-export default function CheckoutList({ items = null, handleOrder }) {
+export default function CheckoutList({ items = [], handleOrder }) {
     const [dialogIdInfo, setDialogIdInfo] = useState(null);
 
     function openDialog(itemId) {
@@ -18,78 +16,70 @@ export default function CheckoutList({ items = null, handleOrder }) {
 
     return (
         <>
-            {items && items?.map((item, index) => {
-                let product;
-                let discountPrice = 0;
-                switch (item?.cart_type) {
-                    case "cart":
-                        product = item;
-                        break;
-                    case "group-cart":
-                        product = item?.product;
-                        if (item.level > 1) {
-                            for (let item of product.discount.discount_Details) {
-                                if (item.level == order.level) {
-                                    discountPrice = sharedService.formatVietnamDong(product.price - product.price * item.amount);
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    default:
-                        return;
-                }
-                const formattedPrice = sharedService.formatVietnamDong(product?.price);
-                const formattedTotalPrice = sharedService.formatVietnamDong(item?.totalItemQuantity * product?.price);
+            {items.map((item) => {
+                const { cart_type, isShare, totalItemQuantity } = item;
 
+                // Determine product and calculate discount price if applicable
+                let product = cart_type === "cart" ? item : item?.product;
+                if (!product) return null;
+
+                let discountPrice = null;
+                if (cart_type === "group-cart" && item.level > 1) {
+                    const discountDetail = product?.discount?.discount_Details?.find(
+                        (detail) => detail.level === item.level
+                    );
+                    if (discountDetail) {
+                        discountPrice = sharedService.formatVietnamDong(
+                            product.price - product.price * discountDetail.amount
+                        );
+                    }
+                }
+
+                const formattedPrice = sharedService.formatVietnamDong(product.price);
+                const formattedTotalPrice = sharedService.formatVietnamDong(totalItemQuantity * product.price);
                 const isDialogOpen = dialogIdInfo === product.id;
 
                 return (
                     <div key={product.id} className="grid grid-cols-[100px_1fr_auto] items-center gap-4 border-b pb-4">
+                        {/* Product Image */}
                         <div className="flex justify-center">
-                            <div className="flex border-4 size-32 rounded-lg border-rich-brown mb-2">
-                                <Image
-                                    className="rounded-lg object-cover"
-                                    src={product.images[0]}
-                                    alt={product.name}
-                                    width={100}
-                                    height={100}
-                                />
-                            </div>
+                            <Image
+                                className="rounded-lg object-cover"
+                                src={product.images[0]}
+                                alt={product.name}
+                                width={100}
+                                height={100}
+                            />
                         </div>
 
+                        {/* Product Details */}
                         <div className="space-y-1">
                             <p className="font-bold text-xl">{product.name}</p>
                             <span className="text-red-500">{formattedPrice}</span>
-                            {item.isShare ? (
-                                <p className="text-red-500">Shared Buy</p>
-                            ) : (
-                                <p className="text-red-500">Individual Buy</p>
-                            )}
-                            <div className="col-span-2">
+                            <div>
                                 <p className="text-lg font-semibold">Total Price: {formattedTotalPrice}</p>
-                                <p className="text-lg font-semibold">Total Price: {discountPrice}</p>
+                                {discountPrice && <p className="text-lg font-semibold">Discount Price: {discountPrice}</p>}
                             </div>
                         </div>
 
-                        <div className="grid grid-flow-row gap-3">
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    className="hover:bg-danger-300"
-                                    onClick={() => openDialog(product.id)}
-                                    color="success"
-                                    variant="flat">
-                                    Buy
-                                </Button>
-
-                                <ConfirmDialog
-                                    title={`Confirm Buy ${ product.name }`}
-                                    content={`Are you sure you want to buy ${ product.name } from your checkout?`}
-                                    isOpen={isDialogOpen}
-                                    onOpenChange={closeDialog}
-                                    onSubmit={() => handleOrder(item)}
-                                />
-                            </div>
+                        {/* Action Buttons */}
+                        <div className="grid gap-3">
+                            <p className="text-end text-sm text-red-500">{isShare ? "Shared Buy" : "Individual Buy"}</p>
+                            <p className="text-end text-md text-red-500">Quantity: {totalItemQuantity}</p>
+                            <Button
+                                className="hover:bg-success-300"
+                                onClick={() => openDialog(product.id)}
+                                color="success"
+                                variant="flat">
+                                Buy
+                            </Button>
+                            <ConfirmDialog
+                                title={`Confirm Purchase: ${ product.name }`}
+                                content={`Are you sure you want to buy ${ product.name } from your checkout?`}
+                                isOpen={isDialogOpen}
+                                onOpenChange={closeDialog}
+                                onSubmit={() => handleOrder(item)}
+                            />
                         </div>
                     </div>
                 );
