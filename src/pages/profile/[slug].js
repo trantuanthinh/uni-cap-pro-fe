@@ -327,6 +327,11 @@ const ChangePasswordTab = ({ user, isLoading }) => {
         const newPassword = document.getElementById("newPassword").value.trim();
         const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            toast.error("All fields are required.");
+            return;
+        }
+
         if (newPassword !== confirmPassword) {
             toast.error("Passwords do not match.");
             setErrors({ confirmPassword: "Passwords do not match." });
@@ -354,67 +359,72 @@ const ChangePasswordTab = ({ user, isLoading }) => {
                 <LoadingIndicator />
             ) : (
                 <div className="flex flex-col items-center justify-center h-full">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Change Password</h2>
-                    <div className="flex flex-col max-w-lg space-y-4 w-full">
-                        <Input
-                            size="sm"
-                            label="Current Password"
-                            type={isCurrentPasswordVisible ? "text" : "password"}
-                            id="currentPassword"
-                            required
-                            endContent={
-                                <button
-                                    className="focus:outline-none opacity-60"
-                                    type="button"
-                                    onClick={toggleCurrentPasswordVisibility}
-                                    aria-label="toggle password visibility">
-                                    {isCurrentPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
-                                </button>
-                            }
-                        />
+                    <div className="flex flex-col items-center justify-center w-[50%] h-[70%] p-6 bg-white rounded-lg shadow-xl">
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Reset your password</h2>
+                        <h2 className="text-sm text-gray-500 mb-6">
+                            Almost done, enter your new password and you're all set to go
+                        </h2>
+                        <div className="flex flex-col max-w-lg space-y-4 w-full">
+                            <Input
+                                size="sm"
+                                label="Current Password"
+                                type={isCurrentPasswordVisible ? "text" : "password"}
+                                id="currentPassword"
+                                required
+                                endContent={
+                                    <button
+                                        className="focus:outline-none opacity-60"
+                                        type="button"
+                                        onClick={toggleCurrentPasswordVisibility}
+                                        aria-label="toggle password visibility">
+                                        {isCurrentPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
+                                    </button>
+                                }
+                            />
 
-                        <Input
-                            size="sm"
-                            label="New Password"
-                            type={isNewPasswordVisible ? "text" : "password"}
-                            id="newPassword"
-                            required
-                            endContent={
-                                <button
-                                    className="focus:outline-none opacity-60"
-                                    type="button"
-                                    onClick={togglePasswordVisibility}
-                                    aria-label="toggle password visibility">
-                                    {isNewPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
-                                </button>
-                            }
-                        />
+                            <Input
+                                size="sm"
+                                label="New Password"
+                                type={isNewPasswordVisible ? "text" : "password"}
+                                id="newPassword"
+                                required
+                                endContent={
+                                    <button
+                                        className="focus:outline-none opacity-60"
+                                        type="button"
+                                        onClick={togglePasswordVisibility}
+                                        aria-label="toggle password visibility">
+                                        {isNewPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
+                                    </button>
+                                }
+                            />
 
-                        <Input
-                            size="sm"
-                            label="Confirm Password"
-                            type={isConfirmPasswordVisible ? "text" : "password"}
-                            id="confirmPassword"
-                            required
-                            endContent={
-                                <button
-                                    className="focus:outline-none opacity-60"
-                                    type="button"
-                                    onClick={toggleConfirmPasswordVisibility}
-                                    aria-label="toggle confirm password visibility">
-                                    {isConfirmPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
-                                </button>
-                            }
-                        />
-                        {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
+                            <Input
+                                size="sm"
+                                label="Confirm Password"
+                                type={isConfirmPasswordVisible ? "text" : "password"}
+                                id="confirmPassword"
+                                required
+                                endContent={
+                                    <button
+                                        className="focus:outline-none opacity-60"
+                                        type="button"
+                                        onClick={toggleConfirmPasswordVisibility}
+                                        aria-label="toggle confirm password visibility">
+                                        {isConfirmPasswordVisible ? <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
+                                    </button>
+                                }
+                            />
+                            {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
+                        </div>
+
+                        <div className="flex justify-end max-w-lg w-full pb-4">
+                            <Button onClick={handleChangePassword} className="bg-blue-500 text-white mt-4">
+                                Change Password
+                            </Button>
+                        </div>
+                        {errors.server && <p className="text-red-500 text-sm mt-2">{errors.server}</p>}
                     </div>
-
-                    <div className="flex justify-end max-w-lg w-full pb-4">
-                        <Button onClick={handleChangePassword} className="bg-blue-500 text-white mt-4">
-                            Change Password
-                        </Button>
-                    </div>
-                    {errors.server && <p className="text-red-500 text-sm mt-2">{errors.server}</p>}
                 </div>
             )}
         </>
