@@ -25,14 +25,20 @@ export const cartSlice = createSlice({
             }
         },
 
+        setQuantity: (state, action) => {
+            const item = state.items.find((item) => item.id === action.payload.id);
+            if (item) {
+                item.totalItemQuantity = action.payload.quantity;
+                state.totalQuantity = state.items.reduce((total, item) => total + item.totalItemQuantity, 0);
+            }
+        },
+
         incrementQuantity: (state, action) => {
             const item = state.items.find((item) => item.id === action.payload);
 
             if (item) {
-                if (item.totalItemQuantity < 10) {
-                    item.totalItemQuantity += 1;
-                    state.totalQuantity += 1;
-                }
+                item.totalItemQuantity += 1;
+                state.totalQuantity += 1;
             }
         },
 
@@ -64,7 +70,7 @@ export const cartSlice = createSlice({
     },
 });
 
-export const { addItemToCart, incrementQuantity, decrementQuantity, removeItemFromCart, clearCart } =
+export const { addItemToCart, setQuantity, incrementQuantity, decrementQuantity, removeItemFromCart, clearCart } =
     cartSlice.actions;
 
 export default cartSlice.reducer;

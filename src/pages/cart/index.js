@@ -1,13 +1,14 @@
 "use client";
 
+import ConfirmDialog from "@/components/shared/default-confirm-dialog";
 import CartList from "@/components/shared/lists/cart-list";
 import CheckoutList from "@/components/shared/lists/checkout-list";
 import GroupCartList from "@/components/shared/lists/group-cart-list";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
-import { clearCart, removeItemFromCart } from "@/redux/slicers/cartSlice";
+import { removeItemFromCart } from "@/redux/slicers/cartSlice";
 import { removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
-import { clearGroupCart, removeItemFromGroupCart } from "@/redux/slicers/groupCartSlice";
+import { removeItemFromGroupCart } from "@/redux/slicers/groupCartSlice";
 import apiService from "@/services/api-service";
 import { Button } from "@nextui-org/react";
 import { useEffect, useState } from "react";
@@ -23,6 +24,7 @@ export default function Cart() {
 
     const [activeTab, setActiveTab] = useState("cart");
     const [isMounted, setIsMounted] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -43,51 +45,41 @@ export default function Cart() {
         }
     };
 
-    const handleOrder = async (item) => {
-        const data = {
+    const handleOrder = async () => {
+        const items = checkout.items.map((item) => ({
             userId: user.id,
             quantity: item.totalItemQuantity,
             price: item.price * item.totalItemQuantity,
-            isShare: item.isShare,
-        };
+        }));
 
         try {
-            let response;
-            if (item.cart_type === "cart") {
-                response = await apiService.postOrder(data);
-                removeItem("cart", item.id);
-            } else if (item.cart_type === "group-cart") {
-                response = await apiService.postBuyTogetherOrder(item.id, data);
-                removeItem("group-cart", item.id);
-            }
+            await Promise.all(
+                items.map(async (data) => {
+                    if (data.cart_type === "cart") {
+                        await apiService.postOrder(data);
+                        removeItem("cart", data.id);
+                    } else if (data.cart_type === "group-cart") {
+                        await apiService.postBuyTogetherOrder(data.id, data);
+                        removeItem("group-cart", data.id);
+                    }
+                })
+            );
 
-            if (response?.ok) {
-                toast.success("Order created successfully");
-            }
+            toast.success("Orders created successfully");
         } catch (error) {
-            console.error("Error: ", error.message);
+            console.error("Error:", error.message);
             toast.error("Error: " + error.message);
+        } finally {
+            setIsDialogOpen(false);
         }
     };
-
-    useEffect(() => {
-        if (cart.items.length === 0) {
-            dispatch(clearCart());
-        }
-    }, [cart.items, dispatch]);
-
-    useEffect(() => {
-        if (groupCart.items.length === 0) {
-            dispatch(clearGroupCart());
-        }
-    }, [groupCart.items, dispatch]);
 
     const renderTabContent = () => {
         if (activeTab === "cart") {
             return (
                 <div className="space-y-4">
                     <div>
-                        <h2 className="text-xl font-semibold">Cart Items</h2>
+                        <h2 className="text-xl font-semibold pb-2">Cart Items</h2>
                         {cart.items.length > 0 ? (
                             <CartList items={cart.items} removeFromCart={(id) => removeItem("cart", id)} />
                         ) : (
@@ -95,7 +87,7 @@ export default function Cart() {
                         )}
                     </div>
                     <div>
-                        <h2 className="text-xl font-semibold">Group Cart Items</h2>
+                        <h2 className="text-xl font-semibold pb-2">Group Cart Items</h2>
                         {groupCart.items.length > 0 ? (
                             <GroupCartList
                                 items={groupCart.items}
@@ -118,8 +110,8 @@ export default function Cart() {
             return (
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold">Checkout Items</h2>
-                    <CheckoutList items={checkout.items} handleOrder={handleOrder} />
-                    <div className="text-right">
+                    <CheckoutList items={checkout.items} />
+                    <div className="text-right space-x-2">
                         <Button
                             color="danger"
                             onClick={() => {
@@ -128,6 +120,21 @@ export default function Cart() {
                             }}>
                             Back to Cart
                         </Button>
+                        <Button
+                            isDisabled={checkout.items.length === 0}
+                            className="hover:bg-success-300"
+                            onClick={() => setIsDialogOpen(true)}
+                            color="success"
+                            variant="flat">
+                            Buy
+                        </Button>
+                        <ConfirmDialog
+                            title={`Confirm Purchase?`}
+                            content={`Are you sure you want to buy all items in your checkout?`}
+                            isOpen={isDialogOpen}
+                            onOpenChange={() => setIsDialogOpen(false)}
+                            onSubmit={handleOrder}
+                        />
                     </div>
                 </div>
             );
@@ -140,19 +147,17 @@ export default function Cart() {
             <div className="h-full container mx-auto py-8 px-8">
                 <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
                 <p className="text-lg mb-6">Review the items in your cart and complete your purchase.</p>
-                <div className="tabs">
-                    <button
-                        disabled
-                        className={`px-4 py-2 ${ activeTab === "cart" ? "bg-gray-300" : "bg-gray-100" } rounded-t`}>
+                <div className="tabs flex gap-2 mb-1">
+                    <button disabled className={`px-4 py-2 ${ activeTab === "cart" ? "bg-blue-300" : "bg-gray-100" } rounded`}>
                         Cart
                     </button>
                     <button
                         disabled
-                        className={`px-4 py-2 ${ activeTab === "checkout" ? "bg-gray-300" : "bg-gray-100" } rounded-t`}>
+                        className={`px-4 py-2 ${ activeTab === "checkout" ? "bg-blue-300" : "bg-gray-100" } rounded`}>
                         Checkout
                     </button>
                 </div>
-                {isMounted && <div className="border p-4 rounded-b">{renderTabContent()}</div>}
+                {isMounted && <div className="border p-4 rounded">{renderTabContent()}</div>}
             </div>
         </>
     );

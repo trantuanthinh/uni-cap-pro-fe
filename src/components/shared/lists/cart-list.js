@@ -1,7 +1,7 @@
-import { decrementQuantity, incrementQuantity } from "@/redux/slicers/cartSlice";
+import { decrementQuantity, incrementQuantity, setQuantity } from "@/redux/slicers/cartSlice";
 import { addItemToCheckout } from "@/redux/slicers/checkoutSlice";
 import sharedService from "@/services/sharedService";
-import { Button, Image } from "@nextui-org/react";
+import { Image } from "@nextui-org/react";
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import { IoMdAddCircleOutline, IoMdRemoveCircleOutline } from "react-icons/io";
@@ -12,7 +12,6 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
     const dispatch = useDispatch();
     const [dialogId, setDialogId] = useState(null);
     const [selectedItems, setSelectedItems] = useState(new Set());
-    const [selectedTypes, setSelectedTypes] = useState({}); // Tracks buy type for each item
 
     const handleDialogOpen = (id) => setDialogId(id);
     const handleDialogClose = () => setDialogId(null);
@@ -30,8 +29,16 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
     };
 
     const addToCheckout = (item) => {
-        const isShare = selectedTypes[item.id] || false;
-        dispatch(addItemToCheckout({ ...item, isShare, cart_type: "cart" }));
+        dispatch(addItemToCheckout({ ...item, cart_type: "cart" }));
+    };
+
+    const handleSetQuantity = (item, quantity) => {
+        const validQuantity = Math.max(1, quantity); // Prevent negative values
+        dispatch(setQuantity({ id: item.id, quantity: validQuantity }));
+        if (selectedItems.has(item.id)) {
+            removeFromCheckout(item.id);
+            addToCheckout({ ...item, totalItemQuantity: validQuantity });
+        }
     };
 
     const handleIncrement = (item) => {
@@ -50,20 +57,12 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
         }
     };
 
-    const handleTypeChange = (type, item) => {
-        setSelectedTypes((prev) => ({ ...prev, [item.id]: type }));
-        if (selectedItems.has(item.id)) {
-            removeFromCheckout(item.id);
-            dispatch(addItemToCheckout({ ...item, isShare: type, cart_type: "cart" }));
-        }
-    };
-
     return (
         <div className="space-y-4">
             {items.length === 0 ? (
                 <p className="text-center text-gray-500">Your cart is currently empty.</p>
             ) : (
-                items?.map((product) => {
+                items.map((product) => {
                     const formattedPrice = sharedService.formatVietnamDong(product.price);
                     const formattedTotalPrice = sharedService.formatVietnamDong(product.totalItemQuantity * product.price);
                     const isDialogOpen = dialogId === product.id;
@@ -93,28 +92,33 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
 
                             <div className="flex flex-col space-y-2">
                                 <div className="flex flex-row justify-end pr-3 items-center gap-3">
-                                    <Button
+                                    <button
                                         color="danger"
                                         variant="bordered"
                                         size="sm"
-                                        className="hover:bg-danger-100"
+                                        className="hover:text-danger-500"
                                         onClick={() => handleDecrement(product)}>
-                                        <IoMdRemoveCircleOutline size={24} />
-                                    </Button>
-                                    <p className="mx-4 text-xl font-bold">{product.totalItemQuantity}</p>
-                                    <Button
+                                        <IoMdRemoveCircleOutline size={35} />
+                                    </button>
+                                    <input
+                                        type="number"
+                                        className="text-center text-xl w-10 rounded-lg"
+                                        value={product.totalItemQuantity}
+                                        onChange={(e) => handleSetQuantity(product, parseInt(e.target.value) || 0)}
+                                    />
+                                    <button
                                         color="success"
                                         variant="bordered"
                                         size="sm"
-                                        className="hover:bg-success-100"
+                                        className="hover:text-success-500"
                                         onClick={() => handleIncrement(product)}>
-                                        <IoMdAddCircleOutline size={24} />
-                                    </Button>
-                                    <Button
-                                        className="text-red-600 hover:text-red-800"
+                                        <IoMdAddCircleOutline size={35} />
+                                    </button>
+                                    <button
+                                        className="text-red-600 pl-5 hover:text-red-800"
                                         onClick={() => handleDialogOpen(product.id)}>
-                                        <FaTrash />
-                                    </Button>
+                                        <FaTrash size={20} />
+                                    </button>
                                     <ConfirmDialog
                                         title={`Remove ${ product.name }?`}
                                         content="Are you sure you want to remove this item from your cart?"
@@ -122,29 +126,6 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
                                         onOpenChange={handleDialogClose}
                                         onSubmit={() => removeFromCart(product.id)}
                                     />
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            name={`type-${ product.id }`}
-                                            value="false"
-                                            checked={selectedTypes[product.id] === false}
-                                            onChange={() => handleTypeChange(false, product)}
-                                        />
-                                        Individual Buy
-                                    </label>
-                                    <label>
-                                        <input
-                                            type="radio"
-                                            name={`type-${ product.id }`}
-                                            value="true"
-                                            checked={selectedTypes[product.id] === true}
-                                            onChange={() => handleTypeChange(true, product)}
-                                        />
-                                        Shared Buy
-                                    </label>
                                 </div>
                             </div>
                         </div>

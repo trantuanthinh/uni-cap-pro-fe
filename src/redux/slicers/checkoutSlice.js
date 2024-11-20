@@ -14,7 +14,6 @@ export const checkoutSlice = createSlice({
 
             state.items.push({
                 ...newItem,
-                isShare: newItem?.isShare,
                 cart_type: newItem?.cart_type,
             });
             state.totalQuantity += 1;
