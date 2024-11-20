@@ -26,6 +26,7 @@ export default function CheckoutList({ items = [] }) {
 
                     const formattedPrice = sharedService.formatVietnamDong(product.price);
                     const formattedTotalPrice = sharedService.formatVietnamDong(totalItemQuantity * product.price);
+                    // const totalPrice;
 
                     return (
                         <div key={product.id} className="grid grid-cols-[100px_1fr_auto] items-center gap-4 border-b pb-4">
@@ -52,6 +53,11 @@ export default function CheckoutList({ items = [] }) {
                                         <p className="text-lg font-semibold">Discount Price: {discountPrice}</p>
                                     )}
                                 </div>
+                            </div>
+
+                            {/* Total Price */}
+                            <div className="flex flex-col items-end">
+                                {/* <p className="text-lg font-semibold">Total Price: {sharedService.formatVietnamDong(totalPrice)}</p> */}
                             </div>
                         </div>
                     );

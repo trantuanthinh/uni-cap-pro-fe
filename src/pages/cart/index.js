@@ -124,8 +124,7 @@ export default function Cart() {
                             isDisabled={checkout.items.length === 0}
                             className="hover:bg-success-300"
                             onClick={() => setIsDialogOpen(true)}
-                            color="success"
-                            variant="flat">
+                            color="success">
                             Buy
                         </Button>
                         <ConfirmDialog

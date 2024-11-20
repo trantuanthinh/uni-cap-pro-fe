@@ -16,10 +16,13 @@ export default function ItemCard({ product }) {
                 </div>
 
                 <div className="text-center mb-4">
-                    <div className="flex items-center justify-center mb-2 text-gray-600">
-                        <span className="mr-1 text-lg font-medium">{starRating.toFixed(1)}</span>
-                        <FaStar color="gold" size={18} />
-                        <span className="ml-1 text-sm">({product.total_Rating_Quantity})</span>
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="font-bold text-md">{product.owner}</span>
+                        <div className="flex flex-row justify-center items-center text-gray-600">
+                            <span className="mr-1 text-lg font-medium">{starRating.toFixed(1)}</span>
+                            <FaStar color="gold" size={18} />
+                            <span className="ml-1 text-sm">({product.total_Rating_Quantity})</span>
+                        </div>
                     </div>
                     <div className="text-lg sm:text-xl font-bold text-gray-800">{product.name}</div>
                     <div className="text-sm sm:text-base text-gray-600 mt-2 line-clamp-2">{product.description}</div>
@@ -27,7 +30,10 @@ export default function ItemCard({ product }) {
             </Link>
 
             <div className="flex items-center justify-between mt-auto">
-                <span className="text-lg sm:text-xl font-semibold text-primary">{formattedPrice}</span>
+                <div>
+                    <span className="text-lg sm:text-xl font-semibold text-primary">{formattedPrice}</span>|
+                    <span className="text-[15px] text-gray-600">Sold: {product.total_Sold_Quantity >= 10000 ? `${ Math.floor(product.total_Sold_Quantity / 1000) }k` : product.sold}</span>
+                </div>
                 <AddToCartButton item={product} />
             </div>
         </div>
