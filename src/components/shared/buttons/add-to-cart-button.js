@@ -14,8 +14,10 @@ export default function AddToCartButton({ item = null }) {
         }
         if (item) {
             dispatch(addItemToCart(item));
+            toast.success("Added to Cart");
+            return;
         }
-        toast.success("Added to Cart");
+        toast.error("Item not found");
     }
 
     return (
@@ -24,5 +26,3 @@ export default function AddToCartButton({ item = null }) {
         </Button>
     );
 }
-
-

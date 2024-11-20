@@ -32,7 +32,12 @@ export default function ItemCard({ product }) {
             <div className="flex items-center justify-between mt-auto">
                 <div>
                     <span className="text-lg sm:text-xl font-semibold text-primary">{formattedPrice}</span>|
-                    <span className="text-[15px] text-gray-600">Sold: {product.total_Sold_Quantity >= 10000 ? `${ Math.floor(product.total_Sold_Quantity / 1000) }k` : product.sold}</span>
+                    <span className="text-[15px] text-gray-600">
+                        Sold:{" "}
+                        {product.total_Sold_Quantity >= 10000
+                            ? `${ Math.floor(product.total_Sold_Quantity / 1000) }k`
+                            : product.total_Sold_Quantity}
+                    </span>
                 </div>
                 <AddToCartButton item={product} />
             </div>
