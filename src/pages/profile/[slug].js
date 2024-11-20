@@ -851,7 +851,7 @@ const ManageProductsTab = ({ user, isLoading }) => {
                         products.map((item) => (
                             <div
                                 key={item.id}
-                                className="flex flex-row items-center space-x-4 p-4 bg-white shadow-md rounded-lg mb-4">
+                                className="flex flex-row items-center space-x-4 p-4 bg-white rounded-lg mb-4 border-b-2">
                                 <div className="flex-shrink-0">
                                     <Image
                                         className="rounded-lg object-cover"

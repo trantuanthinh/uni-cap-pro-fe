@@ -23,6 +23,8 @@ export default function ProductDetail() {
                     console.log("Error fetching product: ", error);
                     toast.error("Error: " + error.message);
                 });
+
+
         }
     }, [slug, router.isReady]);
 
@@ -32,6 +34,9 @@ export default function ProductDetail() {
                 <div className="max-w-screen-xl mx-auto py-6">
                     <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start">
                         <ProductInfo product={product} />
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6 lg:gap-12 items-start py-4">
+
                     </div>
                     <div className="p-4 mt-10 space-y-2">
                         <h2 className="text-2xl font-bold mb-4">Comments</h2>

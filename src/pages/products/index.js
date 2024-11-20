@@ -142,19 +142,7 @@ export default function Products() {
                                 setIsAlpha(null); // Reset alphabetical sorting when switching to price sorting
                             }}
                             color="primary">
-                            {isAscPrice === null ? (
-                                <>
-                                    Price <GoDash />
-                                </>
-                            ) : isAscPrice ? (
-                                <>
-                                    Price <FaArrowUp />
-                                </>
-                            ) : (
-                                <>
-                                    Price <FaArrowDown />
-                                </>
-                            )}
+                            Price {isAscPrice === null ? <GoDash /> : isAscPrice ? <FaArrowUp /> : <FaArrowDown />}
                         </Button>
 
                         {/* Alphabetical Sorting Button */}
@@ -165,19 +153,7 @@ export default function Products() {
                                 setIsAscPrice(null); // Reset price sorting when switching to alphabetical sorting
                             }}
                             color="primary">
-                            {isAlpha === null ? (
-                                <>
-                                    Alphabet <GoDash />
-                                </>
-                            ) : isAlpha ? (
-                                <>
-                                    A-Z <FaArrowUp />
-                                </>
-                            ) : (
-                                <>
-                                    Z-A <FaArrowDown />
-                                </>
-                            )}
+                            Alphabet {isAlpha === null ? <GoDash /> : isAlpha ? <FaArrowUp /> : <FaArrowDown />}
                         </Button>
                     </div>
 

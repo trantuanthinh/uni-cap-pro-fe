@@ -14,13 +14,13 @@ export default function ProductInfo({ product = null }) {
     return (
         <>
             <div className="grid gap-4 md:gap-8">
-                <div className="flex justify-center w-full">
+                <div className="flex justify-center min-w-max">
                     <Image
-                        className="w-[90%] h-[80%] rounded-lg"
+                        className="rounded-lg"
                         src={product.images[0]}
                         alt={product.name}
-                        width={600}
-                        height={600}
+                        width={400}
+                        height={400}
                     />
                 </div>
                 {/* <div className="flex justify-center gap-4 items-center">
@@ -67,14 +67,9 @@ export default function ProductInfo({ product = null }) {
                 </div> */}
             </div>
 
-            <div className="grid gap-6 md:gap-10 items-start">
+            <div className="grid items-start">
                 <div className="grid gap-4">
                     <h1 className="font-bold text-3xl">{product.name}</h1>
-                    <div className="mt-8">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-sm text-gray-600">Quantity</h3>
-                        </div>
-                    </div>
                     <div className="flex flex-row gap-x-10 text-2xl font-bold">
                         <span className="text-3xl">{formattedPrice}</span>
                         <div className="flex text-sm items-center opacity-80">
@@ -86,10 +81,11 @@ export default function ProductInfo({ product = null }) {
 
                     <div className="text-sm leading-loose text-muted-foreground">
                         <p> {product.description} </p>
+                        <h3 className="text-sm text-gray-600">Quantity</h3>
                         <p> Producer: {product.owner} </p>
                     </div>
                 </div>
-                <div className="flex items-center mt-2">
+                <div className="flex items-center">
                     <Button type="button" variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
                         <IoMdRemoveCircleOutline size={24} />
                     </Button>
@@ -97,10 +93,10 @@ export default function ProductInfo({ product = null }) {
                     <Button type="button" variant="outline" size="icon" onClick={() => setQuantity(Math.min(10, quantity + 1))}>
                         <IoMdAddCircleOutline size={24} />
                     </Button>
-                    {/* <AddToCartButton item={ product } /> */}
+                    <AddToCartButton item={product} />
                 </div>
-                <AddToCartButton item={product} />
             </div>
         </>
     );
 }
+
