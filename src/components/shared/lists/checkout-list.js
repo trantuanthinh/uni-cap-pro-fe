@@ -1,8 +1,14 @@
 import { OrderType } from "@/configurations/order-data-type";
+import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import { Button, Image } from "@nextui-org/react";
+import { useState } from "react";
+import { toast } from "sonner";
+import ConfirmDialog from "../default-confirm-dialog";
 
-export default function CheckoutList({ user, items = [] }) {
+export default function CheckoutList({ user, items = [], removeItem }) {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
     // Group items by shop name
     const groupedItems = items.reduce((acc, item) => {
         const shopName = item?.owner || "Unknown Shop";
@@ -13,25 +19,42 @@ export default function CheckoutList({ user, items = [] }) {
         return acc;
     }, {});
 
-    const handleBuy = (shopName) => {
-        let dataJson = {
+    const handleCartBuy = async (shopName) => {
+        let totalPrice = groupedItems[shopName].reduce((total, item) => total + item.price * item.totalItemQuantity, 0);
+
+        const dataJson = {
             itemRequests: groupedItems[shopName].map((item) => ({
                 productId: item.id,
                 quantity: item.totalItemQuantity,
             })),
             userId: user.id,
             districtId: user.districtId,
+            totalPrice: totalPrice,
             isShare: groupedItems[shopName].some((item) => item.order_type === OrderType.shared_order),
         };
-        console.log(dataJson);
+
+        try {
+            const res = await apiService.postOrder(dataJson);
+            if (res.ok) {
+                toast.success("Orders created successfully");
+                groupedItems[shopName].forEach((item) => {
+                    removeItem(item.cart_type, item.id);
+                });
+            }
+        } catch (error) {
+            toast.error(`Error: ${ error.message }`);
+            console.error("Error:", error.message);
+        } finally {
+            setIsDialogOpen(false);
+        }
     };
 
     return (
         <>
             {Object.keys(groupedItems).map((shopName) => {
-                const type =
-                    groupedItems[shopName][0]?.order_type === OrderType.shared_order ? "Shared Orders" : "Individual Orders";
                 const itemsInShop = groupedItems[shopName];
+                const type = itemsInShop[0]?.order_type === OrderType.shared_order ? "Shared Orders" : "Individual Orders";
+                const totalPriceOfShop = itemsInShop.reduce((total, item) => total + item.price * item.totalItemQuantity, 0);
 
                 return (
                     <div key={shopName} className="mb-8">
@@ -45,31 +68,36 @@ export default function CheckoutList({ user, items = [] }) {
                                 {/* Buy Button */}
                                 <Button
                                     className="bg-success hover:bg-success-300 text-white font-semibold px-6 rounded-lg transition duration-300"
-                                    onClick={() => handleBuy(shopName)}>
+                                    onClick={() => setIsDialogOpen(true)}>
                                     Buy
                                 </Button>
+                                <span className="text-black text-lg font-medium">
+                                    Total: {sharedService.formatVietnamDong(totalPriceOfShop)}
+                                </span>
+                                <ConfirmDialog
+                                    title="Confirm Purchase?"
+                                    content="Are you sure you want to buy all items in your checkout?"
+                                    isOpen={isDialogOpen}
+                                    onOpenChange={setIsDialogOpen}
+                                    onSubmit={() => handleCartBuy(shopName)}
+                                />
                             </div>
                         </div>
 
                         {/* Product List */}
                         {itemsInShop.map((item) => {
                             const { cart_type, totalItemQuantity } = item;
-
-                            // Determine product and calculate discount price if applicable
-                            let product = cart_type === "cart" ? item : item?.product;
+                            const product = cart_type === "cart" ? item : item?.product;
                             if (!product) return null;
 
-                            let discountPrice = null;
-                            if (cart_type === "group-cart" && item.level > 1) {
-                                const discountDetail = product?.discount?.discount_Details?.find(
-                                    (detail) => detail.level === item.level
-                                );
-                                if (discountDetail) {
-                                    discountPrice = sharedService.formatVietnamDong(
-                                        product.price - product.price * discountDetail.amount
-                                    );
-                                }
-                            }
+                            const discountDetail =
+                                cart_type === "group-cart" && item.level > 1
+                                    ? product?.discount?.discount_Details?.find((detail) => detail.level === item.level)
+                                    : null;
+
+                            const discountPrice = discountDetail
+                                ? sharedService.formatVietnamDong(product.price - product.price * discountDetail.amount)
+                                : null;
 
                             const formattedPrice = sharedService.formatVietnamDong(product.price);
                             const formattedTotalPrice = sharedService.formatVietnamDong(totalItemQuantity * product.price);
@@ -80,7 +108,7 @@ export default function CheckoutList({ user, items = [] }) {
                                     <div className="flex justify-center w-24 h-24">
                                         <Image
                                             className="rounded-lg object-cover"
-                                            src={product.images[0]}
+                                            src={product.images?.[0] || "/placeholder.png"}
                                             alt={product.name}
                                             width={100}
                                             height={100}

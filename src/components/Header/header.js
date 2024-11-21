@@ -103,14 +103,16 @@ export default function Header() {
                 {navList.map((item) => (
                     <NavbarItem
                         key={item.href}
-                        className="cursor-pointer text-black hover:underline"
+                        className="cursor-pointer text-black hover:underline font-semibold"
                         onClick={() => router.push(item.href)}>
                         {item.label}
                     </NavbarItem>
                 ))}
 
                 <NavbarItem className="relative cursor-pointer text-black hover:underline space-y-5">
-                    <span onMouseEnter={() => setOpenMainCategory(true)}>Categories</span>
+                    <span className="font-semibold" onMouseEnter={() => setOpenMainCategory(true)}>
+                        Categories
+                    </span>
 
                     {openMainCategory && (
                         <ul

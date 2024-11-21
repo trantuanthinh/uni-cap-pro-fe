@@ -1,6 +1,5 @@
 "use client";
 
-import ConfirmDialog from "@/components/shared/default-confirm-dialog";
 import CartList from "@/components/shared/lists/cart-list";
 import CheckoutList from "@/components/shared/lists/checkout-list";
 import GroupCartList from "@/components/shared/lists/group-cart-list";
@@ -10,11 +9,9 @@ import { CartType } from "@/configurations/order-data-type";
 import { removeItemFromCart } from "@/redux/slicers/cartSlice";
 import { removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
 import { removeItemFromGroupCart } from "@/redux/slicers/groupCartSlice";
-import apiService from "@/services/api-service";
 import { Button } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
 
 export default function Cart() {
     const dispatch = useDispatch();
@@ -25,7 +22,6 @@ export default function Cart() {
 
     const [activeTab, setActiveTab] = useState("cart");
     const [isMounted, setIsMounted] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -43,35 +39,6 @@ export default function Cart() {
                 break;
             default:
                 break;
-        }
-    };
-
-    const handleOrder = async () => {
-        const items = checkout.items.map((item) => ({
-            userId: user.id,
-            quantity: item.totalItemQuantity,
-            price: item.price * item.totalItemQuantity,
-        }));
-
-        try {
-            await Promise.all(
-                items.map(async (data) => {
-                    if (data.cart_type === CartType.cart) {
-                        await apiService.postOrder(data);
-                        removeItem(CartType.cart, data.id);
-                    } else if (data.cart_type === CartType.shared_cart) {
-                        await apiService.postBuyTogetherOrder(data.id, data);
-                        removeItem(CartType.shared_cart, data.id);
-                    }
-                })
-            );
-
-            toast.success("Orders created successfully");
-        } catch (error) {
-            console.error("Error:", error.message);
-            toast.error("Error: " + error.message);
-        } finally {
-            setIsDialogOpen(false);
         }
     };
 
@@ -116,7 +83,7 @@ export default function Cart() {
             return (
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold">Checkout Items</h2>
-                    <CheckoutList items={checkout.items} user={user} />
+                    <CheckoutList items={checkout.items} user={user} removeItem={(type, id) => removeItem(type, id)} />
                     <div className="text-right space-x-2">
                         <Button
                             color="danger"
@@ -126,20 +93,6 @@ export default function Cart() {
                             }}>
                             Back to Cart
                         </Button>
-                        <Button
-                            isDisabled={checkout.items.length === 0}
-                            className="hover:bg-success-300"
-                            onClick={() => setIsDialogOpen(true)}
-                            color="success">
-                            Buy
-                        </Button>
-                        <ConfirmDialog
-                            title={`Confirm Purchase?`}
-                            content={`Are you sure you want to buy all items in your checkout?`}
-                            isOpen={isDialogOpen}
-                            onOpenChange={() => setIsDialogOpen(false)}
-                            onSubmit={handleOrder}
-                        />
                     </div>
                 </div>
             );
