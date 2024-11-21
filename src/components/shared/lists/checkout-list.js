@@ -1,4 +1,4 @@
-import { OrderType } from "@/configurations/order-data-type";
+import { OrderType } from "@/configurations/data-settings";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import { Button, Image } from "@nextui-org/react";

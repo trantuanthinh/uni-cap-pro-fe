@@ -8,3 +8,8 @@ export class OrderType {
     static shared_order = "shared_order";
     static join_group = "join_group";
 }
+
+export class QuantityRange {
+    static min = 1;
+    static max = 999;
+}

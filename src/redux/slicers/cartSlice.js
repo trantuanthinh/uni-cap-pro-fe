@@ -1,3 +1,4 @@
+import { QuantityRange } from "@/configurations/data-settings";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -37,8 +38,10 @@ export const cartSlice = createSlice({
             const item = state.items.find((item) => item.id === action.payload);
 
             if (item) {
-                item.totalItemQuantity += 1;
-                state.totalQuantity += 1;
+                if (item.totalItemQuantity < QuantityRange.max) {
+                    item.totalItemQuantity += 1;
+                    state.totalQuantity += 1;
+                }
             }
         },
 
@@ -46,7 +49,7 @@ export const cartSlice = createSlice({
             const item = state.items.find((item) => item.id === action.payload);
 
             if (item) {
-                if (item.totalItemQuantity > 1) {
+                if (item.totalItemQuantity > QuantityRange.min) {
                     item.totalItemQuantity -= 1;
                     state.totalQuantity -= 1;
                 }

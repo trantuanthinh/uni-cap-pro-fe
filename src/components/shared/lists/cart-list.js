@@ -1,4 +1,4 @@
-import { CartType, OrderType } from "@/configurations/order-data-type";
+import { CartType, OrderType, QuantityRange } from "@/configurations/data-settings";
 import { decrementQuantity, incrementQuantity, setQuantity } from "@/redux/slicers/cartSlice";
 import { addItemToCheckout } from "@/redux/slicers/checkoutSlice";
 import sharedService from "@/services/sharedService";
@@ -42,6 +42,7 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
     };
 
     const handleSetQuantity = (item, quantity) => {
+        removeFromCheckout(item.id);
         const validQuantity = Math.max(1, Number(quantity) || 1);
         dispatch(setQuantity({ id: item.id, quantity: validQuantity }));
 
@@ -51,6 +52,7 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
     };
 
     const handleIncrement = (item) => {
+        removeFromCheckout(item.id);
         const updatedQuantity = item.totalItemQuantity + 1;
         dispatch(incrementQuantity(item.id));
 
@@ -60,6 +62,7 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
     };
 
     const handleDecrement = (item) => {
+        removeFromCheckout(item.id);
         const updatedQuantity = Math.max(1, item.totalItemQuantity - 1);
         dispatch(decrementQuantity(item.id));
 
@@ -158,10 +161,20 @@ export default function CartList({ items = [], removeFromCheckout, removeFromCar
                                             </button>
                                             <input
                                                 type="number"
-                                                className="text-center text-xl w-10 rounded-lg"
+                                                className="text-center text-xl w-14 rounded-lg"
                                                 value={product.totalItemQuantity}
-                                                onChange={(e) => handleSetQuantity(product, e.target.value)}
+                                                min={QuantityRange.min}
+                                                max={QuantityRange.max}
+                                                onChange={(e) => {
+                                                    const value = Math.min(
+                                                        QuantityRange.max,
+                                                        Math.max(1, parseInt(e.target.value, 10) || QuantityRange.min)
+                                                    );
+                                                    handleSetQuantity(product, value);
+                                                }}
+                                                aria-label={`Set quantity for ${ product.name }`}
                                             />
+
                                             <button
                                                 className="hover:text-success-500"
                                                 onClick={() => handleIncrement(product)}>
