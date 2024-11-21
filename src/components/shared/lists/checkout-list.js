@@ -1,7 +1,8 @@
+import { OrderType } from "@/configurations/order-data-type";
 import sharedService from "@/services/sharedService";
 import { Button, Image } from "@nextui-org/react";
 
-export default function CheckoutList({ items = [] }) {
+export default function CheckoutList({ user, items = [] }) {
     // Group items by shop name
     const groupedItems = items.reduce((acc, item) => {
         const shopName = item?.owner || "Unknown Shop";
@@ -14,49 +15,36 @@ export default function CheckoutList({ items = [] }) {
 
     const handleBuy = (shopName) => {
         let dataJson = {
-
+            itemRequests: groupedItems[shopName].map((item) => ({
+                productId: item.id,
+                quantity: item.totalItemQuantity,
+            })),
+            userId: user.id,
+            districtId: user.districtId,
+            isShare: groupedItems[shopName].some((item) => item.order_type === OrderType.shared_order),
         };
-        console.log(`Buying from ${ shopName }`);
+        console.log(dataJson);
     };
 
     return (
         <>
             {Object.keys(groupedItems).map((shopName) => {
+                const type =
+                    groupedItems[shopName][0]?.order_type === OrderType.shared_order ? "Shared Orders" : "Individual Orders";
                 const itemsInShop = groupedItems[shopName];
 
                 return (
                     <div key={shopName} className="mb-8">
                         {/* Shop Header */}
                         <div className="flex items-center justify-between mb-4 border-b pb-4">
-                            <h2 className="text-2xl font-bold text-gray-800">{shopName}</h2>
+                            <h2 className="text-2xl font-bold text-gray-800">
+                                {shopName}
+                                <span className="text-gray-600 text-sm">: {type}</span>
+                            </h2>
                             <div className="flex flex-col items-end space-y-2">
-                                {/* Radio Buttons for Checkout Type */}
-                                <div className="flex space-x-6 items-center">
-                                    <label className="flex items-center text-sm text-gray-700">
-                                        <input
-                                            type="radio"
-                                            name={`checkoutType-${ shopName }`}
-                                            value="individual"
-                                            aria-label="Individual"
-                                            className="mr-1"
-                                        />
-                                        Individual
-                                    </label>
-                                    <label className="flex items-center text-sm text-gray-700">
-                                        <input
-                                            type="radio"
-                                            name={`checkoutType-${ shopName }`}
-                                            value="shared"
-                                            aria-label="Shared"
-                                            className="mr-1"
-                                        />
-                                        Shared
-                                    </label>
-                                </div>
-
                                 {/* Buy Button */}
                                 <Button
-                                    className="bg-success hover:bg-success-300 text-white font-semibold px-6 py-3 rounded-lg transition duration-300"
+                                    className="bg-success hover:bg-success-300 text-white font-semibold px-6 rounded-lg transition duration-300"
                                     onClick={() => handleBuy(shopName)}>
                                     Buy
                                 </Button>

@@ -14,7 +14,8 @@ export const checkoutSlice = createSlice({
 
             state.items.push({
                 ...newItem,
-                cart_type: newItem?.cart_type,
+                cart_type: newItem?.cart_type, // client added product from "cart" or "shared_cart"
+                order_type: newItem?.order_type, // client choose order type: "individual", "shared_group", "join_group"
             });
             state.totalQuantity += 1;
         },

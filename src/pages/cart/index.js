@@ -6,6 +6,7 @@ import CheckoutList from "@/components/shared/lists/checkout-list";
 import GroupCartList from "@/components/shared/lists/group-cart-list";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
+import { CartType } from "@/configurations/order-data-type";
 import { removeItemFromCart } from "@/redux/slicers/cartSlice";
 import { removeItemFromCheckout, resetCheckoutCart } from "@/redux/slicers/checkoutSlice";
 import { removeItemFromGroupCart } from "@/redux/slicers/groupCartSlice";
@@ -55,12 +56,12 @@ export default function Cart() {
         try {
             await Promise.all(
                 items.map(async (data) => {
-                    if (data.cart_type === "cart") {
+                    if (data.cart_type === CartType.cart) {
                         await apiService.postOrder(data);
-                        removeItem("cart", data.id);
-                    } else if (data.cart_type === "group-cart") {
+                        removeItem(CartType.cart, data.id);
+                    } else if (data.cart_type === CartType.shared_cart) {
                         await apiService.postBuyTogetherOrder(data.id, data);
-                        removeItem("group-cart", data.id);
+                        removeItem(CartType.shared_cart, data.id);
                     }
                 })
             );
@@ -81,7 +82,11 @@ export default function Cart() {
                     <div>
                         <h2 className="text-xl font-semibold pb-2">Cart Items</h2>
                         {cart.items.length > 0 ? (
-                            <CartList items={cart.items} removeFromCart={(id) => removeItem("cart", id)} />
+                            <CartList
+                                items={cart.items}
+                                removeFromCart={(id) => removeItem(CartType.cart, id)}
+                                removeFromCheckout={(id) => dispatch(removeItemFromCheckout(id))}
+                            />
                         ) : (
                             <p className="text-gray-500">Your cart is currently empty.</p>
                         )}
@@ -91,7 +96,8 @@ export default function Cart() {
                         {groupCart.items.length > 0 ? (
                             <GroupCartList
                                 items={groupCart.items}
-                                removeFromGroupCart={(id) => removeItem("group-cart", id)}
+                                removeFromGroupCart={(id) => removeItem(CartType.shared_cart, id)}
+                                removeFromCheckout={(id) => dispatch(removeItemFromCheckout(id))}
                             />
                         ) : (
                             <p className="text-gray-500">Your group cart is empty.</p>
@@ -110,7 +116,7 @@ export default function Cart() {
             return (
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold">Checkout Items</h2>
-                    <CheckoutList items={checkout.items} />
+                    <CheckoutList items={checkout.items} user={user} />
                     <div className="text-right space-x-2">
                         <Button
                             color="danger"

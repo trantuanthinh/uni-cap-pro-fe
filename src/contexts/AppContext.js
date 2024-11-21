@@ -11,14 +11,14 @@ const AppContext = createContext();
 
 // Unified Context Provider
 export const AppProvider = ({ children }) => {
-    // Theme-related state and logic
-    const [theme, setTheme] = useState("light");
-    const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    // // Theme-related state and logic
+    // const [theme, setTheme] = useState("light");
+    // const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
-    // User-related state and logic
-    const [user, setUser] = useState(null);
-    const login = (data) => setUser(data);
-    const logout = () => setUser(null);
+    // // User-related state and logic
+    // const [user, setUser] = useState(null);
+    // const login = (data) => setUser(data);
+    // const logout = () => setUser(null);
 
     // Main Categories-related state and logic
     const [mainCategories, setMainCategories] = useState([]);
@@ -38,11 +38,11 @@ export const AppProvider = ({ children }) => {
     return (
         <AppContext.Provider
             value={{
-                theme,
-                toggleTheme,
-                user,
-                login,
-                logout,
+                // theme,
+                // toggleTheme,
+                // user,
+                // login,
+                // logout,
                 mainCategories,
                 updateMainCategories,
                 clearMainCategories,
