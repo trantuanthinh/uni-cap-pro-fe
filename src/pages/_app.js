@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer/footer";
 import Header from "@/components/Header/header";
 import { AppProvider } from "@/contexts/AppContext";
-import Providers from "@/redux/provider";
+import ReduxProvider from "@/redux/ReduxProvider";
 import "@/styles/globals.css";
 import { NextUIProvider } from "@nextui-org/react";
 import { Itim, Lusitana, Noto_Sans, Roboto } from "next/font/google";
@@ -48,7 +48,7 @@ export default function App({ Component, pageProps }) {
     }, []);
 
     return (
-        <Providers>
+        <ReduxProvider>
             <AppProvider>
                 <NextUIProvider>
                     <div className={`grid grid-rows-[auto_1fr_auto] min-h-screen ${ notoSans.className }`}>
@@ -70,6 +70,6 @@ export default function App({ Component, pageProps }) {
                     </div>
                 </NextUIProvider>
             </AppProvider>
-        </Providers>
+        </ReduxProvider>
     );
 }
