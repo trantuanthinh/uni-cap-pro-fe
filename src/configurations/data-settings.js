@@ -13,3 +13,11 @@ export class QuantityRange {
     static min = 1;
     static max = 999;
 }
+
+export class DeliveryStatus {
+    static pending = "PENDING";
+    static processing = "PROCESSING";
+    static delivering = "DELIVERING";
+    static delivered = "DELIVERED";
+    static cancelled = "CANCELLED";
+}

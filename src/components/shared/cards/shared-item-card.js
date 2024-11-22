@@ -1,62 +1,45 @@
 import sharedService from "@/services/sharedService";
-import Image from "next/image";
+import { Image } from "@nextui-org/react";
 import Link from "next/link";
-import { FaStar } from "react-icons/fa";
 import JoinedBuyButton from "../buttons/join-buy-button";
+import StatusLabel from "../status-label";
 
 export default function SharedItemCard({ order }) {
-    const product = order.product;
-    const starRating = product.total_Rating_Quantity === 0 ? 0 : product.total_Rating_Value / product.total_Rating_Quantity;
-    const formattedPrice = sharedService.formatVietnamDong(product.price);
-
-    let discountPrice;
-    if (order.level > 1) {
-        for (let item of product.discount.discount_Details) {
-            if (item.level == order.level) {
-                discountPrice = sharedService.formatVietnamDong(product.price - product.price * item.amount);
-                break;
-            }
-        }
-    }
+    const store = order?.store || {};
+    const formattedTotalPrice = sharedService.formatVietnamDong(order?.total_Price || 0);
+    const timeLeft = sharedService.formatToTime(order?.timeLeft);
+    const deliveryStatus = order?.delivery_Status;
 
     return (
-        <div className="grid grid-flow-row grid-rows-1 overflow-hidden shadow-xl p-4 m-5 bg-white transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gray-100">
-            <Link href={`/products/detail/${ product.id }`}>
-                <div className="flex justify-center">
-                    <div className="flex border-4 size-52 rounded-lg border-rich-brown mb-2">
-                        <Image
-                            className="rounded object-cover"
-                            src={product.images[0]}
-                            alt={product.name}
-                            width={240}
-                            height={240}
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-flow-row py-4">
-                    <div className="flex opacity-50">
-                        <span className="mr-1">{starRating.toFixed(1)}</span>
-                        <FaStar color="gold" size={24} />
-                        <span className="ml-1">({product.total_Rating_Quantity})</span>
-                    </div>
-                    <div className="text-text-title font-bold text-3xl">{product.name}</div>
-                    <div className="text-text-base text-base line-clamp-2 mt-3 mb-2">{product.description}</div>
+        <div className="flex flex-col p-5 bg-white shadow-xl rounded-lg transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl hover:cursor-pointer">
+            {/* Image of the seller */}
+            <Link href={`/stores/detail/${ store.id || "#" }`} passHref>
+                <div className="relative flex flex-col justify-center items-center aspect-[4/3] space-y-2">
+                    <div className="font-semibold text-xl text-gray-800">Store: {store?.name || "Unknown Store"}</div>
+                    <Image
+                        className="rounded-lg object-cover transition-transform duration-300 hover:scale-105"
+                        src={store.avatar || "/demoImage.jpg"}
+                        alt={store.name || "Store Avatar"}
+                        layout="fill"
+                    />
                 </div>
             </Link>
 
-            <div className="grid grid-cols-3 grid-rows-1 gap-2">
-                <div className="text-red-500 font-bold text-sm">
-                    Joined: <span className="ml-2 text-base">{order.level}</span>
+            {/* Store Info and Status */}
+            <div className="flex flex-row items-center justify-between space-y-3 mb-2">
+                <div className="text-md text-gray-700">
+                    <span className="font-medium text-red-500">Ends in:</span> <span>{timeLeft}</span>
                 </div>
-
-                <div className="col-span-2 text-red-500 font-bold text-lg">
-                    Price: <span className="font-semibold">{discountPrice || formattedPrice}</span> {` `}
-                    <span className="text-xs line-through">{order.level > 1 ? formattedPrice : ''}</span>
-                </div>
+                <StatusLabel status={deliveryStatus} />
             </div>
 
-            <JoinedBuyButton item={order} />
+            {/* Price and Join Button */}
+            <div className="flex flex-col items-center mt-auto">
+                <div className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
+                    Total Price: <span className="text-primary font-bold">{formattedTotalPrice}</span>
+                </div>
+                <JoinedBuyButton item={order} />
+            </div>
         </div>
     );
 }
