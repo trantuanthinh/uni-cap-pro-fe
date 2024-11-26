@@ -23,8 +23,6 @@ export default function ProductDetail() {
                     console.log("Error fetching product: ", error);
                     toast.error("Error: " + error.message);
                 });
-
-
         }
     }, [slug, router.isReady]);
 

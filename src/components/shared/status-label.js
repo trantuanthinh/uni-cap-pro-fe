@@ -1,4 +1,5 @@
 import { DeliveryStatus } from "@/configurations/data-settings";
+import clsx from "clsx"; // Import clsx for dynamic class names
 
 export default function StatusLabel({ status }) {
     const statusMap = {
@@ -11,5 +12,14 @@ export default function StatusLabel({ status }) {
 
     const { text, color } = statusMap[status] || { text: "", color: "" };
 
-    return <div className={`px-2 py-1 rounded-lg text-sm font-medium bg-${ color }-500`}>{text}</div>;
+    return (
+        <div
+            className={clsx(
+                "px-2 py-1 rounded-lg text-sm font-medium",
+                color ? `bg-${ color }-500` : "" // This ensures that the color class is only applied if 'color' is defined
+            )}
+        >
+            {text}
+        </div>
+    );
 }
