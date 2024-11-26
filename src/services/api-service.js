@@ -171,6 +171,10 @@ class APIService {
         return this.#getItems("products", option);
     }
 
+    async getProductsByStoreId(id, option) {
+        return this.#getItems(`products/store/${ id }`, option);
+    }
+
     async getProduct(id) {
         return this.#getItem("products", id);
     }

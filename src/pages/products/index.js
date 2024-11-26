@@ -188,7 +188,7 @@ export default function Products() {
 
                 {/* Products List */}
                 <div className="basis-10/12 w-full flex flex-col items-center space-y-4">
-                    <ListItem list={list} pageSize={pageSize} type="product" id="search" />
+                    <ListItem list={list} pageSize={pageSize} />
                     {totalPages > 1 && (
                         <Pagination
                             loop
