@@ -2,7 +2,6 @@
 
 import CartList from "@/components/shared/lists/cart-list";
 import CheckoutList from "@/components/shared/lists/checkout-list";
-import GroupCartList from "@/components/shared/lists/group-cart-list";
 import Title from "@/components/shared/title";
 import { CartType } from "@/configurations/data-settings";
 import GlobalSettings from "@/configurations/global-settings";
@@ -58,7 +57,7 @@ export default function Cart() {
                             <p className="text-gray-500">Your cart is currently empty.</p>
                         )}
                     </div>
-                    <div>
+                    {/* <div>
                         <h2 className="text-xl font-semibold pb-2">Group Cart Items</h2>
                         {groupCart.items.length > 0 ? (
                             <GroupCartList
@@ -74,7 +73,7 @@ export default function Cart() {
                         <Button color="primary" onClick={() => setActiveTab("checkout")}>
                             Proceed to Checkout
                         </Button>
-                    </div>
+                    </div> */}
                 </div>
             );
         }

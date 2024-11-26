@@ -1,8 +1,10 @@
 import ListItem from "@/components/shared/list-item";
+import GroupCartList from "@/components/shared/lists/group-cart-list";
 import LoadingIndicator from "@/components/shared/loading-indicator";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
 import apiService from "@/services/api-service";
+import sharedService from "@/services/sharedService";
 import { Input, Pagination } from "@nextui-org/react";
 import { debounce } from "lodash";
 import { useRouter } from "next/router";
@@ -14,6 +16,7 @@ export default function GroupBuy() {
     const user = useSelector((state) => state.user);
     const router = useRouter();
     const { slug } = router.query;
+    const groupCart = useSelector((state) => state.groupCart);
 
     const [isMounted, setIsMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +28,7 @@ export default function GroupBuy() {
     const [selectedGroupBuy, setSelectedGroupBuy] = useState(null);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
+    const [timeLeft, setTimeLeft] = useState(null);
 
     // Fetch group buy details on component load
     useEffect(() => {
@@ -34,6 +38,7 @@ export default function GroupBuy() {
                 .then((res) => {
                     setGroupOrder(res.result);
                     setStore(res.result.store);
+                    setTimeLeft(sharedService.formatToTime(res.result?.timeLeft));
                     let storeId = res.result.storeId;
                     apiService
                         .getProductsByStoreId(storeId)
@@ -127,35 +132,47 @@ export default function GroupBuy() {
                     <div className="grid grid-cols-10 gap-6">
                         {/* Left Column */}
                         <div className="col-span-2">
-                            <p className="text-lg font-bold mb-4 p-2">Order ID: #{groupOrder.id}</p>
-                            <div className="p-2 rounded-lg border-2 border-green-700">
-                                {Array.isArray(groupOrder.sub_Orders) &&
-                                    groupOrder.sub_Orders.map((subOrder, index) => (
-                                        <div key={subOrder.id} className="p-2 shadow-md flex flex-col justify-center">
-                                            <h1 className="text-lg font-semibold">Sub_Order #{index + 1}</h1>
-                                            <p className="text-sm font-semibold text-gray-600">ID: #{subOrder.id}</p>
-                                            <p className="text-sm text-gray-600">Total Price: {subOrder.total_Price}</p>
-                                        </div>
-                                    ))}
+                            <div className="flex flex-col">
+                                <p className="text-lg font-bold pt-2">Order ID: #{groupOrder.id}</p>
+                                <p className="text-sm mb-4 text-red-600 font-semibold">Ends in: {timeLeft}</p>
+                            </div>
+
+                            <div className="rounded-lg">
+                                <div className="mb-2 rounded-lg border-3 border-green-700">
+                                    {Array.isArray(groupOrder.sub_Orders) &&
+                                        groupOrder.sub_Orders.map((subOrder, index) => (
+                                            <div key={subOrder.id} className="p-2 shadow-md flex flex-col justify-center">
+                                                <h1 className="text-lg font-semibold">Sub_Order #{index + 1}</h1>
+                                                <p className="text-sm font-semibold text-gray-600">ID: #{subOrder.id}</p>
+                                                <p className="text-sm text-gray-600">Total Price: {subOrder.total_Price}</p>
+                                            </div>
+                                        ))}
+                                </div>
+
                                 <div className="mt-4">
-                                    {groupOrder.joined ? (
-                                        <button
-                                            onClick={() => handleCancelJoinGroupBuy(groupOrder)}
-                                            className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600">
-                                            Cancel Join
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleJoinGroupBuy(groupOrder)}
-                                            className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
-                                            Join Group Buy
-                                        </button>
-                                    )}
+                                    <button
+                                        onClick={() => handleJoinGroupBuy(groupOrder)}
+                                        className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
+                                        Join Group Buy
+                                    </button>
                                     <button
                                         onClick={() => handleOpenDialog(groupOrder)}
                                         className="ml-2 px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600">
                                         Details
                                     </button>
+                                </div>
+
+                                <div>
+                                    <h2 className="text-xl font-semibold pb-2">Group Cart Items</h2>
+                                    {groupCart.items.length > 0 ? (
+                                        <GroupCartList
+                                            items={groupCart.items}
+                                            removeFromGroupCart={(id) => removeItem(CartType.shared_cart, id)}
+                                            removeFromCheckout={(id) => dispatch(removeItemFromCheckout(id))}
+                                        />
+                                    ) : (
+                                        <p className="text-gray-500">Your group cart is empty.</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -170,7 +187,7 @@ export default function GroupBuy() {
                                     placeholder="Search Products' Name"
                                     type="text"
                                     id="search"
-                                    onChange={(e) => fetchProducts()} // Update search term
+                                    onChange={(e) => fetchProducts()}
                                 />
                                 <ListItem list={products} type="group-buy" />
                                 {totalPages > 1 && (

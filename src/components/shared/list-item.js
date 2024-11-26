@@ -1,4 +1,5 @@
 import AddToCartButton from "./buttons/add-to-cart-button";
+import AddToGroupCartButton from "./buttons/add-to-group-cart";
 import ItemCard from "./cards/item-card";
 import SharedItemCard from "./cards/shared-item-card";
 
@@ -22,7 +23,7 @@ export default function ListItem({ list = null, pageSize = 16, type = "product" 
                     <div className="flex flex-col transition-transform transform duration-300 hover:scale-105 hover:shadow-2xl bg-white shadow-lg rounded-lg">
                         <ItemCard key={product.id} product={product} />
                         <div className="flex items-center justify-center pb-2">
-                            <AddToCartButton item={product} />
+                            <AddToGroupCartButton item={product} />
                         </div>
                     </div>
                 ))}
