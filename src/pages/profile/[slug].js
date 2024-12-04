@@ -696,7 +696,7 @@ const OrdersTab = ({ router, user, isLoading }) => {
                             <div className="col-span-2 space-y-2">
                                 <p className="font-semibold text-gray-900 text-lg">{order.product.name}</p>
                                 <p className="text-gray-600 text-sm">
-                                    {sharedService.formatVietnamDong(order.price)}/{order.product.unitMeasure}
+                                    {sharedService.formatVietnamDong(order.price)}/unit
                                 </p>
                                 <p className="text-gray-600 text-sm">Quantity: {order.quantity}</p>
                                 <p className="text-gray-600 text-sm">

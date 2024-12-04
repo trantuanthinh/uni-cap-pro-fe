@@ -12,12 +12,14 @@ export default function AddToCartButton({ item = null }) {
             toast.error("Please login to add to cart");
             return;
         }
-        if (item) {
-            dispatch(addItemToCart(item));
-            toast.success("Added to Cart");
+
+        if (!item) {
+            toast.error("Item not found");
             return;
         }
-        toast.error("Item not found");
+
+        dispatch(addItemToCart(item));
+        toast.success("Added to Cart");
     }
 
     return (

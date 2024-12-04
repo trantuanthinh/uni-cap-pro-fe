@@ -57,23 +57,6 @@ export default function Cart() {
                             <p className="text-gray-500">Your cart is currently empty.</p>
                         )}
                     </div>
-                    {/* <div>
-                        <h2 className="text-xl font-semibold pb-2">Group Cart Items</h2>
-                        {groupCart.items.length > 0 ? (
-                            <GroupCartList
-                                items={groupCart.items}
-                                removeFromGroupCart={(id) => removeItem(CartType.shared_cart, id)}
-                                removeFromCheckout={(id) => dispatch(removeItemFromCheckout(id))}
-                            />
-                        ) : (
-                            <p className="text-gray-500">Your group cart is empty.</p>
-                        )}
-                    </div>
-                    <div className="text-right">
-                        <Button color="primary" onClick={() => setActiveTab("checkout")}>
-                            Proceed to Checkout
-                        </Button>
-                    </div> */}
                 </div>
             );
         }

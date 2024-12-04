@@ -13,12 +13,13 @@ export default function AddToGroupCartButton({ item = null }) {
             return;
         }
 
-        if (item) {
-            dispatch(addItemToGroupCart(item));
-            toast.success("Added to Group Cart");
+        if (!item) {
+            toast.error("Item not found");
             return;
         }
-        toast.error("Item not found");
+
+        dispatch(addItemToGroupCart(item));
+        toast.success("Added to Group Cart");
     }
 
     return (

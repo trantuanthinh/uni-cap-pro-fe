@@ -3,18 +3,20 @@ import GroupCartList from "@/components/shared/lists/group-cart-list";
 import LoadingIndicator from "@/components/shared/loading-indicator";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
+import { removeItemFromGroupCart } from "@/redux/slicers/groupCartSlice";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
-import { Input, Pagination } from "@nextui-org/react";
+import { Accordion, AccordionItem, Button, Input, Pagination } from "@nextui-org/react";
 import { debounce } from "lodash";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 
 export default function GroupBuy() {
     const user = useSelector((state) => state.user);
     const router = useRouter();
+    const dispatch = useDispatch();
     const { slug } = router.query;
     const groupCart = useSelector((state) => state.groupCart);
 
@@ -138,41 +140,51 @@ export default function GroupBuy() {
                             </div>
 
                             <div className="rounded-lg">
-                                <div className="mb-2 rounded-lg border-3 border-green-700">
-                                    {Array.isArray(groupOrder.sub_Orders) &&
-                                        groupOrder.sub_Orders.map((subOrder, index) => (
-                                            <div key={subOrder.id} className="p-2 shadow-md flex flex-col justify-center">
-                                                <h1 className="text-lg font-semibold">Sub_Order #{index + 1}</h1>
-                                                <p className="text-sm font-semibold text-gray-600">ID: #{subOrder.id}</p>
-                                                <p className="text-sm text-gray-600">Total Price: {subOrder.total_Price}</p>
-                                            </div>
-                                        ))}
-                                </div>
+                                <Accordion variant="bordered" className="mb-2">
+                                    <AccordionItem className="mb-2 rounded-lg" title="Sub-Orders">
+                                        {Array.isArray(groupOrder.sub_Orders) &&
+                                            groupOrder.sub_Orders.map((subOrder, index) => (
+                                                <div
+                                                    key={subOrder.id}
+                                                    className="mb-2 p-2 border border-green-700 rounded-md shadow-md flex flex-col justify-center">
+                                                    <h1 className="text-lg font-semibold">Sub_Order #{index + 1}</h1>
+                                                    <p className="text-sm font-semibold text-gray-600">ID: #{subOrder.id}</p>
+                                                    <p className="text-sm text-gray-600">
+                                                        Total Price: {subOrder.total_Price}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                    </AccordionItem>
+                                </Accordion>
 
-                                <div className="mt-4">
-                                    <button
-                                        onClick={() => handleJoinGroupBuy(groupOrder)}
-                                        className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
-                                        Join Group Buy
-                                    </button>
-                                    <button
-                                        onClick={() => handleOpenDialog(groupOrder)}
-                                        className="ml-2 px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600">
-                                        Details
-                                    </button>
-                                </div>
+                                <Button
+                                    onClick={() => handleJoinGroupBuy(groupOrder)}
+                                    fullWidth
+                                    color="success"
+                                    className="px-4 py-2 text-white rounded hover:bg-blue-700">
+                                    Join Group Buy
+                                </Button>
 
-                                <div>
+                                <div className="flex flex-col justify-center items-center space-y-0.5">
                                     <h2 className="text-xl font-semibold pb-2">Group Cart Items</h2>
                                     {groupCart.items.length > 0 ? (
                                         <GroupCartList
                                             items={groupCart.items}
-                                            removeFromGroupCart={(id) => removeItem(CartType.shared_cart, id)}
-                                            removeFromCheckout={(id) => dispatch(removeItemFromCheckout(id))}
+                                            removeFromGroupCart={(id) => dispatch(removeItemFromGroupCart(id))}
                                         />
                                     ) : (
                                         <p className="text-gray-500">Your group cart is empty.</p>
                                     )}
+
+                                    {/* <Pagination
+                                        loop
+                                        showControls
+                                        color="success"
+                                        radius="lg"
+                                        total={totalPages}
+                                        page={currentPage}
+                                        onChange={handlePageChange}
+                                    /> */}
                                 </div>
                             </div>
                         </div>

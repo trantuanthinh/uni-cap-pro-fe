@@ -14,21 +14,23 @@ export default function JoinedBuyButton({ item = null }) {
             return;
         }
 
-        item.sub_Orders.forEach((subOrder) => {
-            if (subOrder.userId === user.id) {
-                toast.error("Already Joined Order");
-                return;
-            }
-        });
+        const alreadyJoined = item.sub_Orders.some((subOrder) => subOrder.userId === user.id);
+        if (alreadyJoined) {
+            toast.error("Already Joined Order");
+            return;
+        }
 
         if (item.delivery_Status !== DeliveryStatus.pending || !item.isActive) {
             toast.error("Order is not available to join");
             return;
         }
 
-        if (item) {
-            router.push(`/group-buy/${ item.id }`);
+        if (!item) {
+            toast.error("Order not found");
+            return;
         }
+
+        router.push(`/group-buy/${ item.id }`);
         toast.success("You are available to join order");
     }
 

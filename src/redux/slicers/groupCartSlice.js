@@ -1,4 +1,6 @@
+import { QuantityRange } from "@/configurations/data-settings";
 import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "sonner";
 
 const initialState = {
     items: [],
@@ -25,11 +27,19 @@ export const groupCartSlice = createSlice({
             }
         },
 
+        setQuantity: (state, action) => {
+            const item = state.items.find((item) => item.id === action.payload.id);
+            if (item) {
+                item.totalItemQuantity = action.payload.quantity;
+                state.totalQuantity = state.items.reduce((total, item) => total + item.totalItemQuantity, 0);
+            }
+        },
+
         incrementQuantity: (state, action) => {
             const item = state.items.find((item) => item.id === action.payload);
 
             if (item) {
-                if (item.totalItemQuantity < 10) {
+                if (item.totalItemQuantity < QuantityRange.max) {
                     item.totalItemQuantity += 1;
                     state.totalQuantity += 1;
                 }
@@ -40,7 +50,7 @@ export const groupCartSlice = createSlice({
             const item = state.items.find((item) => item.id === action.payload);
 
             if (item) {
-                if (item.totalItemQuantity > 1) {
+                if (item.totalItemQuantity > QuantityRange.min) {
                     item.totalItemQuantity -= 1;
                     state.totalQuantity -= 1;
                 }
@@ -48,6 +58,7 @@ export const groupCartSlice = createSlice({
         },
 
         removeItemFromGroupCart: (state, action) => {
+            toast.success("Removed from Group Cart");
             const id = action.payload;
             const existingItem = state.items.find((item) => item.id === id);
 
@@ -64,7 +75,13 @@ export const groupCartSlice = createSlice({
     },
 });
 
-export const { addItemToGroupCart, incrementQuantity, decrementQuantity, removeItemFromGroupCart, clearGroupCart } =
-    groupCartSlice.actions;
+export const {
+    addItemToGroupCart,
+    setQuantity,
+    incrementQuantity,
+    decrementQuantity,
+    removeItemFromGroupCart,
+    clearGroupCart,
+} = groupCartSlice.actions;
 
 export default groupCartSlice.reducer;
