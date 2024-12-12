@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 class HTTPService {
     async getItems(url) {
         try {
@@ -11,14 +13,16 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                //  // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Get Items Successfully", response);
             return await response.json();
         } catch (error) {
             console.error("Failed to get items:", error);
-            throw error;
+            toast.error("Failed to get items:", error);
+            // throw error;
         }
     }
 
@@ -34,14 +38,16 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Get Item Successfully", response);
             return await response.json();
         } catch (error) {
             console.error("Failed to get item:", error);
-            throw error;
+            toast.error("Failed to get item:", error);
+            // throw error;
         }
     }
 
@@ -58,14 +64,16 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Post Successfully", response);
             return await response.json();
         } catch (error) {
             console.error("Failed to post item:", error);
-            throw error;
+            toast.error("Failed to post item:", error);
+            // throw error;
         }
     }
 
@@ -79,14 +87,16 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Post Successfully", response);
+            console.log("Put Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to post item:", error);
-            throw error;
+            console.error("Failed to put image:", error);
+            toast.error("Failed to put image:", error);
+            // throw error;
         }
     }
 
@@ -103,14 +113,16 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Put Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to post item:", error);
-            throw error;
+            console.error("Failed to put item:", error);
+            toast.error("Failed to put item:", error);
+            // throw error;
         }
     }
 
@@ -127,14 +139,16 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Patch Successfully", response);
             return await response.json();
         } catch (error) {
             console.error("Failed to patch item:", error);
-            throw error;
+            toast.error("Failed to patch item:", error);
+            // throw error;
         }
     }
 
@@ -150,14 +164,16 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
+                toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
             console.log("Delete Successfully", response);
             return await response.json();
         } catch (error) {
             console.error("Failed to delete item:", error);
-            throw error;
+            toast.error("Failed to delete item:", error);
+            // throw error;
         }
     }
 }
