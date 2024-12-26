@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import httpService from "./http-service";
 
 class APIService {
@@ -90,7 +91,8 @@ class APIService {
 
     #handleError(context, error) {
         console.error(`${ context } ${ error.message }`);
-        throw error;
+        toast.error(`${ context } ${ error.message }`);
+        // throw error;
     }
     //#endregion
 
