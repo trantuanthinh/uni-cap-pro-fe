@@ -1,6 +1,6 @@
 class GlobalSettings {
     static Settings = {
-        name: "TTT",
+        name: "Aladin",
         apiUrl: "http://localhost:5130/api",
         debounceTimer: {
             valueChanges: 500,
