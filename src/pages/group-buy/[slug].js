@@ -88,7 +88,7 @@ export default function GroupBuy() {
                     });
             }
         }, GlobalSettings.Settings.debounceTimer.valueChanges),
-        [currentPage] // Added store and searchTerm as dependencies
+        [currentPage]
     );
 
     // Handle page change
@@ -148,9 +148,9 @@ export default function GroupBuy() {
                                                     key={subOrder.id}
                                                     className="mb-2 p-2 border border-green-700 rounded-md shadow-md flex flex-col justify-center">
                                                     <h1 className="text-lg font-semibold">Sub_Order #{index + 1}</h1>
-                                                    <p className="text-sm font-semibold text-gray-600">ID: #{subOrder.id}</p>
+                                                    <p className="text-sm text-gray-600"><strong>ID:</strong> #{subOrder.id}</p>
                                                     <p className="text-sm text-gray-600">
-                                                        Total Price: {subOrder.total_Price}
+                                                        <strong>Total Price:</strong> {sharedService.formatVietnamDong(subOrder.total_Price)}
                                                     </p>
                                                 </div>
                                             ))}

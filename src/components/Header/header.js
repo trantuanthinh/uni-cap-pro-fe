@@ -91,8 +91,8 @@ export default function Header() {
             <NavbarBrand className="max-w-20">
                 <Link href="/">
                     <Image
-                        className="size-14 rounded"
-                        src="/logo/logo-white-removebg-preview.png"
+                        className="rounded"
+                        src="/logo/Aladin-Logo.png"
                         alt="logo"
                         layout="fixed"
                     />
