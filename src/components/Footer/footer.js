@@ -8,7 +8,7 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-emerald-700 text-white py-6 rounded-none">
+        <footer className="bg-background-base text-text-base py-6 rounded-none">
             <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
                 <div className="mb-4 md:mb-0">
                     <LinkList linkList={linkList} />

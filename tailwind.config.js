@@ -12,17 +12,12 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                "primary-green": "#4A773C",
-                "light-green": "#7D9A5F",
-                "rich-brown": "#6F4F28",
-                "light-brown": "#BFAE9F",
-                "beige": "#F5F5DC",
-                "sky-blue": "#87CEEB",
-                "sunset-orange": "#FF6F00",
-                "harvest-yellow": "#F4C542",
-                "text-title": "#4A773C",
-                "text-base": "#6F4F28",
-                "background-base": "#F5F5DC",
+                "background-base": "#059669",       // Nền chính: xanh lá đậm, tạo cảm giác tươi mới.
+                "secondary-background": "#047857",  // Nền phụ: tối hơn một chút để tạo sự phân cấp.
+                "text-base": "#FFFFFF",             // Màu chữ chính: trắng, tương phản cao và dễ đọc trên nền xanh lá.
+                "text-secondary-base": "#B2DFDB",   // Màu chữ phụ: xanh ngọc nhạt, dịu mắt và hiện đại.
+                "hover-dark": "#F7D977",            // Màu vàng nhạt hơn, tạo cảm giác dịu mắt.
+                "hover-light": "#A08A62"            // Màu nâu sáng hơn, nhẹ nhàng và thân thiện.
             },
             backgroundImage: {
                 "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

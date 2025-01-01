@@ -87,15 +87,10 @@ export default function Header() {
     ];
 
     return (
-        <Navbar shouldHideOnScroll className="shadow-md bg-emerald-600 text-white rounded-none">
+        <Navbar shouldHideOnScroll className="shadow-md bg-background-base text-text-base rounded-none">
             <NavbarBrand className="max-w-20">
                 <Link href="/">
-                    <Image
-                        className="rounded"
-                        src="/logo/Aladin-Logo.png"
-                        alt="logo"
-                        layout="fixed"
-                    />
+                    <Image className="rounded" src="/logo/Aladin-Logo.png" alt="logo" layout="fixed" />
                 </Link>
             </NavbarBrand>
 
@@ -103,29 +98,29 @@ export default function Header() {
                 {navList.map((item) => (
                     <NavbarItem
                         key={item.href}
-                        className="cursor-pointer text-black hover:underline font-semibold"
+                        className="cursor-pointer text-text-base hover:underline font-semibold"
                         onClick={() => router.push(item.href)}>
                         {item.label}
                     </NavbarItem>
                 ))}
 
-                <NavbarItem className="relative cursor-pointer text-black hover:underline space-y-5">
+                <NavbarItem className="relative cursor-pointer text-text-base hover:underline space-y-5">
                     <span className="font-semibold" onMouseEnter={() => setOpenMainCategory(true)}>
                         Categories
                     </span>
 
                     {openMainCategory && (
                         <ul
-                            className="absolute mt-2 bg-white border border-gray-300 shadow-lg rounded w-max"
+                            className="absolute mt-2 bg-white text-black border border-gray-300 shadow-lg rounded w-max"
                             onMouseLeave={() => setTimeout(() => setOpenMainCategory(false), timeout)}>
                             <li onClick={() => handleProductRouting("")}>
-                                <div className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                <div className="flex justify-between items-center px-4 py-2 hover:bg-hover-light cursor-pointer">
                                     All Products
                                 </div>
                             </li>
 
                             <li onClick={() => handleProductRouting("shared-order")}>
-                                <div className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                <div className="flex justify-between items-center px-4 py-2 hover:bg-hover-light cursor-pointer">
                                     Shared-Order
                                 </div>
                             </li>
@@ -138,7 +133,7 @@ export default function Header() {
                                     className="relative"
                                     onMouseEnter={() => handleMouseEnter(mainCategory.id)}
                                     onMouseLeave={handleMouseLeave}>
-                                    <div className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                    <div className="flex justify-between items-center px-4 py-2 hover:bg-hover-light cursor-pointer">
                                         {mainCategory.name}{" "}
                                         <span>
                                             <IoIosArrowForward />
@@ -150,7 +145,7 @@ export default function Header() {
                                             {getCategories.map((category) => (
                                                 <li
                                                     key={category.id}
-                                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                    className="px-4 py-2 hover:bg-hover-light cursor-pointer"
                                                     onClick={() => handleProductRouting(category.id)}>
                                                     {category.name}
                                                 </li>
