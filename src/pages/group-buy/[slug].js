@@ -3,7 +3,7 @@ import GroupCartList from "@/components/shared/lists/group-cart-list";
 import LoadingIndicator from "@/components/shared/loading-indicator";
 import Title from "@/components/shared/title";
 import GlobalSettings from "@/configurations/global-settings";
-import { removeItemFromGroupCart } from "@/redux/slicers/groupCartSlice";
+import { clearGroupCart, removeItemFromGroupCart } from "@/redux/slicers/groupCartSlice";
 import apiService from "@/services/api-service";
 import sharedService from "@/services/sharedService";
 import { Accordion, AccordionItem, Button, Input, Pagination } from "@nextui-org/react";
@@ -101,6 +101,30 @@ export default function GroupBuy() {
     const handleOpenDialog = (groupBuy) => {
         setSelectedGroupBuy(groupBuy);
         setIsDialogOpen(true);
+    };
+
+    const handleJoinGroupBuy = async (groupOrder) => {
+        const dataJson = {
+            itemRequests: groupCart.items.map((item) => ({
+                productId: item.id,
+                quantity: item.totalItemQuantity,
+            })),
+            userId: user.id,
+            districtId: user.districtId,
+            totalPrice: groupCart.totalPrice,
+        };
+
+        try {
+            const res = await apiService.postJoinGroupOrder(groupOrder.id, dataJson);
+            if (res.ok) {
+                toast.success("Join Group Order successfully");
+                clearGroupCart();
+                router.push("/");
+            }
+        } catch (error) {
+            toast.error(`Error: ${ error.message }`);
+            console.error("Error:", error.message);
+        }
     };
 
     // Handle dialog close

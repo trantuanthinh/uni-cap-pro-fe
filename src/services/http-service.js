@@ -1,6 +1,14 @@
 import { toast } from "sonner";
 
+/**
+ * A service for handling HTTP requests.
+ */
 class HTTPService {
+    /**
+     * Fetches multiple items from a given URL using a GET request.
+     * @param {string} url - The URL to send the GET request to.
+     * @returns {Promise<Object>} - The response data as JSON.
+     */
     async getItems(url) {
         try {
             const request = {
@@ -13,19 +21,21 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                //  // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
                 toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Get Items Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to get items:", error);
-            toast.error("Failed to get items:", error);
-            // throw error;
+            console.error("Failed to Get items:", error);
+            toast.error("Failed to Get items:", error);
         }
     }
 
+    /**
+     * Fetches a single item from a given URL using a GET request.
+     * @param {string} url - The URL to send the GET request to.
+     * @returns {Promise<Object>} - The response data as JSON.
+     */
     async getItem(url) {
         try {
             const request = {
@@ -38,19 +48,22 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
                 toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Get Item Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to get item:", error);
-            toast.error("Failed to get item:", error);
-            // throw error;
+            console.error("Failed to Get item:", error);
+            toast.error("Failed to Get item:", error);
         }
     }
 
+    /**
+     * Sends a POST request to a given URL with provided data.
+     * @param {string} url - The URL to send the POST request to.
+     * @param {Object} data - The data to be sent in the request body.
+     * @returns {Promise<Object>} - The response data as JSON.
+     */
     async postItem(url, data) {
         try {
             const request = {
@@ -64,19 +77,22 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
                 toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Post Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to post item:", error);
-            toast.error("Failed to post item:", error);
-            // throw error;
+            console.error("Failed to Post item:", error);
+            toast.error("Failed to Post item:", error);
         }
     }
 
+    /**
+     * Sends a PUT request to upload an image using FormData.
+     * @param {string} url - The URL to send the PUT request to.
+     * @param {FormData} formData - The FormData containing the image.
+     * @returns {Promise<Object>} - The response data as JSON.
+     */
     async putImage(url, formData) {
         try {
             const request = {
@@ -87,19 +103,22 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
                 toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Put Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to put image:", error);
-            toast.error("Failed to put image:", error);
-            // throw error;
+            console.error("Failed to Put image:", error);
+            toast.error("Failed to Put image:", error);
         }
     }
 
+    /**
+     * Sends a PUT request to a given URL with provided data.
+     * @param {string} url - The URL to send the PUT request to.
+     * @param {Object} data - The data to be sent in the request body.
+     * @returns {Promise<Object>} - The response data as JSON.
+     */
     async putItem(url, data) {
         try {
             const request = {
@@ -113,19 +132,22 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
                 toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Put Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to put item:", error);
-            toast.error("Failed to put item:", error);
-            // throw error;
+            console.error("Failed to Put item:", error);
+            toast.error("Failed to Put item:", error);
         }
     }
 
+    /**
+     * Sends a PATCH request to a given URL with provided data.
+     * @param {string} url - The URL to send the PATCH request to.
+     * @param {Object} data - The data to be sent in the request body.
+     * @returns {Promise<Object>} - The response data as JSON.
+     */
     async patchItem(url, data) {
         try {
             const request = {
@@ -139,19 +161,21 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
                 toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Patch Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to patch item:", error);
-            toast.error("Failed to patch item:", error);
-            // throw error;
+            console.error("Failed to Patch item:", error);
+            toast.error("Failed to Patch item:", error);
         }
     }
 
+    /**
+     * Sends a DELETE request to a given URL.
+     * @param {string} url - The URL to send the DELETE request to.
+     * @returns {Promise<Object>} - The response data as JSON.
+     */
     async deleteItem(url) {
         try {
             const request = {
@@ -164,16 +188,13 @@ class HTTPService {
             const response = await fetch(url, request);
 
             if (!response.ok) {
-                // throw new Error(`Error ${ response.status }: ${ response.statusText }`);
                 toast.error(`Error ${ response.status }: ${ response.statusText }`);
             }
 
-            console.log("Delete Successfully", response);
             return await response.json();
         } catch (error) {
-            console.error("Failed to delete item:", error);
-            toast.error("Failed to delete item:", error);
-            // throw error;
+            console.error("Failed to Delete item:", error);
+            toast.error("Failed to Delete item:", error);
         }
     }
 }

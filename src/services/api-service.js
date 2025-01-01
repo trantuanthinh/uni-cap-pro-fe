@@ -251,8 +251,8 @@ class APIService {
         return this.#postItem("orders", data);
     }
 
-    async postBuyTogetherOrder(orderId, data) {
-        return this.#postItem(`orders/buy-together/${ orderId }`, data);
+    async postJoinGroupOrder(orderId, data) {
+        return this.#postItem(`orders/join-group/${ orderId }`, data);
     }
     //#endregion
 

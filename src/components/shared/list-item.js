@@ -9,8 +9,8 @@ export default function ListItem({ list = null, pageSize = 16, type = "product" 
             {type === "product" &&
                 list &&
                 list.slice(0, pageSize).map((product) => (
-                    <div className="flex flex-col transition-transform transform duration-300 hover:shadow-xl bg-white shadow-lg rounded-lg">
-                        <ItemCard key={product.id} product={product} />
+                    <div key={product.id} className="flex flex-col transition-transform transform duration-300 hover:shadow-xl bg-white shadow-lg rounded-lg">
+                        <ItemCard product={product} />
                         <div className="flex items-center justify-center pb-4">
                             <AddToCartButton item={product} />
                         </div>
@@ -20,8 +20,8 @@ export default function ListItem({ list = null, pageSize = 16, type = "product" 
             {type === "group-buy" &&
                 list &&
                 list.slice(0, pageSize).map((product) => (
-                    <div className="flex flex-col transition-transform transform duration-300 hover:shadow-2xl bg-white shadow-lg rounded-lg">
-                        <ItemCard key={product.id} product={product} />
+                    <div key={product.id} className="flex flex-col transition-transform transform duration-300 hover:shadow-2xl bg-white shadow-lg rounded-lg">
+                        <ItemCard product={product} />
                         <div className="flex items-center justify-center pb-4">
                             <AddToGroupCartButton item={product} />
                         </div>

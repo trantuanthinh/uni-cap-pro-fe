@@ -1,10 +1,10 @@
 import { QuantityRange } from "@/configurations/data-settings";
 import { createSlice } from "@reduxjs/toolkit";
-import { toast } from "sonner";
 
 const initialState = {
     items: [],
     totalQuantity: 0,
+    totalPrice: 0,
 };
 
 export const groupCartSlice = createSlice({
@@ -20,17 +20,18 @@ export const groupCartSlice = createSlice({
                     ...newItem,
                     totalItemQuantity: 1,
                 });
-                state.totalQuantity += 1;
             } else {
                 existingItem.totalItemQuantity += 1;
-                state.totalQuantity += 1;
             }
+            state.totalPrice += newItem.price;
+            state.totalQuantity += 1;
         },
 
         setQuantity: (state, action) => {
             const item = state.items.find((item) => item.id === action.payload.id);
             if (item) {
                 item.totalItemQuantity = action.payload.quantity;
+                state.totalPrice = state.items.reduce((total, item) => total + item.price * item.totalItemQuantity, 0);
                 state.totalQuantity = state.items.reduce((total, item) => total + item.totalItemQuantity, 0);
             }
         },
@@ -41,6 +42,7 @@ export const groupCartSlice = createSlice({
             if (item) {
                 if (item.totalItemQuantity < QuantityRange.max) {
                     item.totalItemQuantity += 1;
+                    state.totalPrice += item.price;
                     state.totalQuantity += 1;
                 }
             }
@@ -52,13 +54,13 @@ export const groupCartSlice = createSlice({
             if (item) {
                 if (item.totalItemQuantity > QuantityRange.min) {
                     item.totalItemQuantity -= 1;
+                    state.totalPrice -= item.price;
                     state.totalQuantity -= 1;
                 }
             }
         },
 
         removeItemFromGroupCart: (state, action) => {
-            toast.success("Removed from Group Cart");
             const id = action.payload;
             const existingItem = state.items.find((item) => item.id === id);
 
